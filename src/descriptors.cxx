@@ -3,6 +3,8 @@
 #include <usb/descriptors.hxx>
 #include "constants.hxx"
 
+using namespace usb::constants;
+using namespace usb::types;
 using namespace usb::descriptors;
 using namespace std::literals::string_view_literals;
 
