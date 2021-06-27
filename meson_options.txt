@@ -1,0 +1,2 @@
+option('chip', type: 'combo', description: 'Which Tiva-C you wish you use',
+	choices: ['unknown', 'tm4c123gh6pm', 'atxmega256a3u'])
