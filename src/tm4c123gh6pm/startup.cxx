@@ -10,8 +10,10 @@ void irqEmptyDef() noexcept;
 
 extern const uint32_t stackTop;
 extern const uint32_t endText;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 extern uint32_t beginData;
 extern const uint32_t endData;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 extern uint32_t beginBSS;
 extern const uint32_t endBSS;
 
@@ -22,8 +24,8 @@ using irqFunction_t = void (*)();
 
 struct nvicTable_t final
 {
-	const void *stackTop;
-	std::array<irqFunction_t, 155> vectorTable;
+	const void *stackTop{nullptr};
+	std::array<irqFunction_t, 155> vectorTable{{}};
 };
 
 [[gnu::section(".nvic_table"), gnu::used]] static const nvicTable_t nvicTable
@@ -195,12 +197,12 @@ void irqReset() noexcept
 {
 	while (true)
 	{
-		auto *src{&endText};
+		const auto *src{&endText};
 		for (auto *dst{&beginData}; dst < &endData; ++dst, ++src)
 			*dst = *src;
 		for (auto *dst{&beginBSS}; dst < &endBSS; ++dst)
 			*dst = 0;
-		for (auto *ctor{&beginCtors}; ctor != &endCtors; ++ctor)
+		for (const auto *ctor{&beginCtors}; ctor != &endCtors; ++ctor)
 			(*ctor)();
 
 		run();
