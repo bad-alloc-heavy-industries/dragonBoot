@@ -5,4 +5,8 @@
 extern void run() noexcept;
 extern void irqUSB() noexcept;
 
+namespace osc { extern void init() noexcept; }
+
+extern void rebootToFirmware() noexcept;
+
 #endif /*PLATFORM__HXX*/

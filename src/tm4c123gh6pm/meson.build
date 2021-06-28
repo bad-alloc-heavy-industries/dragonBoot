@@ -7,5 +7,5 @@ platform = dependency(
 ).partial_dependency(compile_args: true, includes: true)
 
 platformSrc = files(
-	'startup.cxx'
+	'startup.cxx', 'platform.cxx'
 )
