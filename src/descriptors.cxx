@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 #include <array>
 #include <usb/descriptors.hxx>
+#include <usb/drivers/dfu.hxx>
 #include "constants.hxx"
 
 using namespace std::literals::string_view_literals;
@@ -61,7 +62,7 @@ namespace usb::descriptors
 		dfu::descriptor_t::functional,
 		{dfu::willDetach_t::yes, dfu::manifestationTolerant_t::no, dfu::canUpload_t::no, dfu::canDownload_t::yes},
 		10, // Set the detach timeout to 10ms
-		epBufferSize, // Set the max transfer size to the endpoint buffer size
+		usb::dfu::flashPageSize, // Set the max transfer size to the size of a Flash page on the device
 		0x011A // Tis is 1.1a in USB's BCD format
 	};
 
