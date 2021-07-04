@@ -37,6 +37,12 @@ bootloader = executable(
 	install: false
 )
 
+objdump = find_program('objdump')
+run_target(
+	'disasm',
+	command: [objdump, '-dC', bootloader]
+)
+
 size = find_program('get_fw_size.py', dirs: '@0@/../scripts'.format(meson.current_source_dir()))
 run_target(
 	'size',
