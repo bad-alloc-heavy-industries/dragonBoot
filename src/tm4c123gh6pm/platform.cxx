@@ -44,16 +44,31 @@ namespace osc
 	}
 } // namespace osc
 
+bool mustEnterBootloader() noexcept
+{
+	if (sysCtrl.resetCause | vals::sysCtrl::resetCauseSoftware)
+	{
+		if (!(sysCtrl.resetCause | vals::sysCtrl::resetCausePOR))
+			sysCtrl.resetCause &= ~vals::sysCtrl::resetCauseSoftware;
+		else
+			return true;
+	}
+	uint32_t stackPointer{};
+	static_assert(sizeof(uint32_t) == 4);
+	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+	std::memcpy(&stackPointer, reinterpret_cast<const void *>(applicationBaseAddr), sizeof(uint32_t));
+	return stackPointer == 0xFFFFFFFFU;
+}
+
 void rebootToFirmware() noexcept
 {
+	sysCtrl.resetCause = 0;
+	scb.vtable = applicationBaseAddr;
 	__asm__(R"(
 		mov		r0, %[baseAddr]
-		ldr		r1, [r0] ; Read out the stack pointer
-		cmp		r1, #0xFFFFFFFF
-		beq		badBoot
-		msr		msp, r1
-		ldr		pc, [r0, 4]
-badBoot:
+		ldr		r1, [r0]    // Read out the stack pointer
+		msr		msp, r1     // Stuff it into the main stack pointer special register
+		ldr		pc, [r0, 4] // Hop into the firmware (fake reboot)
 		)" : : [baseAddr] "i" (applicationBaseAddr) :
 			"r0", "r1"
 	);
