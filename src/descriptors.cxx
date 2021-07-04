@@ -55,7 +55,7 @@ namespace usb::descriptors
 		}
 	}};
 
-	static const dfu::functionalDescriptor_t usbDFUFunctionalDesc
+	static const dfu::functionalDescriptor_t dfuFunctionalDesc
 	{
 		sizeof(dfu::functionalDescriptor_t),
 		dfu::descriptor_t::functional,
@@ -77,7 +77,7 @@ namespace usb::descriptors
 		},
 		{
 			sizeof(dfu::functionalDescriptor_t),
-			&usbDFUFunctionalDesc
+			&dfuFunctionalDesc
 		}
 	}};
 
