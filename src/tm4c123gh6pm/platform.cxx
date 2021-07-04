@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
 #include <cstdint>
+#include <cstring>
+#include <substrate/index_sequence>
 #include <tm4c123gh6pm/platform.hxx>
 #include <tm4c123gh6pm/constants.hxx>
+#include <usb/drivers/dfu.hxx>
 
 constexpr uint32_t applicationBaseAddr{0x00004000U};
 
@@ -72,4 +75,45 @@ void rebootToFirmware() noexcept
 		)" : : [baseAddr] "i" (applicationBaseAddr) :
 			"r0", "r1"
 	);
+}
+
+namespace usb::dfu
+{
+	void reboot() noexcept
+	{
+		scb.apint = vals::scb::apintKey | vals::scb::apintSystemResetRequest;
+		while (true)
+			continue;
+	}
+
+	bool flashBusy() noexcept
+	{
+		return (flashCtrl.flashMemCtrl & vals::flashCtrl::flashMemCtrlErase) ||
+			(flashCtrl.flashMemCtrl2 & vals::flashCtrl::flashMemCtrlWrite);
+	}
+
+	void erase(const std::uintptr_t address) noexcept
+	{
+		flashCtrl.flashMemAddr = address;
+		flashCtrl.flashMemCtrl = vals::flashCtrl::flashMemCtrlKey | vals::flashCtrl::flashMemCtrlErase;
+	}
+
+	void write(const std::uintptr_t address, const std::size_t count, const uint8_t *const buffer) noexcept
+	{
+		if (!count || count > flashBufferSize)
+			return;
+
+		// for (const auto &offset : substrate::indexSequence_t{0, count, 4})
+		for (size_t offset{0U}; offset < count; offset += 4U)
+		{
+			const auto bufferOffset{(offset >> 2) & 31U};
+			const auto amount{std::min<size_t>(count - offset, 4U)};
+			uint32_t data{0xFFFFFFFFU};
+			std::memcpy(&data, buffer + offset, amount);
+			flashCtrl.flashMemBuffer[bufferOffset] = data;
+		}
+		flashCtrl.flashMemAddr = address;
+		flashCtrl.flashMemCtrl2 = vals::flashCtrl::flashMemCtrlKey |
+			vals::flashCtrl::flashMemCtrlWrite;
+	}
 }
