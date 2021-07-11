@@ -49,9 +49,9 @@ namespace osc
 
 bool mustEnterBootloader() noexcept
 {
-	if (sysCtrl.resetCause | vals::sysCtrl::resetCauseSoftware)
+	if (sysCtrl.resetCause & vals::sysCtrl::resetCauseSoftware)
 	{
-		if (!(sysCtrl.resetCause | vals::sysCtrl::resetCausePOR))
+		if (sysCtrl.resetCause & vals::sysCtrl::resetCausePOR)
 			sysCtrl.resetCause &= ~vals::sysCtrl::resetCauseSoftware;
 		else
 			return true;
