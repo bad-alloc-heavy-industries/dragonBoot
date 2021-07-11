@@ -3,13 +3,21 @@
 #include <usb/drivers/dfu.hxx>
 #include "platform.hxx"
 
+static const std::array<usb::dfu::zone_t, 1> firmwareZone
+{{
+	{
+		0x00004000,
+		0x00040000
+	}
+}};
+
 void run() noexcept
 {
 	osc::init();
 	if (!mustEnterBootloader())
 		rebootToFirmware();
 	usb::core::init();
-	usb::dfu::registerHandlers({}, 1, 1);
+	usb::dfu::registerHandlers(firmwareZone, 0, 1);
 	usb::dfu::detached(sysCtrl.resetCause | vals::sysCtrl::resetCauseSoftware);
 	sysCtrl.resetCause = 0;
 	usb::core::attach();
