@@ -51,7 +51,7 @@ namespace usb::descriptors
 			0, // No endpoints for this interface
 			usbClass_t::application,
 			uint8_t(subclasses::application_t::dfu),
-			uint8_t(protocols::application_t::runtime),
+			uint8_t(protocols::dfu_t::dfu),
 			4, // "Device Firmware Upgrade interface" string index
 		}
 	}};
@@ -63,7 +63,7 @@ namespace usb::descriptors
 		{dfu::willDetach_t::yes, dfu::manifestationTolerant_t::no, dfu::canUpload_t::no, dfu::canDownload_t::yes},
 		10, // Set the detach timeout to 10ms
 		usb::dfu::flashPageSize, // Set the max transfer size to the size of a Flash page on the device
-		0x011A // Tis is 1.1a in USB's BCD format
+		0x0110 // This is 1.1 in USB's BCD format
 	};
 
 	static const std::array<usbMultiPartDesc_t, 6> configSecs
@@ -90,7 +90,7 @@ namespace usb::descriptors
 	static const std::array<usbStringDesc_t, stringCount> stringDescs
 	{{
 		{{u"bad_alloc Heavy Industries", 26}},
-		{{u"dragonUSB DFU bootloader", 24}},
+		{{u"dragonBoot DFU bootloader", 25}},
 		{{u"bootloader DFU configuration", 28}},
 		{{u"Device Firmware Upgrade interface", 33}},
 	}};
