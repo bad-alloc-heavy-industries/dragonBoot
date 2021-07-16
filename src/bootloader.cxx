@@ -9,8 +9,7 @@ void run() noexcept
 		rebootToFirmware();
 	usb::core::init();
 	usb::dfu::registerHandlers(firmwareZone, 0, 1);
-	usb::dfu::detached(sysCtrl.resetCause | vals::sysCtrl::resetCauseSoftware);
-	sysCtrl.resetCause = 0;
+	usb::dfu::detached(true);
 	usb::core::attach();
 
 	while (true)

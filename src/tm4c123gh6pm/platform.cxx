@@ -17,6 +17,11 @@ const std::array<usb::dfu::zone_t, 1> firmwareZone
 	}
 }};
 
+// The linker script pins this to 0x20001000
+[[gnu::section(".bootMagic")]] static uint16_t bootMagic;
+
+constexpr static uint16_t bootMagicDFU{0xBADB};
+
 namespace osc
 {
 	void init() noexcept
@@ -58,13 +63,10 @@ namespace osc
 
 bool mustEnterBootloader() noexcept
 {
-	if (sysCtrl.resetCause & vals::sysCtrl::resetCauseSoftware)
-	{
-		if (sysCtrl.resetCause & vals::sysCtrl::resetCausePOR)
-			sysCtrl.resetCause &= ~vals::sysCtrl::resetCauseSoftware;
-		else
-			return true;
-	}
+	if (!(sysCtrl.resetCause & vals::sysCtrl::resetCausePOR) && bootMagic == bootMagicDFU)
+		return true;
+	bootMagic = 0;
+	sysCtrl.resetCause = 0;
 	uint32_t stackPointer{};
 	static_assert(sizeof(uint32_t) == 4);
 	// NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -74,7 +76,6 @@ bool mustEnterBootloader() noexcept
 
 void rebootToFirmware() noexcept
 {
-	sysCtrl.resetCause = 0;
 	scb.vtable = applicationBaseAddr;
 	__asm__(R"(
 		mov		r0, %[baseAddr]
@@ -84,12 +85,15 @@ void rebootToFirmware() noexcept
 		)" : : [baseAddr] "i" (applicationBaseAddr) :
 			"r0", "r1"
 	);
+	while (true)
+		continue;
 }
 
 namespace usb::dfu
 {
 	void reboot() noexcept
 	{
+		bootMagic = 0;
 		scb.apint = vals::scb::apintKey | vals::scb::apintSystemResetRequest;
 		while (true)
 			continue;
