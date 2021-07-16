@@ -4,9 +4,18 @@
 #include <substrate/index_sequence>
 #include <tm4c123gh6pm/platform.hxx>
 #include <tm4c123gh6pm/constants.hxx>
-#include <usb/drivers/dfu.hxx>
+#include "platform.hxx"
 
-constexpr uint32_t applicationBaseAddr{0x00004000U};
+constexpr uint32_t applicationBaseAddr{0x00002000U};
+constexpr uint32_t flashEndAddr{0x00040000U};
+
+const std::array<usb::dfu::zone_t, 1> firmwareZone
+{{
+	{
+		applicationBaseAddr,
+		flashEndAddr
+	}
+}};
 
 namespace osc
 {

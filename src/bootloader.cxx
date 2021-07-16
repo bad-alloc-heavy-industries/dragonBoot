@@ -1,15 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 #include <usb/core.hxx>
-#include <usb/drivers/dfu.hxx>
 #include "platform.hxx"
-
-static const std::array<usb::dfu::zone_t, 1> firmwareZone
-{{
-	{
-		0x00004000,
-		0x00040000
-	}
-}};
 
 void run() noexcept
 {
