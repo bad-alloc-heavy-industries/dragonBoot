@@ -1,0 +1,7 @@
+[constants]
+prefix = '/usr'
+exec_prefix = prefix / 'bin'
+plugin_dir = prefix / 'lib/gcc/avr/10.1.0'
+
+[properties]
+sys_root = prefix

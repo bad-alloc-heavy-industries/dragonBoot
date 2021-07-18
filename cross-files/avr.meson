@@ -1,0 +1,46 @@
+[constants]
+common_flags = ['-mdouble=64', '-mlong-double=64', '-mmcu=atxmega256a3u', '-ffreestanding']
+compile_flags = ['-ffunction-sections', '-fdata-sections']
+
+[binaries]
+c = exec_prefix / 'avr-gcc'
+cpp = exec_prefix / 'avr-g++'
+ar = [exec_prefix / 'avr-ar', '--plugin', plugin_dir / 'liblto_plugin.so.0.0.0']
+as = exec_prefix / 'avr-as'
+strip = exec_prefix / 'avr-strip'
+objcopy = exec_prefix / 'avr-objcopy'
+objdump = exec_prefix / 'avr-objdump'
+size = exec_prefix / 'avr-size'
+cmake = 'false'
+
+[properties]
+sizeof_char = 1
+sizeof_short = 2
+sizeof_int = 2
+sizeof_long = 4
+sizeof_longlong = 8
+sizeof_size_t = 2
+sizeof_ptrdiff_t = 2
+sizeof_void* = 2
+sizeof_float = 2
+sizeof_double = 8
+sizeof_longdouble = 8
+sizeof_wchar_t = 2
+
+needs_exe_wrapper = true
+has_function_printf = true
+
+[built-in options]
+c_args = common_flags + compile_flags
+cpp_args = common_flags + compile_flags + ['-fno-rtti', '-fno-exceptions']
+c_link_args = common_flags + ['-nostdlib']
+cpp_link_args = common_flags + ['-nostdlib']
+
+cpp_eh = 'none'
+cpp_rtti = false
+
+[host_machine]
+system = 'ATXMEGA256A3U'
+cpu_family = 'avr'
+cpu = 'avrxmega6' #atxmega256a3u
+endian = 'little'
