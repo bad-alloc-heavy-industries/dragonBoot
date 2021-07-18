@@ -1,6 +1,18 @@
 # SPDX-License-Identifier: BSD-3-Clause
 chip = get_option('chip')
 
+if chip in ['tm4c123gh6pm']
+	dfuOptions = [
+		'dfuFlashBufferSize=128',
+		'dfuFlashPageSize=4096'
+	]
+elif chip in ['atxmega256a3u']
+	dfuOptions = [
+		'dfuFlashBufferSize=256',
+		'dfuFlashPageSize=4096'
+	]
+endif
+
 dragonUSB = dependency(
 	'dragonUSB',
 	required: true,
@@ -16,7 +28,7 @@ dragonUSB = dependency(
 		'endpointDescriptors=0',
 		'strings=4',
 		'drivers=dfu'
-	]
+	] + dfuOptions
 )
 
 subdir(chip)
