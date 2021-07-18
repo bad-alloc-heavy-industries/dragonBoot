@@ -82,10 +82,17 @@ namespace usb::descriptors
 		}
 	}};
 
+#ifdef USB_MEM_SEGMENTED
+	const std::array<flash_t<usbMultiPartTable_t>, configsCount> configDescriptors
+	{{
+		{{configSecs.begin(), configSecs.end()}}
+	}};
+#else
 	const std::array<usbMultiPartTable_t, configsCount> configDescriptors
 	{{
 		{configSecs.begin(), configSecs.end()}
 	}};
+#endif
 
 	static const std::array<usbStringDesc_t, stringCount> stringDescs
 	{{
@@ -103,6 +110,15 @@ namespace usb::descriptors
 		stringDescs[3].asParts()
 	}};
 
+#ifdef USB_MEM_SEGMENTED
+	const std::array<flash_t<usbMultiPartTable_t>, stringCount> strings
+	{{
+		{{stringParts[0].begin(), stringParts[0].end()}},
+		{{stringParts[1].begin(), stringParts[1].end()}},
+		{{stringParts[2].begin(), stringParts[2].end()}},
+		{{stringParts[3].begin(), stringParts[3].end()}}
+	}};
+#else
 	const std::array<usbMultiPartTable_t, stringCount> strings
 	{{
 		{stringParts[0].begin(), stringParts[0].end()},
@@ -110,4 +126,5 @@ namespace usb::descriptors
 		{stringParts[2].begin(), stringParts[2].end()},
 		{stringParts[3].begin(), stringParts[3].end()}
 	}};
+#endif
 } // namespace usb::descriptors
