@@ -17,5 +17,5 @@ add_project_arguments(
 )
 
 platformSrc = files(
-	#'startup.cxx', 'platform.cxx'
+	'startup.cxx', 'platform.cxx'
 )
