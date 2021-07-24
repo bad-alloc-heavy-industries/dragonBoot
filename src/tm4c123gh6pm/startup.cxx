@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <array>
 #include "platform.hxx"
+#include "tm4c123gh6pm.hxx"
 
 void irqReset() noexcept;
 void irqNMI() noexcept;

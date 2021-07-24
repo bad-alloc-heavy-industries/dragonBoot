@@ -11,9 +11,8 @@ void run() noexcept
 	usb::dfu::registerHandlers(firmwareZone, 0, 1);
 	usb::dfu::detached(true);
 	usb::core::attach();
+	enableInterrupts();
 
 	while (true)
-		__asm__("wfi");
+		idle();
 }
-
-void irqUSB() noexcept { usb::core::handleIRQ(); }

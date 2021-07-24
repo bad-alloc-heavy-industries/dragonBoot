@@ -7,8 +7,8 @@
 extern const std::array<usb::dfu::zone_t, 1> firmwareZone;
 
 extern void run() noexcept;
-extern void irqUSB() noexcept;
-
+extern void enableInterrupts() noexcept;
+extern void idle() noexcept;
 namespace osc { extern void init() noexcept; }
 
 extern bool mustEnterBootloader() noexcept;

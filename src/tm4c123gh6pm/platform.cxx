@@ -4,7 +4,9 @@
 #include <substrate/index_sequence>
 #include <tm4c123gh6pm/platform.hxx>
 #include <tm4c123gh6pm/constants.hxx>
+#include <usb/core.hxx>
 #include "platform.hxx"
+#include "tm4c123gh6pm.hxx"
 
 constexpr uint32_t applicationBaseAddr{0x00002000U};
 constexpr uint32_t flashEndAddr{0x00040000U};
@@ -60,6 +62,9 @@ namespace osc
 			vals::sysCtrl::runClockCfg2SysClockDiv(2) | vals::sysCtrl::runClockCfgSysClockDivLSBClr;
 	}
 } // namespace osc
+
+void enableInterrupts() noexcept { }
+void idle() noexcept { __asm__("wfi"); }
 
 bool mustEnterBootloader() noexcept
 {
@@ -129,4 +134,6 @@ namespace usb::dfu
 		flashCtrl.flashMemCtrl2 = vals::flashCtrl::flashMemCtrlKey |
 			vals::flashCtrl::flashMemCtrlWrite;
 	}
-}
+} // namespace usb::dfu
+
+void irqUSB() noexcept { usb::core::handleIRQ(); }
