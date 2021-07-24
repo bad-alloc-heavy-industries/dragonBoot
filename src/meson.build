@@ -13,6 +13,8 @@ elif chip in ['atxmega256a3u']
 	]
 endif
 
+subdir(chip)
+
 dragonUSB = dependency(
 	'dragonUSB',
 	required: true,
@@ -30,8 +32,6 @@ dragonUSB = dependency(
 		'drivers=dfu'
 	] + dfuOptions
 )
-
-subdir(chip)
 
 bootloaderSrc = [
 	platformSrc, 'bootloader.cxx', 'descriptors.cxx'
