@@ -4,12 +4,14 @@ chip = get_option('chip')
 if chip in ['tm4c123gh6pm']
 	dfuOptions = [
 		'dfuFlashBufferSize=128',
-		'dfuFlashPageSize=4096'
+		'dfuFlashPageSize=4096',
+		'dfuFlashEraseSize=1024'
 	]
 elif chip in ['atxmega256a3u']
 	dfuOptions = [
 		'dfuFlashBufferSize=256',
-		'dfuFlashPageSize=4096'
+		'dfuFlashPageSize=4096',
+		'dfuFlashEraseSize=256'
 	]
 endif
 
