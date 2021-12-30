@@ -67,7 +67,7 @@ namespace usb::descriptors
 		0x0110 // This is 1.1 in USB's BCD format
 	};
 
-	static const std::array<usbMultiPartDesc_t, 6> configSecs
+	static const std::array<usbMultiPartDesc_t, 3> configSecs
 	{{
 		{
 			sizeof(usbConfigDescriptor_t),
