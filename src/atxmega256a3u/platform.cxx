@@ -77,6 +77,7 @@ namespace osc
 
 void enableInterrupts() noexcept
 {
+	CCP = CCP_IOREG_gc;
 	PMIC.CTRL = 0xC7U;
 	__builtin_avr_sei();
 }
@@ -85,8 +86,6 @@ void idle() noexcept { /*__builtin_avr_sleep();*/ }
 
 bool mustEnterBootloader() noexcept
 {
-	CCP = CCP_IOREG_gc;
-	PMIC.CTRL |= 0x40U;
 	// If we did not get here through any form of reset source, we must bootload.
 	if (!RST.STATUS)
 		return true;
@@ -100,7 +99,7 @@ void rebootToFirmware() noexcept
 {
 	__builtin_avr_cli();
 	CCP = CCP_IOREG_gc;
-	PMIC.CTRL &= 0xBFU;
+	PMIC.CTRL = 0U;
 	__asm__("jmp 0"); // Jump to the firmware reset vector
 	while (true)
 		continue;
