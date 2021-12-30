@@ -5,7 +5,7 @@ compile_flags = ['-ffunction-sections', '-fdata-sections']
 [binaries]
 c = exec_prefix / 'avr-gcc'
 cpp = exec_prefix / 'avr-g++'
-ar = [exec_prefix / 'avr-ar', '--plugin', plugin_dir / 'liblto_plugin.so.0.0.0']
+ar = [exec_prefix / 'avr-ar', '--plugin', plugin_dir / 'liblto_plugin.so']
 as = exec_prefix / 'avr-as'
 strip = exec_prefix / 'avr-strip'
 objcopy = exec_prefix / 'avr-objcopy'

@@ -1,7 +1,7 @@
 [constants]
 prefix = '/opt/cxc'
 exec_prefix = prefix / 'bin'
-plugin_dir = prefix / 'libexec/gcc/avr/10.1.0'
+plugin_dir = prefix / 'lib/gcc/avr/11.2.0'
 
 [properties]
 sys_root = prefix
