@@ -1,5 +1,5 @@
 from amaranth.vendor.lattice_ice40 import LatticeICE40Platform
-from amaranth.build import Resource, Subsignal, Pins, Clock, Attrs
+from amaranth.build import Resource, Pins, Clock, Attrs
 from amaranth_boards.resources.interface import SPIResource, ULPIResource
 
 __all__ = (
@@ -45,6 +45,9 @@ class AudioInterfacePlatform(LatticeICE40Platform):
 	]
 
 	connectors = []
+
+	flashPageSize = 256
+	erasePageSize = 4096
 
 	def build(self, elaboratable, name = 'top', build_dir = 'build', do_build = True,
 		program_opts = None, do_program = False, **kwargs):
