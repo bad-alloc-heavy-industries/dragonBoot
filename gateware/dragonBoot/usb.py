@@ -60,7 +60,7 @@ class USBInterface(Elaboratable):
 						DFUWillDetach.YES | DFUManifestationTollerant.NO | DFUCanUpload.NO | DFUCanDownload.YES
 					)
 					functionalDesc.wDetachTimeOut = 1000
-					functionalDesc.wTransferSize = platform.flashPageSize
+					functionalDesc.wTransferSize = platform.erasePageSize
 
 		descriptors.add_language_descriptor((LanguageIDs.ENGLISH_US, ))
 		ep0 = device.add_standard_control_endpoint(descriptors)
