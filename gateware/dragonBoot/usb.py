@@ -4,6 +4,8 @@ from usb_protocol.emitters.descriptors.standard import (
 	DeviceDescriptorCollection, LanguageIDs, DeviceClassCodes, InterfaceClassCodes,
 	ApplicationSubclassCodes, DFUProtocolCodes
 )
+from usb_protocol.types.descriptors.dfu import *
+from usb_protocol.contextmgrs.descriptors.dfu import *
 
 __all__ = (
 	'USBInterface',
@@ -45,6 +47,13 @@ class USBInterface(Elaboratable):
 				interfaceDesc.bInterfaceSubclass = ApplicationSubclassCodes.DFU
 				interfaceDesc.bInterfaceProtocol = DFUProtocolCodes.DFU
 				interfaceDesc.iInterface = 'Device Firmware Upgrade interface'
+
+				with FunctionalDescriptor(interfaceDesc) as functionalDesc:
+					functionalDesc.bmAttributes = (
+						DFUWillDetach.YES | DFUManifestationTollerant.NO | DFUCanUpload.NO | DFUCanDownload.YES
+					)
+					functionalDesc.wDetachTimeOut = 1000
+					functionalDesc.wTransferSize = platform.flashPageSize
 
 		descriptors.add_language_descriptor((LanguageIDs.ENGLISH_US, ))
 		ep0 = device.add_standard_control_endpoint(descriptors)
