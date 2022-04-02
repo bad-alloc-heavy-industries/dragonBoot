@@ -21,7 +21,7 @@ endif
 
 cxx = meson.get_compiler('cpp')
 
-subdir('src')
+subdir('firmware')
 
 runClangTidy = find_program('runClangTidy.py')
 run_target(
