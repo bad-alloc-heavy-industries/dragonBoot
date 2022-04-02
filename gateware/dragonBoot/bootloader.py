@@ -1,4 +1,5 @@
-from amaranth import Elaboratable, Module
+from amaranth import Elaboratable, Module, ClockDomain, ResetSignal
+from .usb import USBInterface
 
 __all__ = (
 	'DragonBoot',
@@ -7,5 +8,8 @@ __all__ = (
 class DragonBoot(Elaboratable):
 	def elaborate(self, platform):
 		m = Module()
+		m.domains += ClockDomain('usb')
+		m.submodules.usb = usb = USBInterface(resource = ('ulpi', 0))
 
+		m.d.comb += ResetSignal('usb').eq(0)
 		return m
