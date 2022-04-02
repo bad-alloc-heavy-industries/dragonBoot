@@ -1,5 +1,8 @@
 from amaranth import Elaboratable, Module
 from luna.usb2 import USBDevice
+from luna.gateware.usb.request import SetupPacket
+from luna.gateware.usb.usb2.request import StallOnlyRequestHandler
+from usb_protocol.types import USBRequestType
 from usb_protocol.emitters.descriptors.standard import (
 	DeviceDescriptorCollection, LanguageIDs, DeviceClassCodes, InterfaceClassCodes,
 	ApplicationSubclassCodes, DFUProtocolCodes
@@ -7,12 +10,16 @@ from usb_protocol.emitters.descriptors.standard import (
 from usb_protocol.types.descriptors.dfu import *
 from usb_protocol.contextmgrs.descriptors.dfu import *
 
+from .dfu import DFURequestHandler
+
 __all__ = (
 	'USBInterface',
 )
 
 class USBInterface(Elaboratable):
 	def __init__(self, *, resource):
+		self.dfuRequestHandler = DFURequestHandler(interface = 0)
+
 		self._ulpiResource = resource
 
 	def elaborate(self, platform):
@@ -58,6 +65,14 @@ class USBInterface(Elaboratable):
 		descriptors.add_language_descriptor((LanguageIDs.ENGLISH_US, ))
 		ep0 = device.add_standard_control_endpoint(descriptors)
 
+		def stallCondition(setup : SetupPacket):
+			return ~(
+				(setup.type == USBRequestType.STANDARD) |
+				self.dfuRequestHandler.handlerCondition(setup)
+			)
+
+		ep0.add_request_handler(self.dfuRequestHandler)
+		ep0.add_request_handler(StallOnlyRequestHandler(stall_condition = stallCondition))
 
 		# Signal that we always want LUNA to try connecting
 		m.d.comb += [

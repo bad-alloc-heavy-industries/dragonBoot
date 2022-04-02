@@ -48,6 +48,7 @@ class AudioInterfacePlatform(LatticeICE40Platform):
 
 	flashPageSize = 256
 	erasePageSize = 4096
+	eraseInsn = 0x20
 
 	def build(self, elaboratable, name = 'top', build_dir = 'build', do_build = True,
 		program_opts = None, do_program = False, **kwargs):
