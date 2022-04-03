@@ -8,7 +8,7 @@ from luna.gateware.usb.usb2.request import (
 )
 from enum import IntEnum, auto, unique
 
-from .flash import SPIFlash, SPIFlashOp
+from .flash import SPIFlash
 
 __all__ = (
 	'DFURequestHandler',
@@ -49,7 +49,6 @@ class DFURequestHandler(USBRequestHandler):
 		receiverConsumed = Signal.like(setup.length)
 
 		config = DFUConfig()
-		erasePage = Signal()
 
 		m.submodules.bitstreamFIFO = bitstreamFIFO = AsyncFIFO(
 			width = 8, depth = platform.erasePageSize, r_domain = 'usb', w_domain = 'usb'
@@ -59,7 +58,7 @@ class DFURequestHandler(USBRequestHandler):
 		)
 
 		m.d.comb += [
-			erasePage.eq(0),
+			flash.start.eq(0),
 		]
 
 		with m.FSM(domain = 'usb', name = 'dfu'):
@@ -91,10 +90,8 @@ class DFURequestHandler(USBRequestHandler):
 				with m.If(setup.is_in_request | (setup.length > platform.erasePageSize)):
 					m.next = 'UNHANDLED'
 				with m.Elif(setup.length):
-					m.d.usb += [
-						config.status.eq(DFUState.downloadIdle),
-						flash.op.eq(SPIFlashOp.erase),
-					]
+					m.d.comb += flash.start.eq(1)
+					m.d.usb += config.status.eq(DFUState.downloadIdle)
 					m.next = 'HANDLE_DOWNLOAD_DATA'
 
 			with m.State('HANDLE_DOWNLOAD_DATA'):

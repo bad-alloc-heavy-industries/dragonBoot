@@ -25,16 +25,18 @@ class SPIFlash(Elaboratable):
 		self._flashResource = resource
 		self._flashSize = flashSize
 
+		self.start = Signal()
+		self.done = Signal()
 		self.readAddr = Signal(24)
 		self.eraseAddr = Signal(24)
 		self.writeAddr = Signal(24)
 		self.endAddr = Signal(24)
-		self.op = Signal(SPIFlashOp, reset = SPIFlashOp.none)
 
 	def elaborate(self, platform):
 		m = Module()
 		m.submodules.flash = flash = SPIBus(resource = self._flashResource)
 
+		op = Signal(SPIFlashOp, reset = SPIFlashOp.none)
 		enableStep = Signal(range(4))
 		processStep = Signal(range(7))
 
@@ -46,7 +48,7 @@ class SPIFlash(Elaboratable):
 					enableStep.eq(0),
 					processStep.eq(0),
 				]
-				with m.If(self.op != SPIFlashOp.none):
+				with m.If(self.start):
 					m.next = 'WRITE_ENABLE'
 			with m.State('WRITE_ENABLE'):
 				with m.Switch(enableStep):
@@ -68,7 +70,7 @@ class SPIFlash(Elaboratable):
 								enableStep.eq(3),
 							]
 					with m.Case(3):
-						with m.If(self.op == SPIFlashOp.erase):
+						with m.If(op == SPIFlashOp.erase):
 							m.next = 'ERASE_CMD'
 						with m.Else():
 							m.next = 'WRITE_CMD'
@@ -120,7 +122,7 @@ class SPIFlash(Elaboratable):
 				flash.w_data.eq(platform.eraseCommand)
 				m.next = 'WRITE'
 			with m.State('WRITE'):
-				m.d.sync += self.op.eq(SPIFlashOp.write)
+				m.d.sync += op.eq(SPIFlashOp.write)
 				m.next = 'WRITE_WAIT'
 			with m.State('WRITE_WAIT'):
 				m.next = 'IDLE'
