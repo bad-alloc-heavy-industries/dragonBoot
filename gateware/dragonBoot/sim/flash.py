@@ -61,7 +61,7 @@ class DUT(Elaboratable):
 	dut = DUT(resource = ('flash', 0), flashSize = 512 * 1024)
 )
 def spiFlash(sim : Simulator, dut : SPIFlash):
-	def spiTransact(copi = None, cipo = None):
+	def spiTransact(copi = None, cipo = None, partial = False):
 		if copi is not None and cipo is not None:
 			assert len(copi) == len(cipo)
 		bytes = max(0 if copi is None else len(copi), 0 if cipo is None else len(cipo))
@@ -83,7 +83,8 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 			assert (yield bus.cs.o) == 1
 			yield Settle()
 			yield
-		assert (yield bus.cs.o) == 0
+		if not partial:
+			assert (yield bus.cs.o) == 0
 
 	def domainSync():
 		yield
@@ -110,4 +111,7 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 		yield
+		yield from spiTransact(copi = (0x06,))
+		yield
+		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x00), partial = True)
 	yield domainSync, 'sync'
