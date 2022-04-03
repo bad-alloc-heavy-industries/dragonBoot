@@ -49,7 +49,7 @@ class SPIBus(Elaboratable):
 					m.next = 'DONE'
 			with m.State('DONE'):
 				m.d.comb += self.done.eq(1)
-				m.d.sync += self.r_data.eq(dataIn)
+				m.d.sync += self.r_data.eq(Cat(cipo, dataIn[:-1]))
 				with m.If(self.xfer):
 					m.d.sync += dataOut.eq(self.w_data)
 					m.next = 'TRANSFER'
@@ -58,8 +58,8 @@ class SPIBus(Elaboratable):
 
 		m.d.comb += [
 			bus.cs.o.eq(self.cs),
-			bus.clk.o0.eq(0),
-			bus.clk.o1.eq(clkEn),
+			bus.clk.o0.eq(clkEn),
+			bus.clk.o1.eq(0),
 			bus.clk.o_clk.eq(ClockSignal('sync')),
 		]
 		return m

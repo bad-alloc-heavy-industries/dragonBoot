@@ -45,10 +45,12 @@ def spiBus(sim : Simulator, dut : SPIBus):
 		yield Settle()
 		yield
 		yield dut.xfer.eq(0)
+		yield Settle()
+		yield
 		for bit in range(8):
 			yield bus.cipo.i.eq((dataIn >> (7 - bit)) & 1)
-			yield
 			yield Settle()
+			yield
 			assert (yield bus.copi.o) == (dataOut >> (7 - bit)) & 1
 		assert (yield dut.done) == 1
 		if not overlap:
