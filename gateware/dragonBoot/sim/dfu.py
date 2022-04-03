@@ -1,4 +1,6 @@
 from arachne.core.sim import sim_case
+from amaranth import Record
+from amaranth.hdl.rec import DIR_FANOUT, DIR_FANIN
 from amaranth.sim import Simulator, Settle
 from usb_protocol.types import USBRequestType, USBRequestRecipient, USBStandardRequests
 from usb_protocol.types.descriptors.dfu import DFURequests
@@ -6,8 +8,33 @@ from typing import Tuple, Union
 
 from ..dfu import DFURequestHandler
 
+bus = Record((
+	('clk', [
+		('o0', 1, DIR_FANOUT),
+		('o1', 1, DIR_FANOUT),
+		('o_clk', 1, DIR_FANOUT),
+	]),
+	('cs', [
+		('o', 1, DIR_FANOUT),
+	]),
+	('copi', [
+		('o', 1, DIR_FANOUT),
+	]),
+	('cipo', [
+		('i', 1, DIR_FANIN),
+	]),
+))
+
 class Platform:
+	flashSize = 512 * 1024
 	erasePageSize = 256
+
+	def request(self, name, number, xdr = None):
+		assert name == 'flash'
+		assert number == 0
+		assert xdr is not None
+		assert xdr['clk'] == 2
+		return bus
 
 dfuData = (
 	0xff, 0x00, 0x00, 0xff, 0x7e, 0xaa, 0x99, 0x7e, 0x51, 0x00, 0x01, 0x05, 0x92, 0x00, 0x20, 0x62,
@@ -31,7 +58,7 @@ dfuData = (
 @sim_case(
 	domains = (('usb', 60e6),),
 	platform = Platform(),
-	dut = DFURequestHandler(interface = 0)
+	dut = DFURequestHandler(interface = 0, resource = ('flash', 0))
 )
 def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 	interface = dut.interface
