@@ -60,11 +60,11 @@ class SPIFlash(Elaboratable):
 							enableStep.eq(1),
 						]
 					with m.Case(1):
-						m.d.comb += flash.xfer.eq(1)
-						m.d.sync += [
+						m.d.comb += [
+							flash.xfer.eq(1),
 							flash.w_data.eq(SPIFlashCmd.writeEnable),
-							enableStep.eq(2),
 						]
+						m.d.sync += enableStep.eq(2)
 					with m.Case(2):
 						with m.If(flash.done):
 							m.d.sync += [
@@ -84,32 +84,32 @@ class SPIFlash(Elaboratable):
 							processStep.eq(1),
 						]
 					with m.Case(1):
-						m.d.comb += flash.xfer.eq(1)
-						m.d.sync += [
+						m.d.comb += [
+							flash.xfer.eq(1),
 							flash.w_data.eq(platform.eraseCommand),
-							processStep.eq(2),
 						]
+						m.d.sync += processStep.eq(2)
 					with m.Case(2):
 						with m.If(flash.done):
-							m.d.comb += flash.xfer.eq(1)
-							m.d.sync += [
+							m.d.comb += [
+								flash.xfer.eq(1),
 								flash.w_data.eq(self.eraseAddr[16:24]),
-								processStep.eq(3),
 							]
+							m.d.sync += processStep.eq(3)
 					with m.Case(3):
 						with m.If(flash.done):
-							m.d.comb += flash.xfer.eq(1)
-							m.d.sync += [
+							m.d.comb += [
+								flash.xfer.eq(1),
 								flash.w_data.eq(self.eraseAddr[8:16]),
-								processStep.eq(4),
 							]
+							m.d.sync += processStep.eq(4)
 					with m.Case(4):
 						with m.If(flash.done):
-							m.d.comb += flash.xfer.eq(1)
-							m.d.sync += [
+							m.d.comb += [
+								flash.xfer.eq(1),
 								flash.w_data.eq(self.eraseAddr[0:8]),
-								processStep.eq(5),
 							]
+							m.d.sync += processStep.eq(5)
 					with m.Case(5):
 						with m.If(flash.done):
 							m.d.sync += [
