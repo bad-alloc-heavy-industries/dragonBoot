@@ -28,6 +28,7 @@ bus = Record((
 class Platform:
 	flashSize = 512 * 1024
 	erasePageSize = 256
+	eraseCommand = 0x20
 
 	def request(self, name, number, xdr = None):
 		assert name == 'flash'
