@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from amaranth import Elaboratable, Module, Signal
+from amaranth.lib.fifo import AsyncFIFO
 from enum import IntEnum, auto, unique
 
 from .spi import SPIBus
@@ -22,8 +23,9 @@ class SPIFlashCmd(IntEnum):
 	writeEnable = 0x06
 
 class SPIFlash(Elaboratable):
-	def __init__(self, *, resource, flashSize : int):
+	def __init__(self, *, resource, fifo : AsyncFIFO, flashSize : int):
 		self._flashResource = resource
+		self._fifo = fifo
 		self._flashSize = flashSize
 
 		self.start = Signal()
@@ -35,11 +37,13 @@ class SPIFlash(Elaboratable):
 
 	def elaborate(self, platform):
 		m = Module()
-		m.submodules.flash = flash = SPIBus(resource = self._flashResource)
+		m.submodules.spi = flash = SPIBus(resource = self._flashResource)
+		fifo = self._fifo
 
 		op = Signal(SPIFlashOp, reset = SPIFlashOp.none)
 		enableStep = Signal(range(4))
 		processStep = Signal(range(7))
+		writeCount = Signal(range(platform.flashPageSize))
 
 		m.d.comb += flash.xfer.eq(0)
 
@@ -72,6 +76,7 @@ class SPIFlash(Elaboratable):
 								enableStep.eq(3),
 							]
 					with m.Case(3):
+						m.d.sync += enableStep.eq(0)
 						with m.If(op == SPIFlashOp.erase):
 							m.next = 'ERASE_CMD'
 						with m.Else():
@@ -154,11 +159,54 @@ class SPIFlash(Elaboratable):
 							m.d.sync += op.eq(SPIFlashOp.write)
 							m.next = 'WRITE_ENABLE'
 			with m.State('WRITE_CMD'):
-				flash.w_data.eq(platform.eraseCommand)
-				m.next = 'WRITE'
+				with m.Switch(processStep):
+					with m.Case(0):
+						m.d.sync += [
+							flash.cs.eq(1),
+							processStep.eq(1),
+						]
+					with m.Case(1):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							flash.w_data.eq(SPIFlashCmd.pageProgram),
+						]
+						m.d.sync += processStep.eq(2)
+					with m.Case(2):
+						with m.If(flash.done):
+							m.d.comb += [
+								flash.xfer.eq(1),
+								flash.w_data.eq(self.writeAddr[16:24]),
+							]
+							m.d.sync += processStep.eq(3)
+					with m.Case(3):
+						with m.If(flash.done):
+							m.d.comb += [
+								flash.xfer.eq(1),
+								flash.w_data.eq(self.writeAddr[8:16]),
+							]
+							m.d.sync += processStep.eq(4)
+					with m.Case(4):
+						with m.If(flash.done):
+							m.d.comb += [
+								flash.xfer.eq(1),
+								flash.w_data.eq(self.writeAddr[0:8]),
+							]
+							m.d.sync += processStep.eq(0)
+							m.next = 'WRITE'
 			with m.State('WRITE'):
-				m.next = 'WRITE_WAIT'
+				flash.w_data.eq(fifo.r_data),
+				with m.If(flash.done):
+					m.d.comb += [
+						flash.xfer.eq(1),
+						fifo.r_en.eq(1),
+					]
+					m.d.sync += [
+						writeCount.eq(writeCount + 1)
+					]
+					with m.If(writeCount == platform.flashPageSize - 1):
+						m.next = 'WRITE_WAIT'
 			with m.State('WRITE_WAIT'):
+				m.d.sync += self.writeAddr.eq(self.writeAddr + platform.flashPageSize)
 				m.next = 'IDLE'
 
 		return m
