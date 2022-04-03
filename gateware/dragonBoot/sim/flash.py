@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from arachne.core.sim import sim_case
-from amaranth import Record
+from amaranth import Elaboratable, Module, Record
+from amaranth.lib.fifo import AsyncFIFO
 from amaranth.hdl.rec import DIR_FANOUT, DIR_FANIN
 from amaranth.sim import Simulator, Settle
 
@@ -25,6 +26,7 @@ bus = Record((
 ))
 
 class Platform:
+	flashPageSize = 64
 	erasePageSize = 256
 	eraseCommand = 0x20
 
@@ -35,10 +37,28 @@ class Platform:
 		assert xdr['clk'] == 2
 		return bus
 
+class DUT(Elaboratable):
+	def __init__(self, *, resource, flashSize):
+		self._fifo = AsyncFIFO(width = 8, depth = Platform.erasePageSize, r_domain = 'sync', w_domain = 'usb')
+		self._flash = SPIFlash(resource = resource, fifo = self._fifo, flashSize = flashSize)
+
+		self.start = self._flash.start
+		self.done = self._flash.done
+		self.readAddr = self._flash.readAddr
+		self.eraseAddr = self._flash.eraseAddr
+		self.writeAddr = self._flash.writeAddr
+		self.endAddr = self._flash.endAddr
+
+	def elaborate(self, platform):
+		m = Module()
+		m.submodules.fifo = self._fifo
+		m.submodules.flash = self._flash
+		return m
+
 @sim_case(
-	domains = (('sync', 60e6),),
+	domains = (('sync', 60e6), ('usb', 60e6)),
 	platform = Platform(),
-	dut = SPIFlash(resource = ('flash', 0), flashSize = 512 * 1024)
+	dut = DUT(resource = ('flash', 0), flashSize = 512 * 1024)
 )
 def spiFlash(sim : Simulator, dut : SPIFlash):
 	def spiTransact(copi = None, cipo = None):

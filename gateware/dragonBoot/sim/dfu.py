@@ -28,6 +28,7 @@ bus = Record((
 
 class Platform:
 	flashSize = 512 * 1024
+	flashPageSize = 64
 	erasePageSize = 256
 	eraseCommand = 0x20
 
