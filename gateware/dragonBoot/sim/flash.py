@@ -3,7 +3,6 @@ from arachne.core.sim import sim_case
 from amaranth import Record
 from amaranth.hdl.rec import DIR_FANOUT, DIR_FANIN
 from amaranth.sim import Simulator, Settle
-from typing import Tuple, Union
 
 from ..flash import SPIFlash
 from .dfu import dfuData
@@ -42,24 +41,28 @@ class Platform:
 	dut = SPIFlash(resource = ('flash', 0), flashSize = 512 * 1024)
 )
 def spiFlash(sim : Simulator, dut : SPIFlash):
-	def spiTransact(copi : Union[Tuple[int], None] = None, cipo : Union[Tuple[int], None] = None):
+	def spiTransact(copi = None, cipo = None):
 		if copi is not None and cipo is not None:
 			assert len(copi) == len(cipo)
 		bytes = max(0 if copi is None else len(copi), 0 if cipo is None else len(cipo))
 		yield Settle()
 		yield
 		assert (yield bus.cs.o) == 1
+		yield Settle()
+		yield
 		for byte in range(bytes):
 			for bit in range(8):
-				if cipo is not None:
+				if cipo is not None and cipo[byte] is not None:
 					yield bus.cipo.i.eq(((cipo[byte] << bit) & 0x80) >> 7)
 				yield Settle()
 				yield
-				if copi is not None:
+				if copi is not None and copi[byte] is not None:
 					assert (yield bus.copi.o) == ((copi[byte] << bit) & 0x80) >> 7
-		assert (yield bus.cs.o) == 1
-		yield Settle()
-		yield
+			if cipo is not None and cipo[byte] is not None:
+				yield bus.cipo.i.eq(0)
+			assert (yield bus.cs.o) == 1
+			yield Settle()
+			yield
 		assert (yield bus.cs.o) == 0
 
 	def domainSync():
@@ -75,6 +78,16 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield
 		assert (yield bus.cs.o) == 0
 		yield Settle()
+		yield from spiTransact(copi = (0x06,))
 		yield
-		yield from spiTransact(copi = (0x06, ))
+		yield from spiTransact(copi = (0x20, 0x00, 0x00, 0x00))
+		yield
+		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
+		yield
+		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
+		yield
+		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
+		yield
+		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
+		yield
 	yield domainSync, 'sync'
