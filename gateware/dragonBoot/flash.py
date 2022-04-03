@@ -117,15 +117,46 @@ class SPIFlash(Elaboratable):
 								processStep.eq(6),
 							]
 					with m.Case(6):
-						m.d.sync += self.eraseAddr.eq(self.eraseAddr + platform.erasePageSize)
+						m.d.sync += [
+							self.eraseAddr.eq(self.eraseAddr + platform.erasePageSize),
+							processStep.eq(0),
+						]
 						m.next = 'ERASE_WAIT'
 			with m.State('ERASE_WAIT'):
-				m.next = 'WRITE_ENABLE'
+				with m.Switch(processStep):
+					with m.Case(0):
+						m.d.sync += [
+							flash.cs.eq(1),
+							processStep.eq(1),
+						]
+					with m.Case(1):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							flash.w_data.eq(SPIFlashCmd.readStatus),
+						]
+						m.d.sync += processStep.eq(2)
+					with m.Case(2):
+						with m.If(flash.done):
+							m.d.comb += [
+								flash.xfer.eq(1),
+								flash.w_data.eq(0),
+							]
+							m.d.sync += processStep.eq(3)
+					with m.Case(3):
+						with m.If(flash.done):
+							m.d.sync += [
+								flash.cs.eq(0),
+								processStep.eq(4),
+							]
+					with m.Case(4):
+						m.d.sync += processStep.eq(0)
+						with m.If(~flash.r_data[0]):
+							m.d.sync += op.eq(SPIFlashOp.write)
+							m.next = 'WRITE_ENABLE'
 			with m.State('WRITE_CMD'):
 				flash.w_data.eq(platform.eraseCommand)
 				m.next = 'WRITE'
 			with m.State('WRITE'):
-				m.d.sync += op.eq(SPIFlashOp.write)
 				m.next = 'WRITE_WAIT'
 			with m.State('WRITE_WAIT'):
 				m.next = 'IDLE'
