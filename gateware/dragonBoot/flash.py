@@ -49,6 +49,7 @@ class SPIFlash(Elaboratable):
 					processStep.eq(0),
 				]
 				with m.If(self.start):
+					m.d.sync += op.eq(SPIFlashOp.erase)
 					m.next = 'WRITE_ENABLE'
 			with m.State('WRITE_ENABLE'):
 				with m.Switch(enableStep):
@@ -115,6 +116,7 @@ class SPIFlash(Elaboratable):
 								processStep.eq(6),
 							]
 					with m.Case(6):
+						m.d.sync += self.eraseAddr.eq(self.eraseAddr + platform.erasePageSize)
 						m.next = 'ERASE_WAIT'
 			with m.State('ERASE_WAIT'):
 				m.next = 'WRITE_ENABLE'
