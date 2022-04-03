@@ -42,6 +42,8 @@ class DUT(Elaboratable):
 		self._fifo = AsyncFIFO(width = 8, depth = Platform.erasePageSize, r_domain = 'sync', w_domain = 'usb')
 		self._flash = SPIFlash(resource = resource, fifo = self._fifo, flashSize = flashSize)
 
+		self.fillFIFO = False
+
 		self.start = self._flash.start
 		self.done = self._flash.done
 		self.readAddr = self._flash.readAddr
@@ -61,6 +63,8 @@ class DUT(Elaboratable):
 	dut = DUT(resource = ('flash', 0), flashSize = 512 * 1024)
 )
 def spiFlash(sim : Simulator, dut : SPIFlash):
+	fifo = dut._fifo
+
 	def spiTransact(copi = None, cipo = None, partial = False):
 		if copi is not None and cipo is not None:
 			assert len(copi) == len(cipo)
@@ -68,8 +72,10 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield Settle()
 		yield
 		assert (yield bus.cs.o) == 1
+		assert (yield bus.clk.o0) == 0
 		yield Settle()
 		yield
+		assert (yield bus.clk.o0) == 1
 		for byte in range(bytes):
 			for bit in range(8):
 				if cipo is not None and cipo[byte] is not None:
@@ -85,6 +91,8 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 			yield
 		if not partial:
 			assert (yield bus.cs.o) == 0
+		yield Settle()
+		yield
 
 	def domainSync():
 		yield
@@ -100,19 +108,30 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		assert (yield bus.cs.o) == 0
 		yield Settle()
 		yield from spiTransact(copi = (0x06,))
-		yield
 		yield from spiTransact(copi = (0x20, 0x00, 0x00, 0x00))
-		yield
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
-		yield
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
-		yield
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
-		yield
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
-		yield
 		yield from spiTransact(copi = (0x06,))
-		yield
+		assert (yield fifo.r_rdy) == 0
 		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x00), partial = True)
+		assert (yield fifo.r_rdy) == 0
+		dut.fillFIFO = True
+		for i in range(5):
+			yield
+		yield from spiTransact(copi = dfuData[0:64])
+		assert (yield dut.writeAddr) == 64
 		yield
 	yield domainSync, 'sync'
+
+	def domainUSB():
+		while not dut.fillFIFO:
+			yield
+		yield fifo.w_en.eq(1)
+		for byte in dfuData:
+			yield fifo.w_data.eq(byte)
+			yield
+		yield fifo.w_en.eq(0)
+		yield
+	yield domainUSB, 'usb'
