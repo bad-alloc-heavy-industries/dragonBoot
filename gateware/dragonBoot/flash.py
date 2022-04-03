@@ -47,6 +47,7 @@ class SPIFlash(Elaboratable):
 		writeCount = Signal(range(platform.flashPageSize))
 
 		m.d.comb += [
+			self.done.eq(0),
 			flash.xfer.eq(0),
 			flash.w_data.eq(fifo.r_data),
 		]
@@ -200,7 +201,7 @@ class SPIFlash(Elaboratable):
 						with m.If(flash.done):
 							m.d.sync += [
 								writeTrigger.eq(1),
-								processStep.eq(5)
+								processStep.eq(0)
 							]
 							m.next = 'WRITE'
 			with m.State('WRITE'):
@@ -211,23 +212,60 @@ class SPIFlash(Elaboratable):
 							flash.xfer.eq(1),
 							fifo.r_en.eq(1),
 						]
-						m.d.sync += [
-							writeCount.eq(writeCount + 1)
-						]
-						with m.If(writeCount == platform.flashPageSize - 1):
-							m.next = 'WRITE_WAIT'
+						m.d.sync += writeCount.eq(writeCount + 1)
+						with m.If(writeCount == platform.flashPageSize - 2):
+							m.next = 'WRITE_FINISH'
 					with m.Else():
 						m.next = 'DATA_WAIT'
 			with m.State('DATA_WAIT'):
 				with m.If(fifo.r_rdy):
 					m.d.sync += writeTrigger.eq(1)
 					m.next = 'WRITE'
+			with m.State('WRITE_FINISH'):
+				with m.Switch(processStep):
+					with m.Case(0):
+						with m.If(flash.done):
+							m.d.sync += [
+								flash.cs.eq(0),
+								processStep.eq(1),
+							]
+					with m.Case(1):
+						m.d.sync += [
+							self.writeAddr.eq(self.writeAddr + platform.flashPageSize),
+							processStep.eq(0),
+						]
+						m.next = 'WRITE_WAIT'
 			with m.State('WRITE_WAIT'):
-				with m.If(flash.done):
-					m.d.sync += [
-						flash.cs.eq(0),
-						self.writeAddr.eq(self.writeAddr + platform.flashPageSize),
-					]
-					m.next = 'IDLE'
+				with m.Switch(processStep):
+					with m.Case(0):
+						m.d.sync += [
+							flash.cs.eq(1),
+							processStep.eq(1),
+						]
+					with m.Case(1):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							flash.w_data.eq(SPIFlashCmd.readStatus),
+						]
+						m.d.sync += processStep.eq(2)
+					with m.Case(2):
+						with m.If(flash.done):
+							m.d.comb += [
+								flash.xfer.eq(1),
+								flash.w_data.eq(0),
+							]
+							m.d.sync += processStep.eq(3)
+					with m.Case(3):
+						with m.If(flash.done):
+							m.d.sync += [
+								flash.cs.eq(0),
+								processStep.eq(4),
+							]
+					with m.Case(4):
+						m.d.sync += processStep.eq(0)
+						with m.If(~flash.r_data[0]):
+							m.d.comb += self.done.eq(1)
+							m.d.sync += op.eq(SPIFlashOp.none)
+							m.next = 'IDLE'
 
 		return m
