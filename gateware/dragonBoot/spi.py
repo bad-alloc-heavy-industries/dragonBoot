@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BSD-3-Clause
 from amaranth import Elaboratable, Module, Signal, Cat, ClockSignal
 
 __all__ = (

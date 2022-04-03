@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BSD-3-Clause
 from arachne.core.sim import sim_case
 from amaranth import Record
 from amaranth.hdl.rec import DIR_FANOUT, DIR_FANIN

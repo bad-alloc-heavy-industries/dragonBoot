@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BSD-3-Clause
 from amaranth import Elaboratable, Module
 from luna.usb2 import USBDevice
 from luna.gateware.usb.request import SetupPacket

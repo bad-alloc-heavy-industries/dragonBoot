@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: BSD-3-Clause
 from amaranth import Module, Signal, Record, DomainRenamer
 from amaranth.hdl.rec import DIR_FANOUT
 from amaranth.lib.fifo import AsyncFIFO
