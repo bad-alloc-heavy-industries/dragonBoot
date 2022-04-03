@@ -114,4 +114,5 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield from spiTransact(copi = (0x06,))
 		yield
 		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x00), partial = True)
+		yield
 	yield domainSync, 'sync'

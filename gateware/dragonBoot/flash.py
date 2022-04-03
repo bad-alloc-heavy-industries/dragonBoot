@@ -43,9 +43,13 @@ class SPIFlash(Elaboratable):
 		op = Signal(SPIFlashOp, reset = SPIFlashOp.none)
 		enableStep = Signal(range(4))
 		processStep = Signal(range(7))
+		writeTrigger = Signal()
 		writeCount = Signal(range(platform.flashPageSize))
 
-		m.d.comb += flash.xfer.eq(0)
+		m.d.comb += [
+			flash.xfer.eq(0),
+			flash.w_data.eq(fifo.r_data),
+		]
 
 		with m.FSM(name = 'flash'):
 			with m.State('IDLE'):
@@ -191,22 +195,39 @@ class SPIFlash(Elaboratable):
 								flash.xfer.eq(1),
 								flash.w_data.eq(self.writeAddr[0:8]),
 							]
-							m.d.sync += processStep.eq(0)
+							m.d.sync += processStep.eq(5)
+					with m.Case(5):
+						with m.If(flash.done):
+							m.d.sync += [
+								writeTrigger.eq(1),
+								processStep.eq(5)
+							]
 							m.next = 'WRITE'
 			with m.State('WRITE'):
-				flash.w_data.eq(fifo.r_data),
-				with m.If(flash.done):
-					m.d.comb += [
-						flash.xfer.eq(1),
-						fifo.r_en.eq(1),
-					]
-					m.d.sync += [
-						writeCount.eq(writeCount + 1)
-					]
-					with m.If(writeCount == platform.flashPageSize - 1):
-						m.next = 'WRITE_WAIT'
+				m.d.sync += writeTrigger.eq(0)
+				with m.If(flash.done | writeTrigger):
+					with m.If(fifo.r_rdy):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							fifo.r_en.eq(1),
+						]
+						m.d.sync += [
+							writeCount.eq(writeCount + 1)
+						]
+						with m.If(writeCount == platform.flashPageSize - 1):
+							m.next = 'WRITE_WAIT'
+					with m.Else():
+						m.next = 'DATA_WAIT'
+			with m.State('DATA_WAIT'):
+				with m.If(fifo.r_rdy):
+					m.d.sync += writeTrigger.eq(1)
+					m.next = 'WRITE'
 			with m.State('WRITE_WAIT'):
-				m.d.sync += self.writeAddr.eq(self.writeAddr + platform.flashPageSize)
-				m.next = 'IDLE'
+				with m.If(flash.done):
+					m.d.sync += [
+						flash.cs.eq(0),
+						self.writeAddr.eq(self.writeAddr + platform.flashPageSize),
+					]
+					m.next = 'IDLE'
 
 		return m
