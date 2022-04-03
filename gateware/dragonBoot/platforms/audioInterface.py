@@ -22,11 +22,11 @@ class AudioInterfacePlatform(LatticeICE40Platform):
 		),
 
 		SPIResource(
-			'cfg_spi', 0,
-			clk = 'F11',
-			copi = 'F10',
-			cipo = 'G11',
-			cs_n = 'E11 A7',
+			'flash_spi', 0,
+			clk = 'L10',
+			copi = 'K9',
+			cipo = 'J9',
+			cs_n = 'K10',
 			attrs = Attrs(IO_STANDARD = 'SB_LVCMOS')
 		),
 		# A7 is the internal config interface, E11 is the DAC's
@@ -46,9 +46,10 @@ class AudioInterfacePlatform(LatticeICE40Platform):
 
 	connectors = []
 
+	flashSize = 512 * 1024
 	flashPageSize = 256
 	erasePageSize = 4096
-	eraseInsn = 0x20
+	eraseCommand = 0x20
 
 	def build(self, elaboratable, name = 'top', build_dir = 'build', do_build = True,
 		program_opts = None, do_program = False, **kwargs):
