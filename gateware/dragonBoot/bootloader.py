@@ -9,7 +9,7 @@ class DragonBoot(Elaboratable):
 	def elaborate(self, platform):
 		m = Module()
 		m.domains += ClockDomain('usb')
-		m.submodules.usb = usb = USBInterface(resource = ('ulpi', 0))
+		m.submodules.usb = usb = USBInterface(resource = ('ulpi', 0), dfuResource = ('flash_spi', 0))
 
 		m.d.comb += ResetSignal('usb').eq(0)
 		return m

@@ -1,4 +1,4 @@
-from amaranth import Module, Signal, Record
+from amaranth import Module, Signal, Record, DomainRenamer
 from amaranth.hdl.rec import DIR_FANOUT
 from amaranth.lib.fifo import AsyncFIFO
 from usb_protocol.types import USBRequestType, USBRequestRecipient, USBStandardRequests
@@ -7,6 +7,8 @@ from luna.gateware.usb.usb2.request import (
 	USBRequestHandler, SetupPacket, USBOutStreamInterface
 )
 from enum import IntEnum, auto, unique
+
+from .flash import SPIFlash, SPIFlashOp
 
 __all__ = (
 	'DFURequestHandler',
@@ -28,9 +30,11 @@ class DFUConfig(Record):
 		))
 
 class DFURequestHandler(USBRequestHandler):
-	def __init__(self, *, interface):
+	def __init__(self, *, interface, resource):
 		super().__init__()
+
 		self._interface = interface
+		self._flashResource = resource
 
 	def elaborate(self, platform):
 		m = Module()
@@ -49,6 +53,9 @@ class DFURequestHandler(USBRequestHandler):
 
 		m.submodules.bitstreamFIFO = bitstreamFIFO = AsyncFIFO(
 			width = 8, depth = platform.erasePageSize, r_domain = 'usb', w_domain = 'usb'
+		)
+		m.submodules.flash = flash = DomainRenamer({'sync': 'usb'})(
+			SPIFlash(resource = self._flashResource, flashSize = platform.flashSize)
 		)
 
 		m.d.comb += [
@@ -84,8 +91,10 @@ class DFURequestHandler(USBRequestHandler):
 				with m.If(setup.is_in_request | (setup.length > platform.erasePageSize)):
 					m.next = 'UNHANDLED'
 				with m.Elif(setup.length):
-					m.d.usb += config.status.eq(DFUState.downloadIdle)
-					m.d.comb += erasePage.eq(1)
+					m.d.usb += [
+						config.status.eq(DFUState.downloadIdle),
+						flash.op.eq(SPIFlashOp.erase),
+					]
 					m.next = 'HANDLE_DOWNLOAD_DATA'
 
 			with m.State('HANDLE_DOWNLOAD_DATA'):

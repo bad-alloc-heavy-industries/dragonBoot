@@ -17,8 +17,8 @@ __all__ = (
 )
 
 class USBInterface(Elaboratable):
-	def __init__(self, *, resource):
-		self.dfuRequestHandler = DFURequestHandler(interface = 0)
+	def __init__(self, *, resource, dfuResource):
+		self.dfuRequestHandler = DFURequestHandler(interface = 0, resource = dfuResource)
 
 		self._ulpiResource = resource
 
