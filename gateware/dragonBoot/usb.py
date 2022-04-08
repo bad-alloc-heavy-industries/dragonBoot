@@ -10,6 +10,9 @@ from usb_protocol.emitters.descriptors.standard import (
 )
 from usb_protocol.types.descriptors.dfu import *
 from usb_protocol.contextmgrs.descriptors.dfu import *
+from usb_protocol.types.descriptors.microsoft import *
+from usb_protocol.emitters.descriptors.microsoft import PlatformDescriptorCollection
+from usb_protocol.contextmgrs.descriptors.microsoft import *
 
 from .dfu import DFURequestHandler
 
@@ -30,12 +33,13 @@ class USBInterface(Elaboratable):
 
 		descriptors = DeviceDescriptorCollection()
 		with descriptors.DeviceDescriptor() as deviceDesc:
+			deviceDesc.bcdUSB = 2.01
 			deviceDesc.bDeviceClass = DeviceClassCodes.INTERFACE
 			deviceDesc.bDeviceSubclass = 0
 			deviceDesc.bDeviceProtocol = 0
 			deviceDesc.idVendor = 0x1209
 			deviceDesc.idProduct = 0xBADB
-			deviceDesc.bcdDevice = 0.01
+			deviceDesc.bcdDevice = 0.02
 			deviceDesc.iManufacturer = 'bad_alloc Heavy Industries'
 			deviceDesc.iProduct = 'dragonBoot DFU bootloader'
 			deviceDesc.bNumConfigurations = 1
@@ -62,6 +66,23 @@ class USBInterface(Elaboratable):
 					)
 					functionalDesc.wDetachTimeOut = 1000
 					functionalDesc.wTransferSize = platform.erasePageSize
+
+		platformDescriptors = PlatformDescriptorCollection()
+		with descriptors.BOSDescriptor() as bos:
+			with PlatformDescriptor(bos, platform_collection = platformDescriptors) as platformDesc:
+				with platformDesc.DescriptorSetInformation() as descSetInfo:
+					descSetInfo.bMS_VendorCode = 1
+
+					with descSetInfo.SetHeaderDescriptor() as setHeader:
+						with setHeader.SubsetHeaderConfiguration() as subsetConfig:
+							subsetConfig.bConfigurationValue = 1
+
+							with subsetConfig.SubsetHeaderFunction() as subsetFunc:
+								subsetFunc.bFirstInterface = 0
+
+								with subsetFunc.FeatureCompatibleID() as compatID:
+									compatID.CompatibleID = 'WINUSB'
+									compatID.SubCompatibleID = ''
 
 		descriptors.add_language_descriptor((LanguageIDs.ENGLISH_US, ))
 		ep0 = device.add_standard_control_endpoint(descriptors)
