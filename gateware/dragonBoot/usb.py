@@ -15,6 +15,7 @@ from usb_protocol.emitters.descriptors.microsoft import PlatformDescriptorCollec
 from usb_protocol.contextmgrs.descriptors.microsoft import *
 
 from .dfu import DFURequestHandler
+from .windows import WindowsRequestHandler
 
 __all__ = (
 	'USBInterface',
@@ -26,7 +27,7 @@ class USBInterface(Elaboratable):
 
 		self._ulpiResource = resource
 
-	def elaborate(self, platform):
+	def elaborate(self, platform) -> Module:
 		m = Module()
 		self.ulpiInterface = platform.request(*self._ulpiResource)
 		m.submodules.device = device = USBDevice(bus = self.ulpiInterface, handle_clocking = True)
@@ -86,14 +87,17 @@ class USBInterface(Elaboratable):
 
 		descriptors.add_language_descriptor((LanguageIDs.ENGLISH_US, ))
 		ep0 = device.add_standard_control_endpoint(descriptors)
+		windowsRequestHandler = WindowsRequestHandler(platformDescriptors)
 
 		def stallCondition(setup : SetupPacket):
 			return ~(
 				(setup.type == USBRequestType.STANDARD) |
-				self.dfuRequestHandler.handlerCondition(setup)
+				self.dfuRequestHandler.handlerCondition(setup) |
+				windowsRequestHandler.handlerCondition(setup)
 			)
 
 		ep0.add_request_handler(self.dfuRequestHandler)
+		ep0.add_request_handler(windowsRequestHandler)
 		ep0.add_request_handler(StallOnlyRequestHandler(stall_condition = stallCondition))
 
 		# Signal that we always want LUNA to try connecting
