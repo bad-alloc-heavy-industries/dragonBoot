@@ -40,9 +40,16 @@ class WindowsRequestHandler(USBRequestHandler):
 					with m.If(setup.received):
 						with m.Switch(setup.index):
 							with m.Case(MicrosoftRequests.GET_DESCRIPTOR_SET):
-								m.next = 'GET_DESCRIPTOR_SET'
+								m.next = 'CHECK_GET_DESCRIPTOR_SET'
 							with m.Default():
 								m.next = 'UNHANDLED'
+
+				# CHECK_GET_DESCRIPTOR_SET -- Validate a platform-specific descriptor set request
+				with m.State('CHECK_GET_DESCRIPTOR_SET'):
+					with m.If(setup.is_in_request & (setup.value == 0)):
+						m.next = 'GET_DESCRIPTOR_SET'
+					with m.Else():
+						m.next = 'UNHANDLED'
 
 				# GET_DESCRIPTOR_SET -- The host is trying to request a platform-specific descriptor set
 				with m.State('GET_DESCRIPTOR_SET'):
@@ -68,6 +75,8 @@ class WindowsRequestHandler(USBRequestHandler):
 					with m.If(interface.status_requested):
 						m.d.comb += interface.handshakes_out.ack.eq(1)
 						m.next = 'IDLE'
+					with m.Elif(descriptorSetHandler.stall):
+						m.next = 'IDLE'
 
 				# UNHANDLED -- we've received a request we're not prepared to handle
 				with m.State('UNHANDLED'):
@@ -82,5 +91,8 @@ class WindowsRequestHandler(USBRequestHandler):
 		return (
 			(setup.type == USBRequestType.VENDOR) &
 			(setup.recipient == USBRequestRecipient.DEVICE) &
-			((setup.index == 7) | (setup.index == 8))
+			(
+				(setup.index == MicrosoftRequests.GET_DESCRIPTOR_SET) |
+				(setup.index == MicrosoftRequests.SET_ALTERNATE_ENUM)
+			)
 		)
