@@ -122,7 +122,6 @@ class GetDescriptorSetHandler(Elaboratable):
 
 	def elaborate(self, platform) -> Module:
 		m = Module()
-		vendorCode = self.request
 		rom, descriptorMaxLength, maxVendorCode = self.generateROM()
 		m.submodules.readPort = readPort = rom.read_port(transparent = False)
 
@@ -130,7 +129,16 @@ class GetDescriptorSetHandler(Elaboratable):
 		romUpperHalf = readPort.data.word_select(1, 16)
 		romElementPointer = romLowerHalf.bit_select(2, readPort.addr.width)
 		romElementCount = romUpperHalf
+		vendorCode = Signal.like(self.request)
 		length = Signal(16)
+
+		wordsRemaining = self.length - self.startPosition
+		with m.If(wordsRemaining <= self._maxPacketLength):
+			m.d.sync += length.eq(wordsRemaining)
+		with m.Else():
+			m.d.sync += length.eq(self._maxPacketLength)
+
+		m.d.sync += vendorCode.eq(self.request - 1)
 
 		positionInStream = Signal(range(descriptorMaxLength))
 		bytesSent = Signal.like(length)
@@ -147,7 +155,7 @@ class GetDescriptorSetHandler(Elaboratable):
 		with m.FSM():
 			with m.State('IDLE'):
 				m.d.sync += bytesSent.eq(0)
-				m.d.comb += readPort.addr.eq(vendorCode)
+				m.d.comb += readPort.addr.eq(0)
 				with m.If(self.start):
 					m.next = 'START'
 
@@ -162,7 +170,7 @@ class GetDescriptorSetHandler(Elaboratable):
 					m.next = 'IDLE'
 
 			with m.State('LOOKUP_DESCRIPTOR'):
-				m.d.comb += readPort.addr.eq((readPort.data + positionInStream) >> 2)
+				m.d.comb += readPort.addr.eq((romLowerHalf + positionInStream).bit_select(2, readPort.addr.width))
 				m.d.sync += [
 					descriptorDataBaseAddress.eq(romElementPointer),
 					descriptorLength.eq(romElementCount),
