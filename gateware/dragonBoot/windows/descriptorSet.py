@@ -162,7 +162,7 @@ class GetDescriptorSetHandler(Elaboratable):
 			with m.State('START'):
 				m.d.comb += readPort.addr.eq(vendorCode)
 				m.d.sync += positionInStream.eq(self.startPosition)
-				isValidSet = vendorCode <= maxVendorCode
+				isValidSet = vendorCode < maxVendorCode
 				with m.If(isValidSet):
 					m.next = 'LOOKUP_DESCRIPTOR'
 				with m.Else():

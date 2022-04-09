@@ -48,6 +48,7 @@ def getDescriptorSetHandler(sim : Simulator, dut : GetDescriptorSetHandler):
 		descriptor = descriptors[1]
 		bytes = len(descriptor)
 		lastByte = bytes - 1
+		# And read back the result, validating state along the way
 		for byte in range(bytes):
 			assert (yield tx.first) == (1 if byte == 0 else 0)
 			assert (yield tx.last) == (1 if byte == lastByte else 0)
@@ -57,6 +58,59 @@ def getDescriptorSetHandler(sim : Simulator, dut : GetDescriptorSetHandler):
 			yield
 			yield Settle()
 		assert (yield tx.valid) == 0
+		yield
+
+		# Test the first stall-able condition
+		yield tx.ready.eq(0)
+		yield Settle()
+		yield
+		yield dut.request.eq(0)
+		yield dut.length.eq(0)
+		yield dut.startPosition.eq(0)
+		yield tx.ready.eq(1)
+		yield dut.start.eq(1)
+		yield Settle()
+		yield
+		yield dut.start.eq(0)
+		yield Settle()
+		attempts = 0
+		while not (yield dut.stall):
+			assert (yield tx.valid) == 0
+			attempts += 1
+			if attempts > 10:
+				raise AssertionError('Stall took too long to assert')
+			yield
+			yield Settle()
+		yield
+
+		# Test the second stall-able condition
+		yield tx.ready.eq(0)
+		yield Settle()
+		yield
+		yield dut.request.eq(2)
+		yield dut.length.eq(1)
+		yield dut.startPosition.eq(0)
+		yield tx.ready.eq(1)
+		yield dut.start.eq(1)
+		yield Settle()
+		yield
+		yield dut.start.eq(0)
+		yield Settle()
+		attempts = 0
+		while not (yield dut.stall):
+			assert (yield tx.valid) == 0
+			attempts += 1
+			if attempts > 10:
+				raise AssertionError('Stall took too long to assert')
+			yield
+			yield Settle()
+		yield
+
+		# Cleanup
+		yield tx.ready.eq(0)
+		yield Settle()
+		yield
+		yield Settle()
 		yield
 
 	yield domainUSB, 'usb'
