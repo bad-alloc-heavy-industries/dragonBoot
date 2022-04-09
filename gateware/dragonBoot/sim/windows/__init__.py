@@ -105,4 +105,10 @@ def windowsRequestHandler(sim : Simulator, dut : WindowsRequestHandler):
 		yield from ensureStall()
 		yield from sendGetDescriptorSet(vendorCode = 2, length = 46)
 		yield from ensureStall()
+		yield from sendSetup(type = USBRequestType.VENDOR, retrieve = False, request = 1,
+			value = 0, index = MicrosoftRequests.GET_DESCRIPTOR_SET, length = 0)
+		yield from ensureStall()
+		yield from sendSetup(type = USBRequestType.VENDOR, retrieve = True, request = 1,
+			value = 1, index = MicrosoftRequests.GET_DESCRIPTOR_SET, length = 0)
+		yield from ensureStall()
 	yield domainUSB, 'usb'
