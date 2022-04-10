@@ -107,9 +107,10 @@ class DFURequestHandler(USBRequestHandler):
 				m.d.comb += interface.rx.connect(rxStream)
 				with m.If(~rxTriggered):
 					m.d.comb += receiverStart.eq(1)
-					m.d.usb += rxTriggered.eq(1)
-				with m.Elif(receiverStreaming):
-					m.d.usb += config.status.eq(DFUState.downloadBusy)
+					m.d.usb += [
+						rxTriggered.eq(1),
+						config.status.eq(DFUState.downloadBusy),
+					]
 
 				with m.If(interface.rx_ready_for_response):
 					m.d.comb += interface.handshakes_out.ack.eq(1)
