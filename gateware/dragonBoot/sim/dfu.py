@@ -190,6 +190,8 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield from receiveData(data = (0, 0, 0, 0, DFUState.downloadBusy, 0))
 		yield from sendDFUGetState()
 		yield from receiveData(data = (DFUState.downloadBusy,))
+		for _ in range(6):
+			yield
 		yield from sendDFUGetState()
 		while (yield from receiveData(data = (DFUState.downloadBusy,), check = False)):
 			yield from sendDFUGetState()
