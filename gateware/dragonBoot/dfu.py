@@ -115,6 +115,8 @@ class DFURequestHandler(USBRequestHandler):
 					m.d.comb += flash.start.eq(1)
 					m.d.usb += config.state.eq(DFUState.downloadIdle)
 					m.next = 'HANDLE_DOWNLOAD_DATA'
+				with m.Else():
+					m.next = 'HANDLE_DOWNLOAD_COMPLETE'
 
 			with m.State('HANDLE_DOWNLOAD_DATA'):
 				m.d.comb += interface.rx.connect(rxStream)
@@ -130,6 +132,13 @@ class DFURequestHandler(USBRequestHandler):
 				with m.If(interface.status_requested):
 					m.d.comb += self.send_zlp()
 				with m.If(self.interface.handshakes_in.ack):
+					m.next = 'IDLE'
+
+			with m.State('HANDLE_DOWNLOAD_COMPLETE'):
+				with m.If(interface.status_requested):
+					m.d.usb += config.state.eq(DFUState.dfuIdle)
+					m.d.comb += self.send_zlp()
+				with m.If(interface.handshakes_in.ack):
 					m.next = 'IDLE'
 
 			with m.State('HANDLE_GET_STATUS'):
@@ -156,6 +165,8 @@ class DFURequestHandler(USBRequestHandler):
 				# ... and ACK our status stage.
 				with m.If(interface.status_requested):
 					m.d.comb += interface.handshakes_out.ack.eq(1)
+					with m.If(config.state == DFUState.downloadSync):
+						m.d.usb += config.state.eq(DFUState.downloadIdle)
 					m.next = 'IDLE'
 
 			with m.State('HANDLE_CLR_STATUS'):
