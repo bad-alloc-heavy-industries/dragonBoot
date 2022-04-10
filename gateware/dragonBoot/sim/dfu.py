@@ -110,6 +110,10 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield from sendSetup(type = USBRequestType.CLASS, retrieve = False,
 			request = DFURequests.DOWNLOAD, value = 0, index = 0, length = 256)
 
+	def sendDFUGetStatus():
+		yield from sendSetup(type = USBRequestType.CLASS, retrieve = True,
+			request = DFURequests.GET_STATUS, value = 0, index = 0, length = 6)
+
 	def sendDFUGetState():
 		yield from sendSetup(type = USBRequestType.CLASS, retrieve = True,
 			request = DFURequests.GET_STATE, value = 0, index = 0, length = 1)
@@ -178,17 +182,21 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 	def domainUSB():
 		yield
 		yield
+		yield from sendDFUGetStatus()
+		yield from receiveData(data = (0, 0, 0, 0, DFUState.dfuIdle, 0))
 		yield from sendDFUDownload()
 		yield from sendData(data = dfuData)
+		yield from sendDFUGetStatus()
+		yield from receiveData(data = (0, 0, 0, 0, DFUState.downloadBusy, 0))
 		yield from sendDFUGetState()
 		yield from receiveData(data = (DFUState.downloadBusy,))
-		yield
-		yield
 		yield from sendDFUGetState()
 		while (yield from receiveData(data = (DFUState.downloadBusy,), check = False)):
 			yield from sendDFUGetState()
 		yield from sendDFUGetState()
 		yield from receiveData(data = (DFUState.downloadSync,))
+		yield from sendDFUGetStatus()
+		yield from receiveData(data = (0, 0, 0, 0, DFUState.downloadSync, 0))
 		yield
 
 	yield domainUSB, 'usb'
