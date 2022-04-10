@@ -9,7 +9,7 @@ from luna.gateware.usb.usb2.request import (
 )
 from luna.gateware.usb.stream import USBInStreamInterface, USBOutStreamInterface
 from luna.gateware.stream.generator import StreamSerializer
-from enum import IntEnum, auto, unique
+from enum import IntEnum, unique
 
 from .flash import SPIFlash
 
@@ -19,12 +19,12 @@ __all__ = (
 
 @unique
 class DFUState(IntEnum):
-	dfuIdle = auto()
-	downloadSync = auto()
-	downloadBusy = auto()
-	downloadIdle = auto()
-	uploadIdle = auto()
-	error = auto()
+	dfuIdle = 2
+	downloadSync = 3
+	downloadBusy = 4
+	downloadIdle = 5
+	uploadIdle = 9
+	error = 10
 
 class DFUConfig(Record):
 	def __init__(self):
