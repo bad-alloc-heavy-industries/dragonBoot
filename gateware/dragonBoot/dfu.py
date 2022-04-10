@@ -30,11 +30,10 @@ class DFUState(IntEnum):
 class DFUStatus(IntEnum):
 	ok = 0
 
-class DFUConfig(Record):
+class DFUConfig:
 	def __init__(self):
-		super().__init__((
-			('state', 4, DIR_FANOUT),
-		))
+		self.status = Signal(4, decoder = DFUStatus)
+		self.state = Signal(4, decoder = DFUState)
 
 class DFURequestHandler(USBRequestHandler):
 	def __init__(self, *, interface, resource):
@@ -77,6 +76,7 @@ class DFURequestHandler(USBRequestHandler):
 			# RESET -- do initial setup of the DFU handler state
 			with m.State('RESET'):
 				m.d.usb += [
+					config.status.eq(DFUStatus.ok),
 					config.state.eq(DFUState.dfuIdle),
 				]
 				m.next = 'IDLE'
@@ -91,6 +91,8 @@ class DFURequestHandler(USBRequestHandler):
 								m.next = 'HANDLE_DOWNLOAD'
 							with m.Case(DFURequests.GET_STATUS):
 								m.next = 'HANDLE_GET_STATUS'
+							with m.Case(DFURequests.CLR_STATUS):
+								m.next = 'HANDLE_CLR_STATUS'
 							with m.Case(DFURequests.GET_STATE):
 								m.next = 'HANDLE_GET_STATE'
 							with m.Default():
@@ -137,7 +139,7 @@ class DFURequestHandler(USBRequestHandler):
 					transmitter.max_length.eq(6),
 				]
 				m.d.comb += [
-					transmitter.data[0].eq(DFUStatus.ok),
+					transmitter.data[0].eq(config.status),
 					Cat(transmitter.data[1:4]).eq(0),
 					transmitter.data[4].eq(Cat(config.state, 0)),
 					transmitter.data[5].eq(0),
@@ -154,6 +156,25 @@ class DFURequestHandler(USBRequestHandler):
 				# ... and ACK our status stage.
 				with m.If(interface.status_requested):
 					m.d.comb += interface.handshakes_out.ack.eq(1)
+					m.next = 'IDLE'
+
+			with m.State('HANDLE_CLR_STATUS'):
+				# If there is no data to follow, clear the status info
+				with m.If(setup.length == 0):
+					with m.If(config.state == DFUState.error):
+						m.d.usb += [
+							config.status.eq(DFUStatus.ok),
+							config.state.eq(DFUState.dfuIdle),
+						]
+				with m.Else():
+					m.d.comb += interface.handshakes_out.stall.eq(1)
+					m.next = 'IDLE'
+
+				# Provide a response for the status phase
+				with m.If(interface.status_requested):
+					m.d.comb += self.send_zlp()
+				# And when that gets ack'd, return to idle
+				with m.If(interface.handshakes_in.ack):
 					m.next = 'IDLE'
 
 			with m.State('HANDLE_GET_STATE'):
