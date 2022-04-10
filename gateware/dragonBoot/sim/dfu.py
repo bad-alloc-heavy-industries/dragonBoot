@@ -140,7 +140,8 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield Settle()
 		yield
 
-	def receiveData(*, data : Union[Tuple[int],bytes]):
+	def receiveData(*, data : Union[Tuple[int],bytes], check = True):
+		result = True
 		yield tx.ready.eq(1)
 		yield interface.data_requested.eq(1)
 		yield Settle()
@@ -155,7 +156,10 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 			assert (yield tx.first) == (1 if idx == 0 else 0)
 			assert (yield tx.last) == (1 if idx == len(data) - 1 else 0)
 			assert (yield tx.valid) == 1
-			assert (yield tx.payload) == value
+			if check:
+				assert (yield tx.payload) == value
+			if (yield tx.payload) != value:
+				result = False
 			assert (yield interface.handshakes_out.ack) == 0
 			if idx == len(data) - 1:
 				yield tx.ready.eq(0)
@@ -169,6 +173,7 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield Settle()
 		yield
 		assert (yield interface.handshakes_out.ack) == 0
+		return result
 
 	def domainUSB():
 		yield
@@ -177,6 +182,13 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield from sendData(data = dfuData)
 		yield from sendDFUGetState()
 		yield from receiveData(data = (DFUState.downloadBusy,))
+		yield
+		yield
+		yield from sendDFUGetState()
+		while (yield from receiveData(data = (DFUState.downloadBusy,), check = False)):
+			yield from sendDFUGetState()
+		yield from sendDFUGetState()
+		yield from receiveData(data = (DFUState.downloadSync,))
 		yield
 
 	yield domainUSB, 'usb'
