@@ -1,12 +1,14 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth import Module, Signal, Record, DomainRenamer
+from amaranth import Module, Signal, Record, DomainRenamer, Cat
 from amaranth.hdl.rec import DIR_FANOUT
 from amaranth.lib.fifo import AsyncFIFO
 from usb_protocol.types import USBRequestType, USBRequestRecipient, USBStandardRequests
 from usb_protocol.types.descriptors.dfu import DFURequests
 from luna.gateware.usb.usb2.request import (
-	USBRequestHandler, SetupPacket, USBOutStreamInterface
+	USBRequestHandler, SetupPacket
 )
+from luna.gateware.usb.stream import USBInStreamInterface, USBOutStreamInterface
+from luna.gateware.stream.generator import StreamSerializer
 from enum import IntEnum, auto, unique
 
 from .flash import SPIFlash
@@ -58,6 +60,10 @@ class DFURequestHandler(USBRequestHandler):
 			SPIFlash(resource = self._flashResource, fifo = bitstreamFIFO, flashSize = platform.flashSize)
 		)
 
+		m.submodules.transmitter = transmitter = StreamSerializer(
+			data_length = 6, domain = 'usb', stream_type = USBInStreamInterface, max_length_width = 3
+		)
+
 		m.d.comb += [
 			flash.start.eq(0),
 		]
@@ -78,6 +84,8 @@ class DFURequestHandler(USBRequestHandler):
 						with m.Switch(setup.request):
 							with m.Case(DFURequests.DOWNLOAD):
 								m.next = 'HANDLE_DOWNLOAD'
+							with m.Case(DFURequests.GET_STATE):
+								m.next = 'HANDLE_GET_STATE'
 							with m.Default():
 								m.next = 'UNHANDLED'
 					with m.Elif(setup.type == USBRequestType.STANDARD):
@@ -108,6 +116,27 @@ class DFURequestHandler(USBRequestHandler):
 				with m.If(interface.status_requested):
 					m.d.comb += self.send_zlp()
 				with m.If(self.interface.handshakes_in.ack):
+					m.next = 'IDLE'
+
+			with m.State('HANDLE_GET_STATE'):
+				# Hook up the transmitter ...
+				m.d.comb += [
+					transmitter.stream.connect(interface.tx),
+					transmitter.max_length.eq(1),
+				]
+				m.d.comb += transmitter.data[0].eq(Cat(config.status, 0))
+
+				# ... then trigger it when requested if the lengths match ...
+				with m.If(self.interface.data_requested):
+					with m.If(setup.length == 1):
+						m.d.comb += transmitter.start.eq(1)
+					with m.Else():
+						m.d.comb += interface.handshakes_out.stall.eq(1)
+						m.next = 'IDLE'
+
+				# ... and ACK our status stage.
+				with m.If(interface.status_requested):
+					m.d.comb += interface.handshakes_out.ack.eq(1)
 					m.next = 'IDLE'
 
 			# UNHANDLED -- we've received a request we don't know how to handle
