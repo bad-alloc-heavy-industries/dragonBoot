@@ -26,10 +26,14 @@ class DFUState(IntEnum):
 	uploadIdle = 9
 	error = 10
 
+@unique
+class DFUStatus(IntEnum):
+	ok = 0
+
 class DFUConfig(Record):
 	def __init__(self):
 		super().__init__((
-			('status', 3, DIR_FANOUT),
+			('state', 4, DIR_FANOUT),
 		))
 
 class DFURequestHandler(USBRequestHandler):
@@ -73,7 +77,7 @@ class DFURequestHandler(USBRequestHandler):
 			# RESET -- do initial setup of the DFU handler state
 			with m.State('RESET'):
 				m.d.usb += [
-					config.status.eq(DFUState.dfuIdle),
+					config.state.eq(DFUState.dfuIdle),
 				]
 				m.next = 'IDLE'
 			# IDLE -- no active request being handled
@@ -85,6 +89,8 @@ class DFURequestHandler(USBRequestHandler):
 						with m.Switch(setup.request):
 							with m.Case(DFURequests.DOWNLOAD):
 								m.next = 'HANDLE_DOWNLOAD'
+							with m.Case(DFURequests.GET_STATUS):
+								m.next = 'HANDLE_GET_STATUS'
 							with m.Case(DFURequests.GET_STATE):
 								m.next = 'HANDLE_GET_STATE'
 							with m.Default():
@@ -97,7 +103,7 @@ class DFURequestHandler(USBRequestHandler):
 					# If the underlying Flash operation is complete, signal this by going downloadSync
 					with m.If(flash.done):
 						m.d.comb += flash.finish.eq(1)
-						m.d.usb += config.status.eq(DFUState.downloadSync)
+						m.d.usb += config.state.eq(DFUState.downloadSync)
 
 			# HANDLE_DOWNLOAD -- The host is trying to send us some data to program
 			with m.State('HANDLE_DOWNLOAD'):
@@ -105,7 +111,7 @@ class DFURequestHandler(USBRequestHandler):
 					m.next = 'UNHANDLED'
 				with m.Elif(setup.length):
 					m.d.comb += flash.start.eq(1)
-					m.d.usb += config.status.eq(DFUState.downloadIdle)
+					m.d.usb += config.state.eq(DFUState.downloadIdle)
 					m.next = 'HANDLE_DOWNLOAD_DATA'
 
 			with m.State('HANDLE_DOWNLOAD_DATA'):
@@ -114,7 +120,7 @@ class DFURequestHandler(USBRequestHandler):
 					m.d.comb += receiverStart.eq(1)
 					m.d.usb += [
 						rxTriggered.eq(1),
-						config.status.eq(DFUState.downloadBusy),
+						config.state.eq(DFUState.downloadBusy),
 					]
 
 				with m.If(interface.rx_ready_for_response):
@@ -124,13 +130,39 @@ class DFURequestHandler(USBRequestHandler):
 				with m.If(self.interface.handshakes_in.ack):
 					m.next = 'IDLE'
 
+			with m.State('HANDLE_GET_STATUS'):
+				# Hook up the transmitter ...
+				m.d.comb += [
+					transmitter.stream.connect(interface.tx),
+					transmitter.max_length.eq(6),
+				]
+				m.d.comb += [
+					transmitter.data[0].eq(DFUStatus.ok),
+					Cat(transmitter.data[1:4]).eq(0),
+					transmitter.data[4].eq(Cat(config.state, 0)),
+					transmitter.data[5].eq(0),
+				]
+
+				# ... then trigger it when requested if the lengths match ...
+				with m.If(self.interface.data_requested):
+					with m.If(setup.length == 6):
+						m.d.comb += transmitter.start.eq(1)
+					with m.Else():
+						m.d.comb += interface.handshakes_out.stall.eq(1)
+						m.next = 'IDLE'
+
+				# ... and ACK our status stage.
+				with m.If(interface.status_requested):
+					m.d.comb += interface.handshakes_out.ack.eq(1)
+					m.next = 'IDLE'
+
 			with m.State('HANDLE_GET_STATE'):
 				# Hook up the transmitter ...
 				m.d.comb += [
 					transmitter.stream.connect(interface.tx),
 					transmitter.max_length.eq(1),
 				]
-				m.d.comb += transmitter.data[0].eq(Cat(config.status, 0))
+				m.d.comb += transmitter.data[0].eq(Cat(config.state, 0))
 
 				# ... then trigger it when requested if the lengths match ...
 				with m.If(self.interface.data_requested):
