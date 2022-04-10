@@ -66,6 +66,7 @@ class DFURequestHandler(USBRequestHandler):
 
 		m.d.comb += [
 			flash.start.eq(0),
+			flash.finish.eq(0),
 		]
 
 		with m.FSM(domain = 'usb', name = 'dfu'):
@@ -93,10 +94,10 @@ class DFURequestHandler(USBRequestHandler):
 						with m.Switch(setup.request):
 							with m.Default():
 								m.next = 'UNHANDLED'
-				# If the underlying Flash operation is complete, signal this by going downloadSync
-				with m.If(flash.done):
-					m.d.comb += flash.finish.eq(1)
-					m.d.usb += config.status.eq(DFUState.downloadSync)
+					# If the underlying Flash operation is complete, signal this by going downloadSync
+					with m.If(flash.done):
+						m.d.comb += flash.finish.eq(1)
+						m.d.usb += config.status.eq(DFUState.downloadSync)
 
 			# HANDLE_DOWNLOAD -- The host is trying to send us some data to program
 			with m.State('HANDLE_DOWNLOAD'):
