@@ -7,7 +7,7 @@ from usb_protocol.types import USBRequestType, USBRequestRecipient, USBStandardR
 from usb_protocol.types.descriptors.dfu import DFURequests
 from typing import Tuple, Union
 
-from ..dfu import DFURequestHandler
+from ..dfu import DFURequestHandler, DFUState
 
 bus = Record((
 	('clk', [
@@ -110,6 +110,10 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield from sendSetup(type = USBRequestType.CLASS, retrieve = False,
 			request = DFURequests.DOWNLOAD, value = 0, index = 0, length = 256)
 
+	def sendDFUGetState():
+		yield from sendSetup(type = USBRequestType.CLASS, retrieve = True,
+			request = DFURequests.GET_STATE, value = 0, index = 0, length = 1)
+
 	def sendData(*, data : Tuple):
 		yield rx.valid.eq(1)
 		for value in data:
@@ -136,11 +140,43 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield Settle()
 		yield
 
+	def receiveData(*, data : Union[Tuple[int],bytes]):
+		yield tx.ready.eq(1)
+		yield interface.data_requested.eq(1)
+		yield Settle()
+		yield
+		yield interface.data_requested.eq(0)
+		assert (yield tx.valid) == 0
+		assert (yield tx.payload) == 0
+		while (yield tx.first) == 0:
+			yield Settle()
+			yield
+		for idx, value in enumerate(data):
+			assert (yield tx.first) == (1 if idx == 0 else 0)
+			assert (yield tx.last) == (1 if idx == len(data) - 1 else 0)
+			assert (yield tx.valid) == 1
+			assert (yield tx.payload) == value
+			assert (yield interface.handshakes_out.ack) == 0
+			if idx == len(data) - 1:
+				yield tx.ready.eq(0)
+				yield interface.status_requested.eq(1)
+			yield Settle()
+			yield
+		assert (yield tx.valid) == 0
+		assert (yield tx.payload) == 0
+		assert (yield interface.handshakes_out.ack) == 1
+		yield interface.status_requested.eq(0)
+		yield Settle()
+		yield
+		assert (yield interface.handshakes_out.ack) == 0
+
 	def domainUSB():
 		yield
 		yield
 		yield from sendDFUDownload()
 		yield from sendData(data = dfuData)
+		yield from sendDFUGetState()
+		yield from receiveData(data = (DFUState.downloadBusy,))
 		yield
 
 	yield domainUSB, 'usb'
