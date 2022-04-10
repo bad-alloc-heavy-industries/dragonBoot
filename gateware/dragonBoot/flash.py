@@ -212,8 +212,8 @@ class SPIFlash(Elaboratable):
 							]
 							m.next = 'WRITE'
 			with m.State('WRITE'):
-				m.d.sync += writeTrigger.eq(0)
 				with m.If(flash.done | writeTrigger):
+					m.d.sync += writeTrigger.eq(0)
 					with m.If(fifo.r_rdy):
 						m.d.comb += [
 							flash.xfer.eq(1),
