@@ -78,6 +78,7 @@ class DFURequestHandler(USBRequestHandler):
 				m.d.usb += [
 					config.status.eq(DFUStatus.ok),
 					config.state.eq(DFUState.dfuIdle),
+					flash.endAddr.eq(platform.flashSize),
 				]
 				m.next = 'IDLE'
 			# IDLE -- no active request being handled
