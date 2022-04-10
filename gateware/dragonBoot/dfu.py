@@ -42,6 +42,8 @@ class DFURequestHandler(USBRequestHandler):
 		self._interface = interface
 		self._flashResource = resource
 
+		self.triggerReboot = Signal()
+
 	def elaborate(self, platform):
 		m = Module()
 		interface = self.interface
@@ -88,6 +90,8 @@ class DFURequestHandler(USBRequestHandler):
 					with m.If(setup.type == USBRequestType.CLASS):
 						# Switch to the right state for what we need to handle
 						with m.Switch(setup.request):
+							with m.Case(DFURequests.DETACH):
+								m.next = 'HANDLE_DETACH'
 							with m.Case(DFURequests.DOWNLOAD):
 								m.next = 'HANDLE_DOWNLOAD'
 							with m.Case(DFURequests.GET_STATUS):
@@ -107,6 +111,10 @@ class DFURequestHandler(USBRequestHandler):
 					with m.If(flash.done):
 						m.d.comb += flash.finish.eq(1)
 						m.d.usb += config.state.eq(DFUState.downloadSync)
+
+			# HANDLE_DETACH -- The host wishes us to reboot into run mode
+			with m.State('HANDLE_DETACH'):
+				m.d.comb += self.triggerReboot.eq(1)
 
 			# HANDLE_DOWNLOAD -- The host is trying to send us some data to program
 			with m.State('HANDLE_DOWNLOAD'):

@@ -16,6 +16,7 @@ from usb_protocol.contextmgrs.descriptors.microsoft import *
 
 from .dfu import DFURequestHandler
 from .windows import WindowsRequestHandler
+from .warmboot import Warmboot
 
 __all__ = (
 	'USBInterface',
@@ -31,6 +32,7 @@ class USBInterface(Elaboratable):
 		m = Module()
 		self.ulpiInterface = platform.request(*self._ulpiResource)
 		m.submodules.device = device = USBDevice(bus = self.ulpiInterface, handle_clocking = True)
+		m.submodules.warmboot = warmboot = Warmboot()
 
 		descriptors = DeviceDescriptorCollection()
 		with descriptors.DeviceDescriptor() as deviceDesc:
@@ -105,5 +107,6 @@ class USBInterface(Elaboratable):
 			device.connect.eq(1),
 			device.low_speed_only.eq(0),
 			device.full_speed_only.eq(0),
+			warmboot.trigger.eq(self.dfuRequestHandler.triggerReboot),
 		]
 		return m
