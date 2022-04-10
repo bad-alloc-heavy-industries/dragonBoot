@@ -45,7 +45,7 @@ class SPIFlash(Elaboratable):
 		enableStep = Signal(range(4))
 		processStep = Signal(range(7))
 		writeTrigger = Signal()
-		writeCount = Signal(range(platform.flashPageSize))
+		writeCount = Signal(range(platform.flashPageSize + 1))
 
 		m.d.comb += [
 			self.done.eq(0),
@@ -232,7 +232,8 @@ class SPIFlash(Elaboratable):
 							]
 					with m.Case(1):
 						m.d.sync += [
-							self.writeAddr.eq(self.writeAddr + platform.flashPageSize),
+							self.writeAddr.eq(self.writeAddr + writeCount),
+							writeCount.eq(0),
 							processStep.eq(0),
 						]
 						m.next = 'WRITE_WAIT'
