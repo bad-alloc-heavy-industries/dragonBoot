@@ -80,6 +80,7 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield Settle()
 		for byte in range(bytes):
 			for bit in range(8):
+				assert (yield bus.clk.o0) == (0 if bit == 7 else 1)
 				if copi is not None and copi[byte] is not None:
 					assert (yield bus.copi.o) == ((copi[byte] << bit) & 0x80) >> 7
 				assert (yield bus.cs.o) == 1
@@ -89,13 +90,15 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 				yield Settle()
 			if cipo is not None and cipo[byte] is not None:
 				yield bus.cipo.i.eq(0)
-			yield
-			yield Settle()
-		if completion:
-			assert (yield dut.done) == 1
+			if byte < bytes - 1 or not partial:
+				yield
+				assert (yield bus.clk.o0) == (1 if byte < bytes - 1 else 0)
+				yield Settle()
 		if not partial:
+			if completion:
+				assert (yield dut.done) == 1
 			assert (yield bus.cs.o) == 0
-		yield
+			yield
 
 	def domainSync():
 		yield
@@ -118,15 +121,24 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield from spiTransact(copi = (0x06,))
 		assert (yield fifo.r_rdy) == 0
 		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x00), partial = True)
+		yield
+		assert (yield bus.cs.o) == 1
+		assert (yield bus.clk.o0) == 0
+		yield Settle()
+		assert (yield fifo.r_rdy) == 0
+		assert (yield bus.cs.o) == 1
+		assert (yield bus.clk.o0) == 0
+		yield
 		assert (yield fifo.r_rdy) == 0
 		dut.fillFIFO = True
-		for i in range(5):
+		for _ in range(5):
 			yield Settle()
 			yield
-		yield from spiTransact(copi = dfuData[0:63])
+		yield from spiTransact(copi = dfuData[0:64])
 		assert (yield dut.writeAddr) == 64
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00), completion = True)
+
 		yield Settle()
 		assert (yield dut.done) == 1
 		yield dut.finish.eq(1)
