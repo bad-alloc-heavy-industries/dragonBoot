@@ -51,6 +51,7 @@ class DUT(Elaboratable):
 		self.eraseAddr = self._flash.eraseAddr
 		self.writeAddr = self._flash.writeAddr
 		self.endAddr = self._flash.endAddr
+		self.byteCount = self._flash.byteCount
 
 	def elaborate(self, platform):
 		m = Module()
@@ -101,14 +102,17 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 			yield
 
 	def domainSync():
+		yield dut.endAddr.eq(4096)
 		yield
 		yield dut.start.eq(1)
+		yield dut.byteCount.eq(len(dfuData))
 		yield Settle()
 		yield
 		assert (yield dut.readAddr) == 0
 		assert (yield dut.eraseAddr) == 0
 		assert (yield dut.writeAddr) == 0
 		yield dut.start.eq(0)
+		yield dut.byteCount.eq(0)
 		yield Settle()
 		assert (yield bus.cs.o) == 0
 		yield
@@ -146,13 +150,13 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
 		yield from spiTransact(copi = (0x06,))
-		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x40), partial = True)
+		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x80), partial = True)
 		yield from spiTransact(copi = dfuData[128:192])
 		assert (yield dut.writeAddr) == 192
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
 		yield from spiTransact(copi = (0x06,))
-		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x40), partial = True)
+		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0xC0), partial = True)
 		yield from spiTransact(copi = dfuData[192:256])
 		assert (yield dut.writeAddr) == 256
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00), completion = True)
