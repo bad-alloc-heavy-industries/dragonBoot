@@ -45,6 +45,7 @@ class DUT(Elaboratable):
 		self.fillFIFO = False
 
 		self.start = self._flash.start
+		self.finish = self._flash.finish
 		self.done = self._flash.done
 		self.readAddr = self._flash.readAddr
 		self.eraseAddr = self._flash.eraseAddr
@@ -88,12 +89,10 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 				yield Settle()
 			if cipo is not None and cipo[byte] is not None:
 				yield bus.cipo.i.eq(0)
-			if byte == bytes - 1 and completion:
-				assert (yield dut.done) == 1
 			yield
 			yield Settle()
 		if completion:
-			assert (yield dut.done) == 0
+			assert (yield dut.done) == 1
 		if not partial:
 			assert (yield bus.cs.o) == 0
 		yield
@@ -110,7 +109,6 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield Settle()
 		assert (yield bus.cs.o) == 0
 		yield
-		yield Settle()
 		yield from spiTransact(copi = (0x06,))
 		yield from spiTransact(copi = (0x20, 0x00, 0x00, 0x00))
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
@@ -129,8 +127,16 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		assert (yield dut.writeAddr) == 64
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00), completion = True)
+		yield Settle()
+		assert (yield dut.done) == 1
+		yield dut.finish.eq(1)
 		yield
 		yield Settle()
+		assert (yield dut.done) == 0
+		yield dut.finish.eq(0)
+		yield
+		yield Settle()
+		yield
 	yield domainSync, 'sync'
 
 	def domainUSB():

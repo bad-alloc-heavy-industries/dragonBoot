@@ -30,6 +30,7 @@ class SPIFlash(Elaboratable):
 
 		self.start = Signal()
 		self.done = Signal()
+		self.finish = Signal()
 		self.readAddr = Signal(24)
 		self.eraseAddr = Signal(24)
 		self.writeAddr = Signal(24)
@@ -264,8 +265,11 @@ class SPIFlash(Elaboratable):
 					with m.Case(4):
 						m.d.sync += processStep.eq(0)
 						with m.If(~flash.r_data[0]):
-							m.d.comb += self.done.eq(1)
 							m.d.sync += op.eq(SPIFlashOp.none)
-							m.next = 'IDLE'
+							m.next = 'FINISH'
+			with m.State('FINISH'):
+				m.d.comb += self.done.eq(1)
+				with m.If(self.finish):
+					m.next = 'IDLE'
 
 		return m
