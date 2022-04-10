@@ -137,6 +137,24 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield from spiTransact(copi = dfuData[0:64])
 		assert (yield dut.writeAddr) == 64
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
+		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
+
+		yield from spiTransact(copi = (0x06,))
+		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x40), partial = True)
+		yield from spiTransact(copi = dfuData[64:128])
+		assert (yield dut.writeAddr) == 128
+		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
+
+		yield from spiTransact(copi = (0x06,))
+		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x40), partial = True)
+		yield from spiTransact(copi = dfuData[128:192])
+		assert (yield dut.writeAddr) == 192
+		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
+
+		yield from spiTransact(copi = (0x06,))
+		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x40), partial = True)
+		yield from spiTransact(copi = dfuData[192:256])
+		assert (yield dut.writeAddr) == 256
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00), completion = True)
 
 		yield Settle()
