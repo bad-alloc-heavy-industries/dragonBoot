@@ -35,6 +35,7 @@ class SPIFlash(Elaboratable):
 		self.eraseAddr = Signal(24)
 		self.writeAddr = Signal(24)
 		self.endAddr = Signal(24)
+		self.byteCount = Signal(24)
 
 	def elaborate(self, platform):
 		m = Module()
@@ -46,6 +47,7 @@ class SPIFlash(Elaboratable):
 		processStep = Signal(range(7))
 		writeTrigger = Signal()
 		writeCount = Signal(range(platform.flashPageSize + 1))
+		byteCount = Signal.like(self.byteCount)
 
 		m.d.comb += [
 			self.done.eq(0),
@@ -60,7 +62,10 @@ class SPIFlash(Elaboratable):
 					processStep.eq(0),
 				]
 				with m.If(self.start):
-					m.d.sync += op.eq(SPIFlashOp.erase)
+					m.d.sync += [
+						op.eq(SPIFlashOp.erase),
+						byteCount.eq(self.byteCount),
+					]
 					m.next = 'WRITE_ENABLE'
 			with m.State('WRITE_ENABLE'):
 				with m.Switch(enableStep):
@@ -162,7 +167,8 @@ class SPIFlash(Elaboratable):
 					with m.Case(4):
 						m.d.sync += processStep.eq(0)
 						with m.If(~flash.r_data[0]):
-							m.d.sync += op.eq(SPIFlashOp.write)
+							with m.If((self.writeAddr + byteCount) <= self.endAddr):
+								m.d.sync += op.eq(SPIFlashOp.write)
 							m.next = 'WRITE_ENABLE'
 			with m.State('WRITE_CMD'):
 				with m.Switch(processStep):
@@ -213,8 +219,11 @@ class SPIFlash(Elaboratable):
 							flash.xfer.eq(1),
 							fifo.r_en.eq(1),
 						]
-						m.d.sync += writeCount.eq(writeCount + 1)
-						with m.If(writeCount == platform.flashPageSize - 2):
+						m.d.sync += [
+							writeCount.eq(writeCount + 1),
+							byteCount.eq(byteCount - 1),
+						]
+						with m.If((writeCount == platform.flashPageSize - 1) | (byteCount == 1)):
 							m.next = 'WRITE_FINISH'
 					with m.Else():
 						m.next = 'DATA_WAIT'
@@ -266,8 +275,11 @@ class SPIFlash(Elaboratable):
 					with m.Case(4):
 						m.d.sync += processStep.eq(0)
 						with m.If(~flash.r_data[0]):
-							m.d.sync += op.eq(SPIFlashOp.none)
-							m.next = 'FINISH'
+							with m.If(byteCount):
+								m.next = 'WRITE_ENABLE'
+							with m.Else():
+								m.d.sync += op.eq(SPIFlashOp.none)
+								m.next = 'FINISH'
 			with m.State('FINISH'):
 				m.d.comb += self.done.eq(1)
 				with m.If(self.finish):

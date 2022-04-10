@@ -112,7 +112,10 @@ class DFURequestHandler(USBRequestHandler):
 				with m.If(setup.is_in_request | (setup.length > platform.erasePageSize)):
 					m.next = 'UNHANDLED'
 				with m.Elif(setup.length):
-					m.d.comb += flash.start.eq(1)
+					m.d.comb += [
+						flash.start.eq(1),
+						flash.byteCount.eq(setup.length),
+					]
 					m.d.usb += config.state.eq(DFUState.downloadIdle)
 					m.next = 'HANDLE_DOWNLOAD_DATA'
 				with m.Else():
