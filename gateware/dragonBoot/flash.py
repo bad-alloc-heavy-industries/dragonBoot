@@ -37,7 +37,7 @@ class SPIFlash(Elaboratable):
 		self.endAddr = Signal(24)
 		self.byteCount = Signal(24)
 
-	def elaborate(self, platform):
+	def elaborate(self, platform) -> Module:
 		m = Module()
 		m.submodules.spi = flash = SPIBus(resource = self._flashResource)
 		fifo = self._fifo

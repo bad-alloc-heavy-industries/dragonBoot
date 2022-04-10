@@ -11,7 +11,7 @@ class Warmboot(Elaboratable):
 	def __init__(self):
 		self.trigger = Signal()
 
-	def elaborate(self, platform):
+	def elaborate(self, platform) -> Module:
 		m = Module()
 		if isinstance(platform, LatticeICE40Platform):
 			warmbootSelect = Signal(2)

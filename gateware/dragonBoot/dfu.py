@@ -44,7 +44,7 @@ class DFURequestHandler(USBRequestHandler):
 
 		self.triggerReboot = Signal()
 
-	def elaborate(self, platform):
+	def elaborate(self, platform) -> Module:
 		m = Module()
 		interface = self.interface
 		setup = interface.setup
