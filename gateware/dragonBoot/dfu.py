@@ -50,8 +50,8 @@ class DFURequestHandler(USBRequestHandler):
 		rxTriggered = Signal()
 		rxStream = USBOutStreamInterface(payload_width = 8)
 		receiverStart = Signal()
-		receiverStreaming = Signal()
 		receiverDone = Signal()
+		receiverCount = Signal.like(setup.length)
 		receiverConsumed = Signal.like(setup.length)
 
 		config = DFUConfig()
@@ -225,7 +225,7 @@ class DFURequestHandler(USBRequestHandler):
 			bitstreamFIFO.w_en.eq(0),
 			bitstreamFIFO.w_data.eq(rxStream.payload),
 		]
-		receiverContinue = (receiverConsumed < setup.length)
+		receiverContinue = (receiverConsumed < receiverCount)
 
 		with m.FSM(domain = 'usb', name = 'download'):
             # IDLE -- we're not actively receiving
@@ -234,6 +234,7 @@ class DFURequestHandler(USBRequestHandler):
 				m.d.usb += receiverConsumed.eq(0)
                 # Once the download handler requests we start, begin consuming the data
 				with m.If(receiverStart):
+					m.d.usb += receiverCount.eq(setup.length - 1)
 					m.next = 'STREAMING'
             # STREAMING -- we're actively consuming data
 			with m.State('STREAMING'):
