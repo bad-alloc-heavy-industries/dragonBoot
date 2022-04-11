@@ -24,9 +24,8 @@ __all__ = (
 
 class USBInterface(Elaboratable):
 	def __init__(self, *, resource, dfuResource):
-		self.dfuRequestHandler = DFURequestHandler(interface = 0, resource = dfuResource)
-
 		self._ulpiResource = resource
+		self._dfuResource = dfuResource
 
 	def elaborate(self, platform) -> Module:
 		m = Module()
@@ -89,16 +88,17 @@ class USBInterface(Elaboratable):
 
 		descriptors.add_language_descriptor((LanguageIDs.ENGLISH_US, ))
 		ep0 = device.add_standard_control_endpoint(descriptors)
+		dfuRequestHandler = DFURequestHandler(interface = 0, resource = self._dfuResource)
 		windowsRequestHandler = WindowsRequestHandler(platformDescriptors)
 
 		def stallCondition(setup : SetupPacket):
 			return ~(
 				(setup.type == USBRequestType.STANDARD) |
-				self.dfuRequestHandler.handlerCondition(setup) |
+				dfuRequestHandler.handlerCondition(setup) |
 				windowsRequestHandler.handlerCondition(setup)
 			)
 
-		ep0.add_request_handler(self.dfuRequestHandler)
+		ep0.add_request_handler(dfuRequestHandler)
 		ep0.add_request_handler(windowsRequestHandler)
 		ep0.add_request_handler(StallOnlyRequestHandler(stall_condition = stallCondition))
 
@@ -107,6 +107,6 @@ class USBInterface(Elaboratable):
 			device.connect.eq(1),
 			device.low_speed_only.eq(0),
 			device.full_speed_only.eq(0),
-			warmboot.trigger.eq(self.dfuRequestHandler.triggerReboot),
+			warmboot.trigger.eq(dfuRequestHandler.triggerReboot),
 		]
 		return m
