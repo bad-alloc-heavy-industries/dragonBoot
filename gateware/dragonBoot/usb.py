@@ -54,20 +54,21 @@ class USBInterface(Elaboratable):
 			# 1000mA max.
 			configDesc.bMaxPower = 50
 
-			with configDesc.InterfaceDescriptor() as interfaceDesc:
-				interfaceDesc.bInterfaceNumber = 0
-				interfaceDesc.bAlternateSetting = 0
-				interfaceDesc.bInterfaceClass = InterfaceClassCodes.APPLICATION
-				interfaceDesc.bInterfaceSubclass = ApplicationSubclassCodes.DFU
-				interfaceDesc.bInterfaceProtocol = DFUProtocolCodes.DFU
-				interfaceDesc.iInterface = 'Device Firmware Upgrade interface'
+			for slot in platform.flash.partitions:
+				with configDesc.InterfaceDescriptor() as interfaceDesc:
+					interfaceDesc.bInterfaceNumber = 0
+					interfaceDesc.bAlternateSetting = slot
+					interfaceDesc.bInterfaceClass = InterfaceClassCodes.APPLICATION
+					interfaceDesc.bInterfaceSubclass = ApplicationSubclassCodes.DFU
+					interfaceDesc.bInterfaceProtocol = DFUProtocolCodes.DFU
+					interfaceDesc.iInterface = f'DFU interface for slot {slot}'
 
-				with FunctionalDescriptor(interfaceDesc) as functionalDesc:
-					functionalDesc.bmAttributes = (
-						DFUWillDetach.YES | DFUManifestationTollerant.NO | DFUCanUpload.NO | DFUCanDownload.YES
-					)
-					functionalDesc.wDetachTimeOut = 1000
-					functionalDesc.wTransferSize = platform.flash.erasePageSize
+					with FunctionalDescriptor(interfaceDesc) as functionalDesc:
+						functionalDesc.bmAttributes = (
+							DFUWillDetach.YES | DFUManifestationTollerant.NO | DFUCanUpload.NO | DFUCanDownload.YES
+						)
+						functionalDesc.wDetachTimeOut = 1000
+						functionalDesc.wTransferSize = platform.flash.erasePageSize
 
 		platformDescriptors = PlatformDescriptorCollection()
 		with descriptors.BOSDescriptor() as bos:
