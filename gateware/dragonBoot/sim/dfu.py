@@ -206,5 +206,11 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield from sendDFUGetStatus()
 		yield from receiveData(data = (0, 0, 0, 0, DFUState.downloadSync, 0))
 		yield
+		yield from sendDFUDetach()
+		assert (yield dut.triggerReboot) == 1
+		yield Settle()
+		yield
+		assert (yield dut.triggerReboot) == 1
+		yield
 
 	yield domainUSB, 'usb'
