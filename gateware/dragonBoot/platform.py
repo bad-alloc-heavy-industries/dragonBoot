@@ -10,6 +10,13 @@ __all__ = (
 	'DragonICE40Platform',
 )
 
+sizeSuffixes = {
+	0: 'B',
+	1: 'kiB',
+	2: 'MiB',
+	3: 'GiB',
+}
+
 class Flash:
 	def __init__(self, *, size : int, pageSize : int, erasePageSize : int, eraseCommand : int):
 		self.size = size
@@ -46,6 +53,15 @@ class Flash:
 			}
 			beginAddress += self.slotSize
 		return partitions
+
+	@property
+	def humanSize(self) -> str:
+		size = self.size
+		iters = 0
+		while size > 1024:
+			iters += 1
+			size /= 1024
+		return f'{size}{sizeSuffixes[iters]}'
 
 	def _calculateSlots(self):
 		if isinstance(self._platform, LatticeICE40Platform):

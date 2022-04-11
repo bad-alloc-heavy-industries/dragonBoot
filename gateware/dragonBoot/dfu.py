@@ -10,6 +10,7 @@ from luna.gateware.usb.usb2.request import (
 from luna.gateware.usb.stream import USBInStreamInterface, USBOutStreamInterface
 from luna.gateware.stream.generator import StreamSerializer
 from enum import IntEnum, unique
+import logging
 
 from .flash import SPIFlash
 
@@ -73,6 +74,11 @@ class DFURequestHandler(USBRequestHandler):
 			flash.start.eq(0),
 			flash.finish.eq(0),
 		]
+
+		_flash = platform.flash
+		logging.info(f'Building for a {_flash.humanSize} Flash with {_flash.slots} boot slots')
+		for partition, slot in _flash.partitions.items():
+			logging.info(f'Boot slot {partition} starts at {slot["beginAddress"]:#08x} and finishes at {slot["endAddress"]:#08x}')
 
 		with m.FSM(domain = 'usb', name = 'dfu'):
 			# RESET -- do initial setup of the DFU handler state
