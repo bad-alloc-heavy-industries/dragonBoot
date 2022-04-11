@@ -10,8 +10,10 @@ from luna.gateware.usb.usb2.request import (
 from luna.gateware.usb.stream import USBInStreamInterface, USBOutStreamInterface
 from luna.gateware.stream.generator import StreamSerializer
 from enum import IntEnum, unique
+from typing import Tuple
 import logging
 
+from .platform import Flash
 from .flash import SPIFlash
 
 __all__ = (
@@ -37,7 +39,7 @@ class DFUConfig:
 		self.state = Signal(4, decoder = DFUState)
 
 class DFURequestHandler(USBRequestHandler):
-	def __init__(self, *, interface, resource):
+	def __init__(self, *, interface : int, resource : Tuple[str, int]):
 		super().__init__()
 
 		self._interface = interface
@@ -57,13 +59,14 @@ class DFURequestHandler(USBRequestHandler):
 		receiverCount = Signal.like(setup.length)
 		receiverConsumed = Signal.like(setup.length)
 
+		_flash : Flash = platform.flash
 		config = DFUConfig()
 
 		m.submodules.bitstreamFIFO = bitstreamFIFO = AsyncFIFO(
-			width = 8, depth = platform.flash.erasePageSize, r_domain = 'usb', w_domain = 'usb'
+			width = 8, depth = _flash.erasePageSize, r_domain = 'usb', w_domain = 'usb'
 		)
 		m.submodules.flash = flash = DomainRenamer({'sync': 'usb'})(
-			SPIFlash(resource = self._flashResource, fifo = bitstreamFIFO, flashSize = platform.flash.size)
+			SPIFlash(resource = self._flashResource, fifo = bitstreamFIFO, flashSize = _flash.size)
 		)
 
 		m.submodules.transmitter = transmitter = StreamSerializer(
@@ -75,7 +78,6 @@ class DFURequestHandler(USBRequestHandler):
 			flash.finish.eq(0),
 		]
 
-		_flash = platform.flash
 		logging.info(f'Building for a {_flash.humanSize} Flash with {_flash.slots} boot slots')
 		for partition, slot in _flash.partitions.items():
 			logging.info(f'Boot slot {partition} starts at {slot["beginAddress"]:#08x} and finishes at {slot["endAddress"]:#08x}')
@@ -86,7 +88,7 @@ class DFURequestHandler(USBRequestHandler):
 				m.d.usb += [
 					config.status.eq(DFUStatus.ok),
 					config.state.eq(DFUState.dfuIdle),
-					flash.endAddr.eq(platform.flash.size),
+					flash.endAddr.eq(_flash.size),
 				]
 				m.next = 'IDLE'
 			# IDLE -- no active request being handled
@@ -124,7 +126,7 @@ class DFURequestHandler(USBRequestHandler):
 
 			# HANDLE_DOWNLOAD -- The host is trying to send us some data to program
 			with m.State('HANDLE_DOWNLOAD'):
-				with m.If(setup.is_in_request | (setup.length > platform.flash.erasePageSize)):
+				with m.If(setup.is_in_request | (setup.length > _flash.erasePageSize)):
 					m.next = 'UNHANDLED'
 				with m.Elif(setup.length):
 					m.d.comb += [
