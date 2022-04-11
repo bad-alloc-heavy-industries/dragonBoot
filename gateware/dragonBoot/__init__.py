@@ -1,4 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
+# This must be the first thing done as we otherwise race LUNA and we want to set logging up our way
+from .logging import configureLogging
+configureLogging()
+
 from .platforms.audioInterface import AudioInterfacePlatform
 from .bootloader import DragonBoot
 
