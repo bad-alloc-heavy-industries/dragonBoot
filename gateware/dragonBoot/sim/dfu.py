@@ -7,6 +7,7 @@ from usb_protocol.types import USBRequestType, USBRequestRecipient, USBStandardR
 from usb_protocol.types.descriptors.dfu import DFURequests
 from typing import Tuple, Union
 
+from ..platform import Flash
 from ..dfu import DFURequestHandler, DFUState
 
 bus = Record((
@@ -27,10 +28,15 @@ bus = Record((
 ))
 
 class Platform:
-	flashSize = 512 * 1024
-	flashPageSize = 64
-	erasePageSize = 256
-	eraseCommand = 0x20
+	flash = Flash(
+		size = 512 * 1024,
+		pageSize = 64,
+		erasePageSize = 256,
+		eraseCommand = 0x20
+	)
+
+	flash.slots = 4
+	flash.slotSize = 2 ** 18
 
 	def request(self, name, number, xdr = None):
 		assert name == 'flash'

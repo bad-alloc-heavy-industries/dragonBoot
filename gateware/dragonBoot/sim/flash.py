@@ -5,6 +5,7 @@ from amaranth.lib.fifo import AsyncFIFO
 from amaranth.hdl.rec import DIR_FANOUT, DIR_FANIN
 from amaranth.sim import Simulator, Settle
 
+from ..platform import Flash
 from ..flash import SPIFlash
 from .dfu import dfuData
 
@@ -26,9 +27,12 @@ bus = Record((
 ))
 
 class Platform:
-	flashPageSize = 64
-	erasePageSize = 256
-	eraseCommand = 0x20
+	flash = Flash(
+		size = 512 * 1024,
+		pageSize = 64,
+		erasePageSize = 256,
+		eraseCommand = 0x20
+	)
 
 	def request(self, name, number, xdr = None):
 		assert name == 'flash'
@@ -39,7 +43,7 @@ class Platform:
 
 class DUT(Elaboratable):
 	def __init__(self, *, resource, flashSize):
-		self._fifo = AsyncFIFO(width = 8, depth = Platform.erasePageSize, r_domain = 'sync', w_domain = 'usb')
+		self._fifo = AsyncFIFO(width = 8, depth = Platform.flash.erasePageSize, r_domain = 'sync', w_domain = 'usb')
 		self._flash = SPIFlash(resource = resource, fifo = self._fifo, flashSize = flashSize)
 
 		self.fillFIFO = False
