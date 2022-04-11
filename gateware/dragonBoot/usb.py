@@ -68,7 +68,7 @@ class USBInterface(Elaboratable):
 						DFUWillDetach.YES | DFUManifestationTollerant.NO | DFUCanUpload.NO | DFUCanDownload.YES
 					)
 					functionalDesc.wDetachTimeOut = 1000
-					functionalDesc.wTransferSize = platform.erasePageSize
+					functionalDesc.wTransferSize = platform.flash.erasePageSize
 
 		platformDescriptors = PlatformDescriptorCollection()
 		with descriptors.BOSDescriptor() as bos:

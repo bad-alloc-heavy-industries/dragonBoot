@@ -46,7 +46,7 @@ class SPIFlash(Elaboratable):
 		enableStep = Signal(range(4))
 		processStep = Signal(range(7))
 		writeTrigger = Signal()
-		writeCount = Signal(range(platform.flashPageSize + 1))
+		writeCount = Signal(range(platform.flash.pageSize + 1))
 		byteCount = Signal.like(self.byteCount)
 
 		m.d.comb += [
@@ -102,7 +102,7 @@ class SPIFlash(Elaboratable):
 					with m.Case(1):
 						m.d.comb += [
 							flash.xfer.eq(1),
-							flash.w_data.eq(platform.eraseCommand),
+							flash.w_data.eq(platform.flash.eraseCommand),
 						]
 						m.d.sync += processStep.eq(2)
 					with m.Case(2):
@@ -134,7 +134,7 @@ class SPIFlash(Elaboratable):
 							]
 					with m.Case(6):
 						m.d.sync += [
-							self.eraseAddr.eq(self.eraseAddr + platform.erasePageSize),
+							self.eraseAddr.eq(self.eraseAddr + platform.flash.erasePageSize),
 							processStep.eq(0),
 						]
 						m.next = 'ERASE_WAIT'
@@ -223,7 +223,7 @@ class SPIFlash(Elaboratable):
 							writeCount.eq(writeCount + 1),
 							byteCount.eq(byteCount - 1),
 						]
-						with m.If((writeCount == platform.flashPageSize - 1) | (byteCount == 1)):
+						with m.If((writeCount == platform.flash.pageSize - 1) | (byteCount == 1)):
 							m.next = 'WRITE_FINISH'
 					with m.Else():
 						m.next = 'DATA_WAIT'

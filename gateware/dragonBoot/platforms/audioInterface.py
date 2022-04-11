@@ -1,12 +1,13 @@
-from amaranth.vendor.lattice_ice40 import LatticeICE40Platform
+# SPDX-License-Identifier: BSD-3-Clause
 from amaranth.build import Resource, Pins, Clock, Attrs
 from amaranth_boards.resources.interface import SPIResource, ULPIResource
+from ..platform import DragonICE40Platform, Flash
 
 __all__ = (
 	'AudioInterfacePlatform',
 )
 
-class AudioInterfacePlatform(LatticeICE40Platform):
+class AudioInterfacePlatform(DragonICE40Platform):
 	device = 'iCE40HX8K'
 	package = 'BG121'
 	toolchain = 'IceStorm'
@@ -46,10 +47,12 @@ class AudioInterfacePlatform(LatticeICE40Platform):
 
 	connectors = []
 
-	flashSize = 512 * 1024
-	flashPageSize = 256
-	erasePageSize = 4096
-	eraseCommand = 0x20
+	flash = Flash(
+		size = 512 * 1024,
+		pageSize = 256,
+		erasePageSize = 4096,
+		eraseCommand = 0x20
+	)
 
 	def build(self, elaboratable, name = 'top', build_dir = 'build', do_build = True,
 		program_opts = None, do_program = False, **kwargs):
