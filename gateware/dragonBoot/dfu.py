@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth import Module, Signal, Record, DomainRenamer, Cat
+from amaranth import Module, Signal, DomainRenamer, Cat, Memory, Const
 from amaranth.hdl.rec import DIR_FANOUT
 from amaranth.lib.fifo import AsyncFIFO
 from usb_protocol.types import USBRequestType, USBRequestRecipient, USBStandardRequests
@@ -10,6 +10,7 @@ from luna.gateware.usb.usb2.request import (
 from luna.gateware.usb.stream import USBInStreamInterface, USBOutStreamInterface
 from luna.gateware.stream.generator import StreamSerializer
 from enum import IntEnum, unique
+from struct import pack as structPack, unpack as structUnpack
 from typing import Tuple
 import logging
 
@@ -73,6 +74,8 @@ class DFURequestHandler(USBRequestHandler):
 		m.submodules.transmitter = transmitter = StreamSerializer(
 			data_length = 6, domain = 'usb', stream_type = USBInStreamInterface, max_length_width = 3
 		)
+		slotROM = self.generateROM(_flash)
+		m.submodules.slots = slots = slotROM.read_port(domain = 'usb', transparent = False)
 
 		m.d.comb += [
 			flash.start.eq(0),
@@ -85,9 +88,9 @@ class DFURequestHandler(USBRequestHandler):
 				m.d.usb += [
 					config.status.eq(DFUStatus.ok),
 					config.state.eq(DFUState.dfuIdle),
-					flash.endAddr.eq(_flash.size),
+					slot.eq(0),
 				]
-				m.next = 'IDLE'
+				m.next = 'READ_SLOT_DATA'
 			# IDLE -- no active request being handled
 			with m.State('IDLE'):
 				# If we've received a new setup packet
@@ -261,7 +264,7 @@ class DFURequestHandler(USBRequestHandler):
 				# Copy the value once we get back an ACK from the ZLP
 				with m.If(interface.handshakes_in.ack):
 					m.d.usb += slot.eq(setup.value[0:8])
-					m.next = 'IDLE'
+					m.next = 'READ_SLOT_DATA'
 
 			# UNHANDLED -- we've received a request we don't know how to handle
 			with m.State('UNHANDLED'):
@@ -270,6 +273,22 @@ class DFURequestHandler(USBRequestHandler):
 				with m.If(interface.data_requested | interface.status_requested):
 					m.d.comb += interface.handshakes_out.stall.eq(1)
 					m.next = 'IDLE'
+
+			# READ_SLOT_DATA -- Begin reading the slot data for the newly selected slot
+			with m.State('READ_SLOT_DATA'):
+				m.d.comb += slots.addr.eq(Cat(Const(0, 1), slot))
+				m.next = 'READ_SLOT_BEGIN'
+
+			# READ_SLOT_BEGIN -- Read the begin address for the newly selected slot
+			with m.State('READ_SLOT_BEGIN'):
+				m.d.comb += slots.addr.eq(Cat(Const(1, 1), slot))
+				m.d.usb += flash.beginAddr.eq(slots.data)
+				m.next = 'READ_SLOT_END'
+
+			# READ_SLOT_BEGIN -- Read the end address for the newly selected slot
+			with m.State('READ_SLOT_END'):
+				m.d.usb += flash.endAddr.eq(slots.data)
+				m.next = 'IDLE'
 
 		m.d.comb += [
 			receiverDone.eq(0),
@@ -318,3 +337,17 @@ class DFURequestHandler(USBRequestHandler):
 		for partition, slot in flash.partitions.items():
 			logging.info(f'Boot slot {partition} starts at {slot["beginAddress"]:#08x} and finishes at {slot["endAddress"]:#08x}')
 
+	def generateROM(self, flash : Flash):
+		# 4 bytes per address, 2 addresses per slot (but the highest byte of each address will get truncated off)
+		totalSize = flash.slots * 8
+		rom = bytearray(totalSize)
+		romAddress = 0
+		for partition in range(flash.slots):
+			slot = flash.partitions[partition]
+			addressRange = structPack('>II', slot['beginAddress'], slot['endAddress'])
+			rom[romAddress:romAddress + 8] = addressRange
+			romAddress += 8
+
+		romEntries = (rom[i:i + 4] for i in range(0, totalSize, 4))
+		initialiser = [structUnpack('>I', romEntry)[0] for romEntry in romEntries]
+		return Memory(width = 24, depth = flash.slots * 2, init = initialiser)
