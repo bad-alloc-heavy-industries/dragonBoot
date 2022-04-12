@@ -61,6 +61,7 @@ class DFURequestHandler(USBRequestHandler):
 
 		_flash : Flash = platform.flash
 		config = DFUConfig()
+		self.printSlotInfo(_flash)
 
 		m.submodules.bitstreamFIFO = bitstreamFIFO = AsyncFIFO(
 			width = 8, depth = _flash.erasePageSize, r_domain = 'usb', w_domain = 'usb'
@@ -68,7 +69,6 @@ class DFURequestHandler(USBRequestHandler):
 		m.submodules.flash = flash = DomainRenamer({'sync': 'usb'})(
 			SPIFlash(resource = self._flashResource, fifo = bitstreamFIFO, flashSize = _flash.size)
 		)
-
 		m.submodules.transmitter = transmitter = StreamSerializer(
 			data_length = 6, domain = 'usb', stream_type = USBInStreamInterface, max_length_width = 3
 		)
@@ -77,10 +77,6 @@ class DFURequestHandler(USBRequestHandler):
 			flash.start.eq(0),
 			flash.finish.eq(0),
 		]
-
-		logging.info(f'Building for a {_flash.humanSize} Flash with {_flash.slots} boot slots')
-		for partition, slot in _flash.partitions.items():
-			logging.info(f'Boot slot {partition} starts at {slot["beginAddress"]:#08x} and finishes at {slot["endAddress"]:#08x}')
 
 		with m.FSM(domain = 'usb', name = 'dfu'):
 			# RESET -- do initial setup of the DFU handler state
@@ -278,3 +274,9 @@ class DFURequestHandler(USBRequestHandler):
 			(setup.recipient == USBRequestRecipient.INTERFACE) &
 			(setup.index == self._interface)
 		)
+
+	def printSlotInfo(self, flash : Flash):
+		logging.info(f'Building for a {flash.humanSize} Flash with {flash.slots} boot slots')
+		for partition, slot in flash.partitions.items():
+			logging.info(f'Boot slot {partition} starts at {slot["beginAddress"]:#08x} and finishes at {slot["endAddress"]:#08x}')
+
