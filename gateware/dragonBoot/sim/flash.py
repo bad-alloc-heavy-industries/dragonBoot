@@ -51,10 +51,12 @@ class DUT(Elaboratable):
 		self.start = self._flash.start
 		self.finish = self._flash.finish
 		self.done = self._flash.done
+		self.resetAddrs = self._flash.resetAddrs
+		self.beginAddr = self._flash.beginAddr
+		self.endAddr = self._flash.endAddr
 		self.readAddr = self._flash.readAddr
 		self.eraseAddr = self._flash.eraseAddr
 		self.writeAddr = self._flash.writeAddr
-		self.endAddr = self._flash.endAddr
 		self.byteCount = self._flash.byteCount
 
 	def elaborate(self, platform):
@@ -106,7 +108,15 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 			yield
 
 	def domainSync():
+		yield dut.beginAddr.eq(0)
 		yield dut.endAddr.eq(4096)
+		yield Settle()
+		yield
+		yield dut.resetAddrs.eq(1)
+		yield Settle()
+		yield
+		yield dut.resetAddrs.eq(0)
+		yield Settle()
 		yield
 		yield dut.start.eq(1)
 		yield dut.byteCount.eq(len(dfuData))

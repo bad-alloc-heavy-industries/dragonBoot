@@ -80,6 +80,7 @@ class DFURequestHandler(USBRequestHandler):
 		m.d.comb += [
 			flash.start.eq(0),
 			flash.finish.eq(0),
+			flash.resetAddrs.eq(0),
 		]
 
 		with m.FSM(domain = 'usb', name = 'dfu'):
@@ -288,6 +289,7 @@ class DFURequestHandler(USBRequestHandler):
 			# READ_SLOT_BEGIN -- Read the end address for the newly selected slot
 			with m.State('READ_SLOT_END'):
 				m.d.usb += flash.endAddr.eq(slots.data)
+				m.d.comb += flash.resetAddrs.eq(1)
 				m.next = 'IDLE'
 
 		m.d.comb += [

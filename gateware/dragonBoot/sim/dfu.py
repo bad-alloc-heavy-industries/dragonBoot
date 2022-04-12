@@ -188,6 +188,8 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 	def domainUSB():
 		yield
 		yield
+		yield
+		yield
 		yield from sendDFUGetStatus()
 		yield from receiveData(data = (0, 0, 0, 0, DFUState.dfuIdle, 0))
 		yield from sendDFUDownload()

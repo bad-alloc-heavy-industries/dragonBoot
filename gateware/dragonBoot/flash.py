@@ -31,11 +31,14 @@ class SPIFlash(Elaboratable):
 		self.start = Signal()
 		self.done = Signal()
 		self.finish = Signal()
+		self.resetAddrs = Signal()
+		self.beginAddr = Signal(24)
+		self.endAddr = Signal(24)
+		self.byteCount = Signal(24)
+
 		self.readAddr = Signal(24)
 		self.eraseAddr = Signal(24)
 		self.writeAddr = Signal(24)
-		self.endAddr = Signal(24)
-		self.byteCount = Signal(24)
 
 	def elaborate(self, platform) -> Module:
 		m = Module()
@@ -61,6 +64,12 @@ class SPIFlash(Elaboratable):
 					enableStep.eq(0),
 					processStep.eq(0),
 				]
+				with m.If(self.resetAddrs):
+					m.d.sync += [
+						self.readAddr.eq(self.beginAddr),
+						self.eraseAddr.eq(self.beginAddr),
+						self.writeAddr.eq(self.beginAddr),
+					]
 				with m.If(self.start):
 					m.d.sync += [
 						op.eq(SPIFlashOp.erase),
