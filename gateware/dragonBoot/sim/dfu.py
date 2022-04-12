@@ -104,9 +104,9 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield from setupReceived()
 
 	def sendSetupSetInterface():
-		# setup packet for interface 1
+		# setup packet for interface 0
 		yield from sendSetup(type = USBRequestType.STANDARD, retrieve = False,
-			request = USBStandardRequests.SET_INTERFACE, value = (1, 0), index = (1, 0), length = 0)
+			request = USBStandardRequests.SET_INTERFACE, value = (1, 0), index = (0, 0), length = 0)
 
 	def sendDFUDetach():
 		yield from sendSetup(type = USBRequestType.CLASS, retrieve = False,
@@ -185,6 +185,24 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		assert (yield interface.handshakes_out.ack) == 0
 		return result
 
+	def receiveZLP():
+		assert (yield tx.valid) == 0
+		assert (yield tx.last) == 0
+		yield interface.status_requested.eq(1)
+		yield Settle()
+		yield
+		assert (yield tx.valid) == 1
+		assert (yield tx.last) == 1
+		yield interface.status_requested.eq(0)
+		yield interface.handshakes_in.ack.eq(1)
+		yield Settle()
+		yield
+		assert (yield tx.valid) == 0
+		assert (yield tx.last) == 0
+		yield interface.handshakes_in.ack.eq(0)
+		yield Settle()
+		yield
+
 	def domainUSB():
 		yield
 		yield
@@ -192,6 +210,11 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield
 		yield from sendDFUGetStatus()
 		yield from receiveData(data = (0, 0, 0, 0, DFUState.dfuIdle, 0))
+		yield from sendSetupSetInterface()
+		yield from receiveZLP()
+		yield
+		yield
+		yield
 		yield from sendDFUDownload()
 		yield from sendData(data = dfuData)
 		yield from sendDFUGetStatus()
