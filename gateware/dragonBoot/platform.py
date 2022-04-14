@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # If you're looking for the target platforms this bootloader can be built for, look in platforms/
 from amaranth.build import Platform
+from amaranth.build.run import BuildPlan
 from amaranth.vendor.lattice_ice40 import LatticeICE40Platform
 from abc import abstractmethod
 from typing import Dict, Type
@@ -45,13 +46,17 @@ class Flash:
 	@property
 	def partitions(self) -> Dict[int, Dict[str, int]]:
 		partitions = {}
-		beginAddress = 0
+		beginAddress = self.erasePageSize
 		for slot in range(self.slots):
+			endAddress = self.slotSize if slot == 0 else beginAddress + self.slotSize
 			partitions[slot] = {
 				'beginAddress': beginAddress,
-				'endAddress': beginAddress + self.slotSize
+				'endAddress': endAddress
 			}
-			beginAddress += self.slotSize
+			if slot == 0:
+				beginAddress = self.slotSize
+			else:
+				beginAddress += self.slotSize
 		return partitions
 
 	@property
@@ -90,3 +95,42 @@ class DragonICE40Platform(LatticeICE40Platform):
 	def __init__(self, toolchain = 'IceStorm'):
 		super().__init__(toolchain = toolchain)
 		self.flash.platform(self)
+		self._icestorm_command_templates[2] = (
+			r"""
+			{{invoke_tool("icepack")}}
+				{{verbose("-v")}}
+				{{name}}.asc
+				{{name}}.boot.bin
+			"""
+		)
+		self._icestorm_required_tools.append("cat")
+		self._icestorm_command_templates.append(
+			r"""
+			{{invoke_tool("cat")}}
+				{{name}}.slots.bin
+				{{name}}.boot.bin
+				> {{name}}.bin
+			"""
+		)
+
+	def build(self, elaboratable, name = "top", build_dir = "build", do_build = True,
+		program_opts = None, do_program = False, **kwargs
+	):
+		plan : BuildPlan = super().build(elaboratable, name, build_dir, False, program_opts, do_program, **kwargs)
+		if not do_build:
+			return plan
+
+		plan.add_file(f'{name}.slots.bin', self.buildSlots())
+
+		products = plan.execute_local(build_dir)
+		if not do_program:
+			return products
+
+		self.toolchain_program(products, name, **(program_opts or {}))
+
+	def buildSlots(self):
+		slotConfig = bytearray(self.flash.erasePageSize)
+		configBytes = 0
+		for byte in range(configBytes, self.flash.erasePageSize):
+			slotConfig[byte] = 0xFF
+		return bytes(slotConfig)
