@@ -129,8 +129,10 @@ class DragonICE40Platform(LatticeICE40Platform):
 		self.toolchain_program(products, name, **(program_opts or {}))
 
 	def buildSlots(self):
+		from .ice40 import Slots
 		slotConfig = bytearray(self.flash.erasePageSize)
-		configBytes = 0
-		for byte in range(configBytes, self.flash.erasePageSize):
+		slots = Slots(self.flash).build()
+		slotConfig[0:len(slots)] = slots
+		for byte in range(len(slots), self.flash.erasePageSize):
 			slotConfig[byte] = 0xFF
 		return bytes(slotConfig)
