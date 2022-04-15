@@ -28,9 +28,9 @@ class AudioInterfacePlatform(DragonICE40Platform):
 			copi = 'K9',
 			cipo = 'J9',
 			cs_n = 'K10',
+			role = 'controller',
 			attrs = Attrs(IO_STANDARD = 'SB_LVCMOS')
 		),
-		# A7 is the internal config interface, E11 is the DAC's
 
 		ULPIResource(
 			'ulpi', 0,
