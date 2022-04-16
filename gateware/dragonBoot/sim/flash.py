@@ -11,9 +11,7 @@ from .dfu import dfuData
 
 bus = Record((
 	('clk', [
-		('o0', 1, DIR_FANOUT),
-		('o1', 1, DIR_FANOUT),
-		('o_clk', 1, DIR_FANOUT),
+		('o', 1, DIR_FANOUT),
 	]),
 	('cs', [
 		('o', 1, DIR_FANOUT),
@@ -34,11 +32,9 @@ class Platform:
 		eraseCommand = 0x20
 	)
 
-	def request(self, name, number, xdr = None):
+	def request(self, name, number):
 		assert name == 'flash'
 		assert number == 0
-		assert xdr is not None
-		assert xdr['clk'] == 2
 		return bus
 
 class DUT(Elaboratable):
@@ -73,43 +69,52 @@ class DUT(Elaboratable):
 def spiFlash(sim : Simulator, dut : SPIFlash):
 	fifo = dut._fifo
 
-	def spiTransact(copi = None, cipo = None, partial = False, completion = False):
+	def spiTransact(copi = None, cipo = None, partial = False, continuation = False):
 		if copi is not None and cipo is not None:
 			assert len(copi) == len(cipo)
 		bytes = max(0 if copi is None else len(copi), 0 if cipo is None else len(cipo))
+		assert (yield bus.clk.o) == 1
+		assert (yield bus.cs.o) == (1 if continuation else 0)
 		yield Settle()
-		assert (yield bus.clk.o0) == 0
 		yield
-		yield Settle()
-		assert (yield bus.clk.o0) == 1
+		assert (yield bus.clk.o) == 1
 		assert (yield bus.cs.o) == 1
-		yield
 		yield Settle()
+		yield
 		for byte in range(bytes):
 			for bit in range(8):
-				assert (yield bus.clk.o0) == (0 if bit == 7 else 1)
+				assert (yield bus.clk.o) == 0
 				if copi is not None and copi[byte] is not None:
 					assert (yield bus.copi.o) == ((copi[byte] << bit) & 0x80) >> 7
 				assert (yield bus.cs.o) == 1
 				if cipo is not None and cipo[byte] is not None:
 					yield bus.cipo.i.eq(((cipo[byte] << bit) & 0x80) >> 7)
-				yield
 				yield Settle()
+				yield
+				assert (yield bus.clk.o) == 1
+				assert (yield bus.cs.o) == 1
+				yield Settle()
+				yield
 			if cipo is not None and cipo[byte] is not None:
 				yield bus.cipo.i.eq(0)
-			if byte < bytes - 1 or not partial:
-				yield
-				assert (yield bus.clk.o0) == (1 if byte < bytes - 1 else 0)
+			if byte < bytes - 1:# or not partial:
+				assert (yield bus.clk.o) == 1
+				assert (yield bus.cs.o) == 1
 				yield Settle()
+				yield
+		assert (yield dut.done) == 0
 		if not partial:
-			if completion:
-				assert (yield dut.done) == 1
+			assert (yield bus.clk.o) == 1
 			assert (yield bus.cs.o) == 0
+			yield Settle()
 			yield
 
 	def domainSync():
 		yield dut.beginAddr.eq(0)
 		yield dut.endAddr.eq(4096)
+		yield from spiTransact(copi = (0xAB,))
+		yield Settle()
+		yield
 		yield Settle()
 		yield
 		yield dut.resetAddrs.eq(1)
@@ -125,10 +130,10 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		assert (yield dut.readAddr) == 0
 		assert (yield dut.eraseAddr) == 0
 		assert (yield dut.writeAddr) == 0
+		assert (yield bus.cs.o) == 0
 		yield dut.start.eq(0)
 		yield dut.byteCount.eq(0)
 		yield Settle()
-		assert (yield bus.cs.o) == 0
 		yield
 		yield from spiTransact(copi = (0x06,))
 		yield from spiTransact(copi = (0x20, 0x00, 0x00, 0x00))
@@ -141,47 +146,54 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x00), partial = True)
 		yield
 		assert (yield bus.cs.o) == 1
-		assert (yield bus.clk.o0) == 0
-		yield Settle()
+		assert (yield bus.clk.o) == 1
 		assert (yield fifo.r_rdy) == 0
 		assert (yield bus.cs.o) == 1
-		assert (yield bus.clk.o0) == 0
+		assert (yield bus.clk.o) == 1
+		yield Settle()
 		yield
 		assert (yield fifo.r_rdy) == 0
+		assert (yield bus.cs.o) == 1
+		assert (yield bus.clk.o) == 1
 		dut.fillFIFO = True
 		for _ in range(5):
 			yield Settle()
 			yield
-		yield from spiTransact(copi = dfuData[0:64])
+			assert (yield bus.cs.o) == 1
+			assert (yield bus.clk.o) == 1
+		yield from spiTransact(copi = dfuData[0:64], continuation = True)
 		assert (yield dut.writeAddr) == 64
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
 		yield from spiTransact(copi = (0x06,))
 		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x40), partial = True)
-		yield from spiTransact(copi = dfuData[64:128])
+		yield from spiTransact(copi = dfuData[64:128], continuation = True)
 		assert (yield dut.writeAddr) == 128
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
 		yield from spiTransact(copi = (0x06,))
 		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x80), partial = True)
-		yield from spiTransact(copi = dfuData[128:192])
+		yield from spiTransact(copi = dfuData[128:192], continuation = True)
 		assert (yield dut.writeAddr) == 192
 		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
 		yield from spiTransact(copi = (0x06,))
 		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0xC0), partial = True)
-		yield from spiTransact(copi = dfuData[192:256])
+		yield from spiTransact(copi = dfuData[192:256], continuation = True)
 		assert (yield dut.writeAddr) == 256
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00), completion = True)
+		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
-		yield Settle()
 		assert (yield dut.done) == 1
 		yield dut.finish.eq(1)
-		yield
 		yield Settle()
-		assert (yield dut.done) == 0
+		yield
+		assert (yield dut.done) == 1
 		yield dut.finish.eq(0)
+		yield Settle()
+		yield
+		assert (yield dut.done) == 0
+		yield Settle()
 		yield
 		yield Settle()
 		yield

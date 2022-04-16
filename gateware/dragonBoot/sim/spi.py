@@ -8,9 +8,7 @@ from ..spi import SPIBus
 
 bus = Record((
 	('clk', [
-		('o0', 1, DIR_FANOUT),
-		('o1', 1, DIR_FANOUT),
-		('o_clk', 1, DIR_FANOUT),
+		('o', 1, DIR_FANOUT),
 	]),
 	('cs', [
 		('o', 1, DIR_FANOUT),
@@ -26,11 +24,9 @@ bus = Record((
 class Platform:
 	flashSize = 512 * 1024
 
-	def request(self, name, number, xdr = None):
+	def request(self, name, number):
 		assert name == 'flash'
 		assert number == 0
-		assert xdr is not None
-		assert xdr['clk'] == 2
 		return bus
 
 @sim_case(
@@ -40,35 +36,47 @@ class Platform:
 )
 def spiBus(sim : Simulator, dut : SPIBus):
 	def sendRecv(dataOut, dataIn, overlap = False):
+		assert (yield bus.clk.o) == 1
 		yield dut.w_data.eq(dataOut)
 		yield dut.xfer.eq(1)
 		yield Settle()
 		yield
+		assert (yield bus.clk.o) == 1
 		yield dut.xfer.eq(0)
 		yield Settle()
 		yield
 		for bit in range(8):
+			assert (yield bus.clk.o) == 1
 			yield bus.cipo.i.eq((dataIn >> (7 - bit)) & 1)
 			yield Settle()
 			yield
+			assert (yield bus.clk.o) == 0
 			assert (yield bus.copi.o) == (dataOut >> (7 - bit)) & 1
+			yield Settle()
+			yield
+		assert (yield bus.clk.o) == 1
 		assert (yield dut.done) == 1
 		if not overlap:
-			yield
 			yield Settle()
+			yield
+			assert (yield bus.clk.o) == 1
 			assert (yield dut.done) == 0
 			assert (yield dut.r_data) == dataIn
+		yield Settle()
 
 	def domainSync():
 		yield
+		assert (yield bus.clk.o) == 1
 		yield dut.cs.eq(1)
 		yield Settle()
 		yield
 		yield from sendRecv(0x0F, 0xF0)
 		yield
+		assert (yield bus.clk.o) == 1
 		yield dut.cs.eq(0)
 		yield Settle()
 		yield
+		assert (yield bus.clk.o) == 1
 		yield dut.cs.eq(1)
 		yield Settle()
 		yield

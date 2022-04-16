@@ -12,9 +12,7 @@ from ..dfu import DFURequestHandler, DFUState
 
 bus = Record((
 	('clk', [
-		('o0', 1, DIR_FANOUT),
-		('o1', 1, DIR_FANOUT),
-		('o_clk', 1, DIR_FANOUT),
+		('o', 1, DIR_FANOUT),
 	]),
 	('cs', [
 		('o', 1, DIR_FANOUT),
@@ -38,11 +36,9 @@ class Platform:
 	flash.slots = 4
 	flash.slotSize = 2 ** 18
 
-	def request(self, name, number, xdr = None):
+	def request(self, name, number):
 		assert name == 'flash'
 		assert number == 0
-		assert xdr is not None
-		assert xdr['clk'] == 2
 		return bus
 
 dfuData = (
@@ -206,6 +202,8 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 	def domainUSB():
 		yield
 		yield
+		while (yield bus.cs.o) == 1:
+			yield
 		yield
 		yield
 		yield from sendDFUGetStatus()
