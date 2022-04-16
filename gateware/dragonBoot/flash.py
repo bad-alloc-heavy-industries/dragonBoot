@@ -46,12 +46,12 @@ class SPIFlash(Elaboratable):
 		fifo = self._fifo
 
 		op = Signal(SPIFlashOp, reset = SPIFlashOp.none)
-		enableStep = Signal(range(4))
-		eraseCmdStep = Signal(range(7))
-		eraseWaitStep = Signal(range(5))
-		writeCmdStep = Signal(range(6))
+		enableStep = Signal(range(3))
+		eraseCmdStep = Signal(range(6))
+		eraseWaitStep = Signal(range(4))
+		writeCmdStep = Signal(range(5))
 		writeFinishStep = Signal(range(2))
-		writeWaitStep = Signal(range(5))
+		writeWaitStep = Signal(range(4))
 		writeTrigger = Signal()
 		writeCount = Signal(range(platform.flash.pageSize + 1))
 		byteCount = Signal.like(self.byteCount)
@@ -87,23 +87,21 @@ class SPIFlash(Elaboratable):
 			with m.State('WRITE_ENABLE'):
 				with m.Switch(enableStep):
 					with m.Case(0):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							flash.w_data.eq(SPIFlashCmd.writeEnable),
+						]
 						m.d.sync += [
 							flash.cs.eq(1),
 							enableStep.eq(1),
 						]
 					with m.Case(1):
-						m.d.comb += [
-							flash.xfer.eq(1),
-							flash.w_data.eq(SPIFlashCmd.writeEnable),
-						]
-						m.d.sync += enableStep.eq(2)
-					with m.Case(2):
 						with m.If(flash.done):
 							m.d.sync += [
 								flash.cs.eq(0),
-								enableStep.eq(3),
+								enableStep.eq(2),
 							]
-					with m.Case(3):
+					with m.Case(2):
 						m.d.sync += enableStep.eq(0)
 						with m.If(op == SPIFlashOp.erase):
 							m.next = 'ERASE_CMD'
@@ -112,44 +110,42 @@ class SPIFlash(Elaboratable):
 			with m.State('ERASE_CMD'):
 				with m.Switch(eraseCmdStep):
 					with m.Case(0):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							flash.w_data.eq(platform.flash.eraseCommand),
+						]
 						m.d.sync += [
 							flash.cs.eq(1),
 							eraseCmdStep.eq(1),
 						]
 					with m.Case(1):
-						m.d.comb += [
-							flash.xfer.eq(1),
-							flash.w_data.eq(platform.flash.eraseCommand),
-						]
-						m.d.sync += eraseCmdStep.eq(2)
-					with m.Case(2):
 						with m.If(flash.done):
 							m.d.comb += [
 								flash.xfer.eq(1),
 								flash.w_data.eq(self.eraseAddr[16:24]),
+							]
+							m.d.sync += eraseCmdStep.eq(2)
+					with m.Case(2):
+						with m.If(flash.done):
+							m.d.comb += [
+								flash.xfer.eq(1),
+								flash.w_data.eq(self.eraseAddr[8:16]),
 							]
 							m.d.sync += eraseCmdStep.eq(3)
 					with m.Case(3):
 						with m.If(flash.done):
 							m.d.comb += [
 								flash.xfer.eq(1),
-								flash.w_data.eq(self.eraseAddr[8:16]),
+								flash.w_data.eq(self.eraseAddr[0:8]),
 							]
 							m.d.sync += eraseCmdStep.eq(4)
 					with m.Case(4):
 						with m.If(flash.done):
-							m.d.comb += [
-								flash.xfer.eq(1),
-								flash.w_data.eq(self.eraseAddr[0:8]),
-							]
-							m.d.sync += eraseCmdStep.eq(5)
-					with m.Case(5):
-						with m.If(flash.done):
 							m.d.sync += [
 								flash.cs.eq(0),
-								eraseCmdStep.eq(6),
+								eraseCmdStep.eq(5),
 							]
-					with m.Case(6):
+					with m.Case(5):
 						m.d.sync += [
 							self.eraseAddr.eq(self.eraseAddr + platform.flash.erasePageSize),
 							eraseCmdStep.eq(0),
@@ -158,30 +154,28 @@ class SPIFlash(Elaboratable):
 			with m.State('ERASE_WAIT'):
 				with m.Switch(eraseWaitStep):
 					with m.Case(0):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							flash.w_data.eq(SPIFlashCmd.readStatus),
+						]
 						m.d.sync += [
 							flash.cs.eq(1),
 							eraseWaitStep.eq(1),
 						]
 					with m.Case(1):
-						m.d.comb += [
-							flash.xfer.eq(1),
-							flash.w_data.eq(SPIFlashCmd.readStatus),
-						]
-						m.d.sync += eraseWaitStep.eq(2)
-					with m.Case(2):
 						with m.If(flash.done):
 							m.d.comb += [
 								flash.xfer.eq(1),
 								flash.w_data.eq(0),
 							]
-							m.d.sync += eraseWaitStep.eq(3)
-					with m.Case(3):
+							m.d.sync += eraseWaitStep.eq(2)
+					with m.Case(2):
 						with m.If(flash.done):
 							m.d.sync += [
 								flash.cs.eq(0),
-								eraseWaitStep.eq(4),
+								eraseWaitStep.eq(3),
 							]
-					with m.Case(4):
+					with m.Case(3):
 						m.d.sync += eraseWaitStep.eq(0)
 						with m.If(~flash.r_data[0]):
 							with m.If((self.writeAddr + byteCount) <= self.endAddr):
@@ -190,38 +184,36 @@ class SPIFlash(Elaboratable):
 			with m.State('WRITE_CMD'):
 				with m.Switch(writeCmdStep):
 					with m.Case(0):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							flash.w_data.eq(SPIFlashCmd.pageProgram),
+						]
 						m.d.sync += [
 							flash.cs.eq(1),
 							writeCmdStep.eq(1),
 						]
 					with m.Case(1):
-						m.d.comb += [
-							flash.xfer.eq(1),
-							flash.w_data.eq(SPIFlashCmd.pageProgram),
-						]
-						m.d.sync += writeCmdStep.eq(2)
-					with m.Case(2):
 						with m.If(flash.done):
 							m.d.comb += [
 								flash.xfer.eq(1),
 								flash.w_data.eq(self.writeAddr[16:24]),
+							]
+							m.d.sync += writeCmdStep.eq(2)
+					with m.Case(2):
+						with m.If(flash.done):
+							m.d.comb += [
+								flash.xfer.eq(1),
+								flash.w_data.eq(self.writeAddr[8:16]),
 							]
 							m.d.sync += writeCmdStep.eq(3)
 					with m.Case(3):
 						with m.If(flash.done):
 							m.d.comb += [
 								flash.xfer.eq(1),
-								flash.w_data.eq(self.writeAddr[8:16]),
+								flash.w_data.eq(self.writeAddr[0:8]),
 							]
 							m.d.sync += writeCmdStep.eq(4)
 					with m.Case(4):
-						with m.If(flash.done):
-							m.d.comb += [
-								flash.xfer.eq(1),
-								flash.w_data.eq(self.writeAddr[0:8]),
-							]
-							m.d.sync += writeCmdStep.eq(5)
-					with m.Case(5):
 						with m.If(flash.done):
 							m.d.sync += [
 								writeTrigger.eq(1),
@@ -266,30 +258,28 @@ class SPIFlash(Elaboratable):
 			with m.State('WRITE_WAIT'):
 				with m.Switch(writeWaitStep):
 					with m.Case(0):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							flash.w_data.eq(SPIFlashCmd.readStatus),
+						]
 						m.d.sync += [
 							flash.cs.eq(1),
 							writeWaitStep.eq(1),
 						]
 					with m.Case(1):
-						m.d.comb += [
-							flash.xfer.eq(1),
-							flash.w_data.eq(SPIFlashCmd.readStatus),
-						]
-						m.d.sync += writeWaitStep.eq(2)
-					with m.Case(2):
 						with m.If(flash.done):
 							m.d.comb += [
 								flash.xfer.eq(1),
 								flash.w_data.eq(0),
 							]
-							m.d.sync += writeWaitStep.eq(3)
-					with m.Case(3):
+							m.d.sync += writeWaitStep.eq(2)
+					with m.Case(2):
 						with m.If(flash.done):
 							m.d.sync += [
 								flash.cs.eq(0),
-								writeWaitStep.eq(4),
+								writeWaitStep.eq(3),
 							]
-					with m.Case(4):
+					with m.Case(3):
 						m.d.sync += writeWaitStep.eq(0)
 						with m.If(~flash.r_data[0]):
 							with m.If(byteCount):
