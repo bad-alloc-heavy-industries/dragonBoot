@@ -21,6 +21,7 @@ class SPIFlashCmd(IntEnum):
 	pageProgram = 0x02
 	readStatus = 0x05
 	writeEnable = 0x06
+	releasePowerDown = 0xAB
 
 class SPIFlash(Elaboratable):
 	def __init__(self, *, resource, fifo : AsyncFIFO, flashSize : int):
@@ -28,6 +29,7 @@ class SPIFlash(Elaboratable):
 		self._fifo = fifo
 		self._flashSize = flashSize
 
+		self.ready = Signal()
 		self.start = Signal()
 		self.done = Signal()
 		self.finish = Signal()
@@ -46,6 +48,7 @@ class SPIFlash(Elaboratable):
 		fifo = self._fifo
 
 		op = Signal(SPIFlashOp, reset = SPIFlashOp.none)
+		resetStep = Signal(range(2))
 		enableStep = Signal(range(3))
 		eraseCmdStep = Signal(range(6))
 		eraseWaitStep = Signal(range(4))
@@ -57,12 +60,32 @@ class SPIFlash(Elaboratable):
 		byteCount = Signal.like(self.byteCount)
 
 		m.d.comb += [
+			self.ready.eq(0),
 			self.done.eq(0),
 			flash.xfer.eq(0),
 			flash.w_data.eq(fifo.r_data),
 		]
 
 		with m.FSM(name = 'flash'):
+			with m.State('RESET'):
+				with m.Switch(resetStep):
+					with m.Case(0):
+						m.d.comb += [
+							flash.xfer.eq(1),
+							flash.w_data.eq(SPIFlashCmd.releasePowerDown),
+						]
+						m.d.sync += [
+							flash.cs.eq(1),
+							resetStep.eq(1),
+						]
+					with m.Case(1):
+						with m.If(flash.done):
+							m.d.comb += self.ready.eq(1)
+							m.d.sync += [
+								flash.cs.eq(0),
+								enableStep.eq(0),
+							]
+							m.next = 'IDLE'
 			with m.State('IDLE'):
 				m.d.sync += [
 					enableStep.eq(0),

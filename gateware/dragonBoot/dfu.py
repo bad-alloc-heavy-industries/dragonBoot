@@ -92,7 +92,8 @@ class DFURequestHandler(USBRequestHandler):
 					config.state.eq(DFUState.dfuIdle),
 					slot.eq(0),
 				]
-				m.next = 'READ_SLOT_DATA'
+				with m.If(flash.ready):
+					m.next = 'READ_SLOT_DATA'
 			# IDLE -- no active request being handled
 			with m.State('IDLE'):
 				# If we've received a new setup packet
