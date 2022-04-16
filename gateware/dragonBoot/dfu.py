@@ -56,7 +56,6 @@ class DFURequestHandler(USBRequestHandler):
 		rxTriggered = Signal()
 		rxStream = USBOutStreamInterface(payload_width = 8)
 		receiverStart = Signal()
-		receiverDone = Signal()
 		receiverCount = Signal.like(setup.length)
 		receiverConsumed = Signal.like(setup.length)
 		slot = Signal(8)
@@ -140,7 +139,7 @@ class DFURequestHandler(USBRequestHandler):
 						flash.start.eq(1),
 						flash.byteCount.eq(setup.length),
 					]
-					m.d.usb += config.state.eq(DFUState.downloadIdle)
+					m.d.usb += config.state.eq(DFUState.downloadBusy)
 					m.next = 'HANDLE_DOWNLOAD_DATA'
 				with m.Else():
 					m.next = 'HANDLE_DOWNLOAD_COMPLETE'
@@ -149,16 +148,14 @@ class DFURequestHandler(USBRequestHandler):
 				m.d.comb += interface.rx.connect(rxStream)
 				with m.If(~rxTriggered):
 					m.d.comb += receiverStart.eq(1)
-					m.d.usb += [
-						rxTriggered.eq(1),
-						config.state.eq(DFUState.downloadBusy),
-					]
+					m.d.usb += rxTriggered.eq(1)
 
 				with m.If(interface.rx_ready_for_response):
 					m.d.comb += interface.handshakes_out.ack.eq(1)
 				with m.If(interface.status_requested):
 					m.d.comb += self.send_zlp()
 				with m.If(self.interface.handshakes_in.ack):
+					m.d.usb += rxTriggered.eq(0)
 					m.next = 'IDLE'
 
 			with m.State('HANDLE_DOWNLOAD_COMPLETE'):
@@ -295,7 +292,6 @@ class DFURequestHandler(USBRequestHandler):
 				m.next = 'IDLE'
 
 		m.d.comb += [
-			receiverDone.eq(0),
 			bitstreamFIFO.w_en.eq(0),
 			bitstreamFIFO.w_data.eq(rxStream.payload),
 		]
@@ -321,11 +317,7 @@ class DFURequestHandler(USBRequestHandler):
 						m.d.usb += receiverConsumed.eq(receiverConsumed + 1)
                     # Otherwise go back to idle
 					with m.Else():
-						m.next = 'DONE'
-            # DONE -- report our completion then go to idle
-			with m.State('DONE'):
-				m.d.comb += receiverDone.eq(1)
-				m.next = 'IDLE'
+						m.next = 'IDLE'
 
 		return m
 
