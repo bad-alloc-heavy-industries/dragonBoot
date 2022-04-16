@@ -17,39 +17,42 @@ class SPIBus(Elaboratable):
 
 	def elaborate(self, platform):
 		m = Module()
-		bus = platform.request(*self._spiResource, xdr = {'clk': 2})
+		bus = platform.request(*self._spiResource)
 
 		bit = Signal(range(8))
-		clkEn = Signal(1)
+		clk = Signal(reset = 1)
 		cipo = bus.cipo.i
 		copi = bus.copi.o
 
 		dataIn = Signal.like(self.r_data)
 		dataOut = Signal.like(self.w_data)
 
-		m.d.comb += [
-			clkEn.eq(0),
-			self.done.eq(0),
-		]
+		m.d.comb += self.done.eq(0)
 
 		with m.FSM(name = 'spi'):
 			with m.State('IDLE'):
+				m.d.sync += clk.eq(1)
 				with m.If(self.xfer):
 					m.d.sync += dataOut.eq(self.w_data)
 					m.next = 'TRANSFER'
 			with m.State('TRANSFER'):
-				m.d.comb += clkEn.eq(1)
-				m.d.sync += [
-					bit.eq(bit + 1),
-					copi.eq(dataOut[7]),
-					dataOut.eq(dataOut.shift_left(1)),
-					dataIn.eq(Cat(cipo, dataIn[:-1])),
-				]
-				with m.If(bit == 7):
-					m.next = 'DONE'
+				with m.If(clk):
+					m.d.sync += [
+						clk.eq(0),
+						bit.eq(bit + 1),
+						copi.eq(dataOut[7]),
+					]
+				with m.Else():
+					m.d.sync += [
+						clk.eq(1),
+						dataOut.eq(dataOut.shift_left(1)),
+						dataIn.eq(Cat(cipo, dataIn[:-1])),
+					]
+					with m.If(bit == 0):
+						m.next = 'DONE'
 			with m.State('DONE'):
 				m.d.comb += self.done.eq(1)
-				m.d.sync += self.r_data.eq(Cat(cipo, dataIn[:-1]))
+				m.d.sync += self.r_data.eq(dataIn)
 				with m.If(self.xfer):
 					m.d.sync += dataOut.eq(self.w_data)
 					m.next = 'TRANSFER'
@@ -58,8 +61,6 @@ class SPIBus(Elaboratable):
 
 		m.d.comb += [
 			bus.cs.o.eq(self.cs),
-			bus.clk.o0.eq(clkEn),
-			bus.clk.o1.eq(0),
-			bus.clk.o_clk.eq(ClockSignal('sync')),
+			bus.clk.o.eq(clk)
 		]
 		return m
