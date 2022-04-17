@@ -61,6 +61,6 @@ class SPIBus(Elaboratable):
 
 		m.d.comb += [
 			bus.cs.o.eq(self.cs),
-			bus.clk.o.eq(clk)
+			bus.clk.o.eq(clk),
 		]
 		return m
