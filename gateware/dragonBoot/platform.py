@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # If you're looking for the target platforms this bootloader can be built for, look in platforms/
 from amaranth.build import Platform
-from amaranth.build.run import BuildPlan
+from amaranth.build.run import LocalBuildProducts
 from amaranth.vendor.lattice_ice40 import LatticeICE40Platform
 from abc import abstractmethod
 from typing import Dict, Type
@@ -95,44 +95,34 @@ class DragonICE40Platform(LatticeICE40Platform):
 	def __init__(self, toolchain = 'IceStorm'):
 		super().__init__(toolchain = toolchain)
 		self.flash.platform(self)
-		self._icestorm_command_templates[2] = (
-			r"""
-			{{invoke_tool("icepack")}}
-				{{verbose("-v")}}
-				{{name}}.asc
-				{{name}}.boot.bin
-			"""
-		)
-		self._icestorm_required_tools.append("cat")
-		self._icestorm_command_templates.append(
-			r"""
-			{{invoke_tool("cat")}}
-				{{name}}.slots.bin
-				{{name}}.boot.bin
-				> {{name}}.bin
-			"""
-		)
 
 	def build(self, elaboratable, name = "top", build_dir = "build", do_build = True,
 		program_opts = None, do_program = False, **kwargs
 	):
-		plan : BuildPlan = super().build(elaboratable, name, build_dir, False, program_opts, do_program, **kwargs)
-		if not do_build:
-			return plan
+		products : LocalBuildProducts = super().build(elaboratable, name, build_dir, do_build, do_program = False, **kwargs)
+		# Build the multi-boot bitstreams image to go along with the upgrade bitstream
+		with open(f'{build_dir}/{name}.multi.bin', 'wb') as multiboot:
+			# Build and write the slot data and first slot
+			slotData = self.buildSlots()
+			multiboot.write(slotData)
+			multiboot.write(products.get(f'{name}.bin'))
+			# Pad out to the start of the second slot
+			begin = multiboot.tell()
+			end = self.flash.partitions[1]['beginAddress']
+			for _ in range(begin, end):
+				multiboot.write(b'\xFF')
+			# Grab a copy of the bootloader boot entry
+			multiboot.write(slotData[32:64])
 
-		plan.add_file(f'{name}.slots.bin', self.buildSlots())
-
-		products = plan.execute_local(build_dir)
 		if not do_program:
 			return products
-
 		self.toolchain_program(products, name, **(program_opts or {}))
 
 	def buildSlots(self):
 		from .ice40 import Slots
-		slotConfig = bytearray(self.flash.erasePageSize)
+		slotData = bytearray(self.flash.erasePageSize)
 		slots = Slots(self.flash).build()
-		slotConfig[0:len(slots)] = slots
+		slotData[0:len(slots)] = slots
 		for byte in range(len(slots), self.flash.erasePageSize):
-			slotConfig[byte] = 0xFF
-		return bytes(slotConfig)
+			slotData[byte] = 0xFF
+		return bytes(slotData)
