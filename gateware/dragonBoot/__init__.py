@@ -3,7 +3,7 @@
 from .logging import configureLogging
 configureLogging()
 
-from .platforms.audioInterface import AudioInterfacePlatform
+from .platforms import listPlatforms
 from .bootloader import DragonBoot
 
 __all__ = (
@@ -17,7 +17,9 @@ def cli():
 	parser = ArgumentParser(formatter_class = ArgumentDefaultsHelpFormatter,
 		description = 'dragonBoot')
 	actions = parser.add_subparsers(dest = 'action', required = True)
-	actions.add_parser('build', help = 'build the dragonBoot DFU gateware')
+	buildAction = actions.add_parser('build', help = 'build the dragonBoot DFU gateware')
+	platforms = listPlatforms()
+	buildAction.add_argument('--target', action = 'store', required = True, choices = platforms.keys())
 
 	register_cli(parser = parser)
 	args = parser.parse_args()
@@ -27,6 +29,6 @@ def cli():
 		run_sims(pkg = 'dragonBoot/sim', result_dir = 'build')
 		return 0
 	elif args.action == 'build':
-		platform = AudioInterfacePlatform()
+		platform = platforms[args.target]()
 		platform.build(DragonBoot(), name = 'dragonBoot')
 		return 0
