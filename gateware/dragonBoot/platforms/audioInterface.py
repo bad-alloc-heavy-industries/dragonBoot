@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from amaranth.build import Resource, Pins, Clock, Attrs
 from amaranth_boards.resources.interface import SPIResource, ULPIResource
-from ..platform import DragonICE40Platform, Flash
+from ..platform import DragonICE40Platform, Flash, platform
 
 __all__ = (
 	'AudioInterfacePlatform',
 )
 
+@platform
 class AudioInterfacePlatform(DragonICE40Platform):
 	device = 'iCE40HX8K'
 	package = 'BG121'

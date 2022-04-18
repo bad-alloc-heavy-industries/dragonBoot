@@ -9,6 +9,7 @@ from typing import Dict, Type
 __all__ = (
 	'Flash',
 	'DragonICE40Platform',
+	'platform'
 )
 
 sizeSuffixes = {
@@ -126,3 +127,7 @@ class DragonICE40Platform(LatticeICE40Platform):
 		for byte in range(len(slots), self.flash.erasePageSize):
 			slotData[byte] = 0xFF
 		return bytes(slotData)
+
+def platform(cls):
+	cls._dragonPlatform = True
+	return cls
