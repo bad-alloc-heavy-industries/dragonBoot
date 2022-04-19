@@ -8,7 +8,7 @@ platforms/index
 handlers/index
 luna
 flash
-
+descriptors
 ```
 
 The gateware is comprised of a few important components:
