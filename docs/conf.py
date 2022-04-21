@@ -16,6 +16,7 @@ extensions = [
 	'sphinx.ext.graphviz',
 	'sphinx.ext.napoleon',
 	'sphinx_rtd_theme',
+	'sphinx_construct',
 	'myst_parser',
 ]
 

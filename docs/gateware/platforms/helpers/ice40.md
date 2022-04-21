@@ -18,6 +18,23 @@ iCE40 slots system
 Because of the iCE40 warmboot block, dragonBoot also defines a set of types and construct structures for building the slots configuration for a given target platform
 
 ```{eval-rst}
-.. automodule:: dragonBoot.ice40
+.. autoclass:: dragonBoot.ice40.Slots
   :members:
+
+.. autoclass:: dragonBoot.ice40.Opcodes
+  :members:
+
+.. autoclass:: dragonBoot.ice40.SpecialOpcodes
+  :members:
+
+.. autoclass:: dragonBoot.ice40.BootModes
+  :members:
+
+.. autosubconstruct:: dragonBoot.ice40.Special
+.. autosubconstruct:: dragonBoot.ice40.BootMode
+.. autosubconstruct:: dragonBoot.ice40.BankOffset
+.. autosubconstruct:: dragonBoot.ice40.BootAddress
+.. autosubconstruct:: dragonBoot.ice40.Payload
+.. autosubconstruct:: dragonBoot.ice40.Instruction
+.. autosubconstruct:: dragonBoot.ice40.Slot
 ```
