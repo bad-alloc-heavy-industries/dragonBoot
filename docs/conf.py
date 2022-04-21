@@ -43,4 +43,6 @@ todo_include_todos = True
 html_theme = 'sphinx_rtd_theme'
 html_copy_source = False
 
+pygments_style = 'one-dark'
+
 napoleon_use_ivar = True

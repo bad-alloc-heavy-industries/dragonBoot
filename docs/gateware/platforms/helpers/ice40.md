@@ -20,6 +20,7 @@ Because of the iCE40 warmboot block, dragonBoot also defines a set of types and 
 ```{eval-rst}
 .. autoclass:: dragonBoot.ice40.Slots
   :members:
+  :private-members:
 
 .. autoclass:: dragonBoot.ice40.Opcodes
   :members:

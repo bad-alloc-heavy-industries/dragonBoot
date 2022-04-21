@@ -103,7 +103,7 @@ class Slots:
 		2. Slot 0 is this bootloader, which is only booted when the user asks for FPGA reconfiguration
 		3. Slot 1 is the main gateware slot, which is booted by default
 		4. Slot 2 depends on if there is sufficient room in the Flash - if there is, this is an auxilary slot;
-			if not, then this is a dupliate of Slot 1
+		   if not, then this is a dupliate of Slot 1
 		5. Slot 3 also depends on there being sufficient room in the Flash in the same way as Slot 2
 		"""
 		data = bytearray(32 * 5)
@@ -127,6 +127,12 @@ class Slots:
 
 	@staticmethod
 	def _buildSlots(flash : Flash) -> List[bytes]:
+		""" Go through the calculated max slots for the Flash and generate the slot data for each
+
+		Returns
+		-------
+		A list containing the data for each valid warmbootable slot
+		"""
 		partitions = flash.partitions
 		slots = []
 		for slot in range(flash.slots):
@@ -135,6 +141,25 @@ class Slots:
 
 	@staticmethod
 	def _buildSlot(partition : Dict[str, int]) -> bytes:
+		""" Construct the slot configuration for a given slot
+
+		Parameters
+		----------
+		partition
+			A [begin, end) pair expressed as a dictionary of the area of Flash the slot covers
+
+		Notes
+		-----
+		.. highlight:: python
+
+		The partition dict comes from the Flash object's partition data and contains two entires::
+
+			{
+				'beginAddress': begin,
+				'endAddress: end
+			}
+
+		"""
 		return Slot.build({
 			'bitstream': [
 				{
