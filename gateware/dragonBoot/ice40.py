@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 import logging
 import construct
-from construct import this, len_
+from construct import this
 from enum import IntEnum, IntFlag, unique
 from typing import Dict, List
 
@@ -81,10 +81,31 @@ Slot = construct.Struct(
 )
 
 class Slots:
+	""" A builder type that creates multi-boot slot configurations for the Lattice iCE40 FPGAs. """
+
 	def __init__(self, flash : Flash):
+		"""
+		Parameters
+		----------
+		flash
+			A Flash configuration object describing the target platform's Flash configuration
+			to allow this type to generate a correct multi-boot layout for the target.
+		"""
 		self._flash = flash
 
 	def build(self) -> bytearray:
+		""" Generate a bytearray encoding the slot configuration for the Flash passed to the constructor.
+
+		All valid iCE40 slot configurations consist of 5 slots that the FPGA will read from fixed addresses
+		in the Flash. The slots are numbered in the order POR, Slot 0, Slot 1, Slot 2 and Slot 3.
+
+		1. The POR slot is used to configure the FPGA from cold which we set to the Slot 1 configuration
+		2. Slot 0 is this bootloader, which is only booted when the user asks for FPGA reconfiguration
+		3. Slot 1 is the main gateware slot, which is booted by default
+		4. Slot 2 depends on if there is sufficient room in the Flash - if there is, this is an auxilary slot;
+			if not, then this is a dupliate of Slot 1
+		5. Slot 3 also depends on there being sufficient room in the Flash in the same way as Slot 2
+		"""
 		data = bytearray(32 * 5)
 		logging.info(f'Serialising {len(data)} bytes of slot data')
 
