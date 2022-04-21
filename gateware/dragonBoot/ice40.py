@@ -2,7 +2,7 @@
 import logging
 import construct
 from construct import this, len_
-from enum import IntEnum, unique
+from enum import IntEnum, IntFlag, unique
 from typing import Dict, List
 
 from .platform import Flash
@@ -13,6 +13,7 @@ __all__ = (
 
 @unique
 class Opcodes(IntEnum):
+	"""Opcodes for operations the bitstream can request of the FPGA"""
 	Special = 0
 	BankNumber = 1
 	CRCCheck = 2
@@ -25,6 +26,7 @@ class Opcodes(IntEnum):
 
 @unique
 class SpecialOpcodes(IntEnum):
+	"""Opcodes requested via :py:attr:`Opcodes.Special`"""
 	CRAMData = 1
 	BRAMData = 3
 	ResetCRC = 5
@@ -32,7 +34,8 @@ class SpecialOpcodes(IntEnum):
 	Reboot = 8
 
 @unique
-class BootModes(IntEnum):
+class BootModes(IntFlag):
+	"""Boot mode bits that can be or'd together"""
 	SimpleBoot = 0
 	ColdBoot = 16
 	WarmBoot = 32
