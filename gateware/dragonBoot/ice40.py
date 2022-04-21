@@ -131,7 +131,7 @@ class Slots:
 
 		Returns
 		-------
-		A list containing the data for each valid warmbootable slot
+		A list containing the data for each valid warmboot slot
 		"""
 		partitions = flash.partitions
 		slots = []
