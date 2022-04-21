@@ -33,6 +33,7 @@ intersphinx_mapping = {
 }
 
 autodoc_member_order = 'bysource'
+autoclass_content = 'both'
 autodoc_default_options = {
 	'undoc-members': True
 }
@@ -41,3 +42,5 @@ todo_include_todos = True
 
 html_theme = 'sphinx_rtd_theme'
 html_copy_source = False
+
+napoleon_use_ivar = True
