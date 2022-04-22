@@ -101,6 +101,18 @@ class SPIFlash(Elaboratable):
 		self.writeAddr = Signal(24)
 
 	def elaborate(self, platform) -> Module:
+		""" Describes the specific gateware needed to talk to and erase + rewrite the data in a SPI Flash device
+
+		Parameters
+		----------
+		platform
+			The Amaranth platform for which the gateware will be synthesised
+
+		Returns
+		-------
+		amaranth.hdl.dsl.Module
+			A complete description of the gateware behaviour required
+		"""
 		m = Module()
 		m.submodules.spi = flash = SPIBus(resource = self._flashResource)
 		fifo = self._fifo

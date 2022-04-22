@@ -41,7 +41,7 @@ class SPIBus(Elaboratable):
 		self.w_data = Signal(8)
 
 	def elaborate(self, platform) -> Module:
-		""" Describe the specific gateware needed to talk SPI protocol
+		""" Describes the specific gateware needed to talk SPI protocol
 
 		Parameters
 		----------
