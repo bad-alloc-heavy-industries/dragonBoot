@@ -36,7 +36,7 @@ class SPIFlash(Elaboratable):
 	ready : Signal(), output
 		Initialisation completion strobe indicating the controller is ready to operate
 	start : Signal(), input
-		Strobe to instruct the controller to start operations
+		Strobe to instruct the controller to start operations (this is further explained below)
 	done : Signal(), output
 		Signal that signals the completion of operations pending going to idle
 	finish : Signal(), input
@@ -51,6 +51,16 @@ class SPIFlash(Elaboratable):
 	endAddr : Signal(24), input
 		The Flash address for the end of an operation. Usually set to the end of a
 		slot when the alt-mode for that slot is selected by the host
+	byteCount : Signal(24), input
+		A count of the number of bytes loaded (or being loaded) into the FIFO for the requested
+		write operation
+
+	readAddr : Signal(24)
+		The internal current read address for the Flash
+	eraseAddr : Signal(24)
+		The internal current erase address for the Flash
+	writeAddr : Signal(24)
+		The internal current write address for the Flash
 	"""
 	def __init__(self, *, resource, fifo : AsyncFIFO, flashSize : int):
 		"""
@@ -62,6 +72,16 @@ class SPIFlash(Elaboratable):
 			A FIFO buffer used as the data input to Flash write operations
 		flashSize
 			The platform.flash.size (to be removed)
+
+		Notes
+		-----
+		When requested by the start strobe, the controller starts by entering an erase mode which sees
+		the required Flash pages to write the incomming data from the FIFO erased ready to be written.
+		On the completion of the required erase operations it then enters into write mode where Flash
+		page by Flash page the data from the FIFO is read out and written for up to byteCount bytes.
+
+		This system is designed with byteCount being equal to a multiple of platform.flash.erasePageSize
+		right up until the final cycle prior to either a warmboot of the Flash addressing being reset
 		"""
 		self._flashResource = resource
 		self._fifo = fifo
