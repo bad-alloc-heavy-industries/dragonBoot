@@ -59,12 +59,3 @@ class AudioInterfacePlatform(DragonICE40Platform):
 		erasePageSize = 4096,
 		eraseCommand = 0x20
 	)
-
-	def build(self, elaboratable, name = 'top', build_dir = 'build', do_build = True,
-		program_opts = None, do_program = False, **kwargs
-	):
-		super().build(
-			elaboratable, name, build_dir, do_build, program_opts, do_program,
-			synth_opts = ['-abc9'], nextpnr_opts = ['--tmg-ripup', '--seed=0'],
-			**kwargs
-		)

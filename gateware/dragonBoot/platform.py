@@ -130,7 +130,12 @@ class DragonICE40Platform(LatticeICE40Platform):
 		This will then optionally program the initial Flash image to a target device per your
 		specification using the function :py:meth:`self.toolchain_program`
 		"""
-		products : LocalBuildProducts = super().build(elaboratable, name, build_dir, do_build, do_program = False, **kwargs)
+		products : LocalBuildProducts = super().build(
+			elaboratable, name, build_dir, do_build, do_program = False,
+			synth_opts = ['-abc9'], nextpnr_opts = ['--tmg-ripup', '--seed=0'],
+			**kwargs
+		)
+
 		# Build the multi-boot bitstreams image to go along with the upgrade bitstream
 		with open(f'{build_dir}/{name}.multi.bin', 'wb') as multiboot:
 			# Build and write the slot data and first slot
