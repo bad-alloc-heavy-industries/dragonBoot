@@ -85,10 +85,37 @@
 <span class="target" id="module-dragonBoot.spi"></span><dl class="py class">
 <dt class="sig sig-object py" id="dragonBoot.spi.SPIBus">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.spi.</span></span><span class="sig-name descname"><span class="pre">SPIBus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.spi.SPIBus" title="Permalink to this definition"></a></dt>
-<dd><dl class="py method">
+<dd><p>SPI bus controller gateware for talking to the Flash.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cs</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Chip Select (non-inverted) signal to be passed through to the Flash</p></li>
+<li><p><strong>xfer</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Strobe that signals to start a SPI transfer</p></li>
+<li><p><strong>done</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>output</em>) – Strobe that indicates the completion of a SPI transfer</p></li>
+<li><p><strong>r_data</strong> (<em>Signal</em><em>(</em><em>8</em><em>)</em><em>, </em><em>output</em>) – Data read from the Flash in the last completed transfer</p></li>
+<li><p><strong>w_data</strong> (<em>Signal</em><em>(</em><em>8</em><em>)</em><em>, </em><em>input</em>) – Data to be written to the Flash in the next transfer</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>resource</strong> – The fully qualified identifier for the platform resource defining the SPI bus to use</p>
+</dd>
+</dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.spi.SPIBus.elaborate">
-<span class="sig-name descname"><span class="pre">elaborate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.spi.SPIBus.elaborate" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">elaborate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.dsl.Module</span></span></span><a class="headerlink" href="#dragonBoot.spi.SPIBus.elaborate" title="Permalink to this definition"></a></dt>
+<dd><p>Describe the specific gateware needed to talk SPI protocol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>platform</strong> – The Amaranth platform for which the gateware will be synthesised</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A complete description of the gateware behaviour required</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>amaranth.hdl.dsl.Module</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
