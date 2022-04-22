@@ -42,7 +42,7 @@ jobs:
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
-          target-branch: gh-pages
+          target_branch: gh-pages
           build_dir: build
           keep_history: true
           allow_empty_commit: false
