@@ -44,7 +44,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../firmware/index.html">dragonBoot for microcontroller</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">dragonBoot for FPGA</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Platforms</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonmux/HeadphoneAmp audio interface platform</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonmux/HeadphoneAmp audio interface platform</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="helpers/index.html">Platform Helpers</a></li>
 </ul>
 </li>
@@ -83,10 +85,36 @@
              
   <section id="dragonmux-headphoneamp-audio-interface-platform">
 <h1>dragonmux/HeadphoneAmp audio interface platform<a class="headerlink" href="#dragonmux-headphoneamp-audio-interface-platform" title="Permalink to this headline"></a></h1>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>Document this platform</p>
+<div class="toctree-wrapper compound">
 </div>
+<dl class="py class">
+<dt class="sig sig-object py" id="dragonBoot.platforms.audioInterface.AudioInterfacePlatform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.platforms.audioInterface.</span></span><span class="sig-name descname"><span class="pre">AudioInterfacePlatform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toolchain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IceStorm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.platforms.audioInterface.AudioInterfacePlatform" title="Permalink to this definition"></a></dt>
+<dd><p>Platform for <a class="reference external" href="https://github.com/dragonmux/HeadphoneAmp">HeadphoneAmp’s audio interface</a>.</p>
+<p>Used to allow the device gateware to be upgraded or swapped out on the fly,
+this defines the bare minimum of the resources on the board requried to to perform this task:</p>
+<ul>
+<li><p>A SPI resource to access the configuration Flash (A GD25Q40C)</p></li>
+<li><p>The UPLI Phy used to provide USB HS to the board</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>This resource is also responsible for providing our operating clock -
+the phy on the board is a USB3318 which produces a 60MHz clock from its associated
+13MHz clock source.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>The Flash configuration object requried to describe the GD25Q40C Flash</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>toolchain</strong> – Which toolchain synthesis, placement and routing should be performed via.
+Unless you have extremely good reason to do otherwise, the default IceStorm
+should be used.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
