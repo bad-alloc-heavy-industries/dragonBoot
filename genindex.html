@@ -215,21 +215,14 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    dragonBoot.flash
-
-      <ul>
-        <li><a href="gateware/flash.html#module-dragonBoot.flash">module</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
     dragonBoot.spi
 
       <ul>
         <li><a href="gateware/flash.html#module-dragonBoot.spi">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.platform.DragonICE40Platform">DragonICE40Platform (class in dragonBoot.platform)</a>
 </li>
   </ul></td>
@@ -290,12 +283,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.BootMode.mode">mode (dragonBoot.ice40.dragonBoot.ice40.BootMode attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
       <ul>
-        <li><a href="gateware/flash.html#module-dragonBoot.flash">dragonBoot.flash</a>
-</li>
         <li><a href="gateware/flash.html#module-dragonBoot.spi">dragonBoot.spi</a>
 </li>
       </ul></li>
@@ -327,10 +320,12 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.Instruction.payload">payload (dragonBoot.ice40.dragonBoot.ice40.Instruction attribute)</a>
+      <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashCmd.pageProgram">pageProgram (dragonBoot.flash.SPIFlashCmd attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.Instruction.payload">payload (dragonBoot.ice40.dragonBoot.ice40.Instruction attribute)</a>
+</li>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.Payload">Payload (in module dragonBoot.ice40)</a>
 </li>
   </ul></td>
@@ -339,6 +334,8 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashCmd.readStatus">readStatus (dragonBoot.flash.SPIFlashCmd attribute)</a>
+</li>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.Special.operation.Reboot">Reboot (dragonBoot.ice40.dragonBoot.ice40.Special.operation attribute)</a>
 
       <ul>
@@ -347,6 +344,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashCmd.releasePowerDown">releasePowerDown (dragonBoot.flash.SPIFlashCmd attribute)</a>
+</li>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.BootMode.reserved">reserved (dragonBoot.ice40.dragonBoot.ice40.BootMode attribute)</a>
 </li>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.Special.operation.ResetCRC">ResetCRC (dragonBoot.ice40.dragonBoot.ice40.Special.operation attribute)</a>
@@ -387,6 +386,8 @@
 </li>
       <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlash">SPIFlash (class in dragonBoot.flash)</a>
 </li>
+      <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashCmd">SPIFlashCmd (class in dragonBoot.flash)</a>
+</li>
       <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashOp">SPIFlashOp (class in dragonBoot.flash)</a>
 </li>
   </ul></td>
@@ -401,15 +402,17 @@
         <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.SpecialOpcodes.Wakeup">(dragonBoot.ice40.SpecialOpcodes attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.BootModes.WarmBoot">WarmBoot (dragonBoot.ice40.BootModes attribute)</a>
 
       <ul>
         <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.BootMode.mode.WarmBoot">(dragonBoot.ice40.dragonBoot.ice40.BootMode.mode attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashOp.write">write (dragonBoot.flash.SPIFlashOp attribute)</a>
+</li>
+      <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashCmd.writeEnable">writeEnable (dragonBoot.flash.SPIFlashCmd attribute)</a>
 </li>
   </ul></td>
 </tr></table>
