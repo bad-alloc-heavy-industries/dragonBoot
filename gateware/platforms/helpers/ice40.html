@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iCE40 Platform Helper &mdash; dragonBoot  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/sphinx_construct.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Request Handlers" href="../../handlers/index.html" />
+    <link rel="prev" title="Platform Helpers" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> dragonBoot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../gettingStarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/index.html">dragonBoot for microcontroller</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">dragonBoot for FPGA</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Platforms</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../audioInterface.html">dragonmux/HeadphoneAmp audio interface platform</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Platform Helpers</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">iCE40 Platform Helper</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../handlers/index.html">Request Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../luna.html">The LUNA-based USB Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flash.html">The SPI Flash controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../descriptors.html">USB Descriptors</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">dragonBoot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">dragonBoot for FPGA</a> &raquo;</li>
+          <li><a href="../index.html">Platforms</a> &raquo;</li>
+          <li><a href="index.html">Platform Helpers</a> &raquo;</li>
+      <li>iCE40 Platform Helper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ice40-platform-helper">
+<h1>iCE40 Platform Helper<a class="headerlink" href="#ice40-platform-helper" title="Permalink to this headline"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>To reduce boilerplate and aid platform implementation, an iCE40 platform helper type has been defined.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dragonBoot.platform.DragonICE40Platform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.platform.</span></span><span class="sig-name descname"><span class="pre">DragonICE40Platform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toolchain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IceStorm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.platform.DragonICE40Platform" title="Permalink to this definition"></a></dt>
+<dd><p>This is the base platform for all Lattice iCE40 bootloaders.</p>
+<p>This platform defines how to build a multi-boot Flash image on top of the normal bitstream building logic.
+It also includes logic required to enforce the presence and facilitate retrieval of Flash descriptor objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>toolchain</strong> – Which toolchain synthesis, placement and routing should be performed via.
+Unless you have extremely good reason to do otherwise, the default IceStorm
+should be used.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dragonBoot.platform.DragonICE40Platform.flash">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flash</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dragonBoot.platform.Flash</span></em><a class="headerlink" href="#dragonBoot.platform.DragonICE40Platform.flash" title="Permalink to this definition"></a></dt>
+<dd><p>A Flash configuration describing the targets FPGA configuration Flash</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dragonBoot.platform.DragonICE40Platform.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elaboratable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'build'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_build</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">program_opts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_program</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><span class="pre">amaranth.build.run.BuildPlan</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">amaranth.build.run.BuildProducts</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dragonBoot.platform.DragonICE40Platform.build" title="Permalink to this definition"></a></dt>
+<dd><p>This is called automatically by the bootloader CLI.</p>
+<p>This function builds both the upgrade bitstream, and the initial Flash layout to be
+written by either <a class="reference external" href="https://github.com/bad-alloc-heavy-industries/SPIFlashProgrammer">SPIFlashProgrammer</a>,
+or any other tool capable of writing a raw Flash image to a target device.</p>
+<p>Once the upgrade bitstream has been created, this then builds the multi-boot slot
+configuration page, appends the upgrade bitstream in its proper location and then
+pads out to the start of the next slot after and places a short bitstream there which
+instructs the FPGA to warmboot into the bootloader slot. This is done so that
+unconfigured devices enter the bootloader automatically untill written with a valid bitstream.</p>
+<p>This will then optionally program the initial Flash image to a target device per your
+specification using the function <code class="xref py py-meth docutils literal notranslate"><span class="pre">self.toolchain_program()</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dragonBoot.platform.DragonICE40Platform.buildSlots">
+<span class="sig-name descname"><span class="pre">buildSlots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#dragonBoot.platform.DragonICE40Platform.buildSlots" title="Permalink to this definition"></a></dt>
+<dd><p>Builds a multi-boot slot configuration for the platform</p>
+<p>This first builds the slot configuration block that must sit at the start of Flash
+and then follows it with unset Flash (0xFF) byte padding till we meet the end of the
+first Flash sector erase page where the dragonBoot warmboot slot begins.</p>
+<p>For further details on the inner workings, see <a class="reference internal" href="#dragonBoot.ice40.Slots" title="dragonBoot.ice40.Slots"><code class="xref py py-class docutils literal notranslate"><span class="pre">dragonBoot.ice40.Slots</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="ice40-slots-system">
+<h2>iCE40 slots system<a class="headerlink" href="#ice40-slots-system" title="Permalink to this headline"></a></h2>
+<p>Because of the iCE40 warmboot block, dragonBoot also defines a set of types and construct structures for building the slots configuration for a given target platform</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Slots">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">Slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dragonBoot.platform.Flash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.ice40.Slots" title="Permalink to this definition"></a></dt>
+<dd><p>A builder type that creates multi-boot slot configurations for the Lattice iCE40 FPGAs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>flash</strong> – A Flash configuration object describing the target platform’s Flash configuration
+to allow this type to generate a correct multi-boot layout for the target.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Slots.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.10)"><span class="pre">bytearray</span></a></span></span><a class="headerlink" href="#dragonBoot.ice40.Slots.build" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a bytearray encoding the slot configuration for the Flash passed to the constructor.</p>
+<p>All valid iCE40 slot configurations consist of 5 slots that the FPGA will read from fixed addresses
+in the Flash. The slots are numbered in the order POR, Slot 0, Slot 1, Slot 2 and Slot 3.</p>
+<ol class="arabic simple">
+<li><p>The POR slot is used to configure the FPGA from cold which we set to the Slot 1 configuration</p></li>
+<li><p>Slot 0 is this bootloader, which is only booted when the user asks for FPGA reconfiguration</p></li>
+<li><p>Slot 1 is the main gateware slot, which is booted by default</p></li>
+<li><p>Slot 2 depends on if there is sufficient room in the Flash - if there is, this is an auxilary slot;
+if not, then this is a dupliate of Slot 1</p></li>
+<li><p>Slot 3 also depends on there being sufficient room in the Flash in the same way as Slot 2</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Slots._buildSlots">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_buildSlots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dragonBoot.platform.Flash</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dragonBoot.ice40.Slots._buildSlots" title="Permalink to this definition"></a></dt>
+<dd><p>Go through the calculated max slots for the Flash and generate the slot data for each</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>A list containing the data for each valid warmboot slot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Slots._buildSlot">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_buildSlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.10)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#dragonBoot.ice40.Slots._buildSlot" title="Permalink to this definition"></a></dt>
+<dd><p>Construct the slot configuration for a given slot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>partition</strong> – A [begin, end) pair expressed as a dictionary of the area of Flash the slot covers</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The partition dict comes from the Flash object’s partition data and contains two entires:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+        <span class="s1">&#39;beginAddress&#39;</span><span class="p">:</span> <span class="n">begin</span><span class="p">,</span>
+        <span class="s1">&#39;endAddress: end</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">Opcodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.ice40.Opcodes" title="Permalink to this definition"></a></dt>
+<dd><p>Opcodes for operations the bitstream can request of the FPGA</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.Special">
+<span class="sig-name descname"><span class="pre">Special</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.Special" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.BankNumber">
+<span class="sig-name descname"><span class="pre">BankNumber</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.BankNumber" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.CRCCheck">
+<span class="sig-name descname"><span class="pre">CRCCheck</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.CRCCheck" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.BootAddress">
+<span class="sig-name descname"><span class="pre">BootAddress</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.BootAddress" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.InternalOscRange">
+<span class="sig-name descname"><span class="pre">InternalOscRange</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.InternalOscRange" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.BankWidth">
+<span class="sig-name descname"><span class="pre">BankWidth</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.BankWidth" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.BankHeight">
+<span class="sig-name descname"><span class="pre">BankHeight</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.BankHeight" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.BankOffset">
+<span class="sig-name descname"><span class="pre">BankOffset</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.BankOffset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.BootMode">
+<span class="sig-name descname"><span class="pre">BootMode</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.BootMode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dragonBoot.ice40.SpecialOpcodes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">SpecialOpcodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.ice40.SpecialOpcodes" title="Permalink to this definition"></a></dt>
+<dd><p>Opcodes requested via <a class="reference internal" href="#dragonBoot.ice40.Opcodes.Special" title="dragonBoot.ice40.Opcodes.Special"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Opcodes.Special</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.SpecialOpcodes.CRAMData">
+<span class="sig-name descname"><span class="pre">CRAMData</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#dragonBoot.ice40.SpecialOpcodes.CRAMData" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.SpecialOpcodes.BRAMData">
+<span class="sig-name descname"><span class="pre">BRAMData</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#dragonBoot.ice40.SpecialOpcodes.BRAMData" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.SpecialOpcodes.ResetCRC">
+<span class="sig-name descname"><span class="pre">ResetCRC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#dragonBoot.ice40.SpecialOpcodes.ResetCRC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.SpecialOpcodes.Wakeup">
+<span class="sig-name descname"><span class="pre">Wakeup</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#dragonBoot.ice40.SpecialOpcodes.Wakeup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.SpecialOpcodes.Reboot">
+<span class="sig-name descname"><span class="pre">Reboot</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#dragonBoot.ice40.SpecialOpcodes.Reboot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dragonBoot.ice40.BootModes">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">BootModes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.ice40.BootModes" title="Permalink to this definition"></a></dt>
+<dd><p>Boot mode bits that can be or’d together</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.BootModes.SimpleBoot">
+<span class="sig-name descname"><span class="pre">SimpleBoot</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#dragonBoot.ice40.BootModes.SimpleBoot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.BootModes.ColdBoot">
+<span class="sig-name descname"><span class="pre">ColdBoot</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#dragonBoot.ice40.BootModes.ColdBoot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.BootModes.WarmBoot">
+<span class="sig-name descname"><span class="pre">WarmBoot</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="headerlink" href="#dragonBoot.ice40.BootModes.WarmBoot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Special">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">Special</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Struct</span></em><a class="headerlink" href="#dragonBoot.ice40.Special" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Special.operation">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Special.</span></span><span class="sig-name descname"><span class="pre">operation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Enum</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Special.operation" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Special.operation.CRAMData">
+<span class="sig-prename descclassname"><span class="pre">operation.</span></span><span class="sig-name descname"><span class="pre">CRAMData</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FormatField&lt;2&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x01</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Special.operation.CRAMData" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Special.operation.BRAMData">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Special.operation.</span></span><span class="sig-name descname"><span class="pre">BRAMData</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FormatField&lt;2&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x03</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Special.operation.BRAMData" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Special.operation.ResetCRC">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Special.operation.</span></span><span class="sig-name descname"><span class="pre">ResetCRC</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FormatField&lt;2&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x05</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Special.operation.ResetCRC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Special.operation.Wakeup">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Special.operation.</span></span><span class="sig-name descname"><span class="pre">Wakeup</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FormatField&lt;2&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x06</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Special.operation.Wakeup" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Special.operation.Reboot">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Special.operation.</span></span><span class="sig-name descname"><span class="pre">Reboot</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FormatField&lt;2&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x08</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Special.operation.Reboot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.BootMode">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">BootMode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Struct</span></em><a class="headerlink" href="#dragonBoot.ice40.BootMode" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.BootMode.reserved">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.BootMode.</span></span><span class="sig-name descname"><span class="pre">reserved</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Const</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.BootMode.reserved" title="Permalink to this definition"></a></dt>
+<dd><p><strong>Endian:</strong> big</p>
+<p><strong>Size:</strong> 1</p>
+<p><strong>Underlying Types:</strong></p>
+<blockquote>
+<div><p>Type: int</p>
+<p>Size: 1</p>
+<p>Sign: unsigned</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.BootMode.mode">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.BootMode.</span></span><span class="sig-name descname"><span class="pre">mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FlagsEnum</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.BootMode.mode" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.BootMode.mode.SimpleBoot">
+<span class="sig-prename descclassname"><span class="pre">mode.</span></span><span class="sig-name descname"><span class="pre">SimpleBoot</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FormatField&lt;2&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.BootMode.mode.SimpleBoot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.BootMode.mode.ColdBoot">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.BootMode.mode.</span></span><span class="sig-name descname"><span class="pre">ColdBoot</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FormatField&lt;2&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x10</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.BootMode.mode.ColdBoot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.BootMode.mode.WarmBoot">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.BootMode.mode.</span></span><span class="sig-name descname"><span class="pre">WarmBoot</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FormatField&lt;2&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x20</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.BootMode.mode.WarmBoot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.BankOffset">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">BankOffset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Struct</span></em><a class="headerlink" href="#dragonBoot.ice40.BankOffset" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.BankOffset.offset">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.BankOffset.</span></span><span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FormatField</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.BankOffset.offset" title="Permalink to this definition"></a></dt>
+<dd><p><strong>Endian:</strong> big</p>
+<p><strong>Size:</strong> 2</p>
+<p><strong>Underlying Types:</strong></p>
+<blockquote>
+<div><p>Type: int</p>
+<p>Size: 2</p>
+<p>Sign: unsigned</p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.BootAddress">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">BootAddress</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Struct</span></em><a class="headerlink" href="#dragonBoot.ice40.BootAddress" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.BootAddress.addressLength">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.BootAddress.</span></span><span class="sig-name descname"><span class="pre">addressLength</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Const</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.BootAddress.addressLength" title="Permalink to this definition"></a></dt>
+<dd><p><strong>Endian:</strong> big</p>
+<p><strong>Size:</strong> 1</p>
+<p><strong>Underlying Types:</strong></p>
+<blockquote>
+<div><p>Type: int</p>
+<p>Size: 1</p>
+<p>Sign: unsigned</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.BootAddress.address">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.BootAddress.</span></span><span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BytesInteger</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.BootAddress.address" title="Permalink to this definition"></a></dt>
+<dd><p>Unsigned 3 byte integer.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Payload">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">Payload</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Switch</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">this['instruction']</span></em><a class="headerlink" href="#dragonBoot.ice40.Payload" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Payload.</span></span><span class="sig-name descname"><span class="pre">0</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Struct</span></em></dt>
+<dd><p>See: <a class="reference internal" href="#dragonBoot.ice40.Special" title="dragonBoot.ice40.Special"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dragonBoot.ice40.Special</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Payload.</span></span><span class="sig-name descname"><span class="pre">4</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Struct</span></em></dt>
+<dd><p>See: <a class="reference internal" href="#dragonBoot.ice40.BootAddress" title="dragonBoot.ice40.BootAddress"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dragonBoot.ice40.BootAddress</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Payload.</span></span><span class="sig-name descname"><span class="pre">8</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Struct</span></em></dt>
+<dd><p>See: <a class="reference internal" href="#dragonBoot.ice40.BankOffset" title="dragonBoot.ice40.BankOffset"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dragonBoot.ice40.BankOffset</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Payload.</span></span><span class="sig-name descname"><span class="pre">9</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Struct</span></em></dt>
+<dd><p>See: <a class="reference internal" href="#dragonBoot.ice40.BootMode" title="dragonBoot.ice40.BootMode"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dragonBoot.ice40.BootMode</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Instruction">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">Instruction</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitStruct</span></em><a class="headerlink" href="#dragonBoot.ice40.Instruction" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.</span></span><span class="sig-name descname"><span class="pre">instruction</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Enum</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.Special">
+<span class="sig-prename descclassname"><span class="pre">instruction.</span></span><span class="sig-name descname"><span class="pre">Special</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitsInteger&lt;8&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00000000</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.Special" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BankNumber">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.instruction.</span></span><span class="sig-name descname"><span class="pre">BankNumber</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitsInteger&lt;8&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00000001</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BankNumber" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.CRCCheck">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.instruction.</span></span><span class="sig-name descname"><span class="pre">CRCCheck</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitsInteger&lt;8&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00000002</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.CRCCheck" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BootAddress">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.instruction.</span></span><span class="sig-name descname"><span class="pre">BootAddress</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitsInteger&lt;8&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00000004</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BootAddress" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.InternalOscRange">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.instruction.</span></span><span class="sig-name descname"><span class="pre">InternalOscRange</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitsInteger&lt;8&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00000005</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.InternalOscRange" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BankWidth">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.instruction.</span></span><span class="sig-name descname"><span class="pre">BankWidth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitsInteger&lt;8&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00000006</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BankWidth" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BankHeight">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.instruction.</span></span><span class="sig-name descname"><span class="pre">BankHeight</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitsInteger&lt;8&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00000007</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BankHeight" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BankOffset">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.instruction.</span></span><span class="sig-name descname"><span class="pre">BankOffset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitsInteger&lt;8&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00000008</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BankOffset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BootMode">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.instruction.</span></span><span class="sig-name descname"><span class="pre">BootMode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitsInteger&lt;8&gt;</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0x00000009</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.instruction.BootMode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.byteCount">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.</span></span><span class="sig-name descname"><span class="pre">byteCount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Rebuild</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.byteCount" title="Permalink to this definition"></a></dt>
+<dd><p>Runtime rebuilt constant</p>
+<p>Unsigned 4 bit integer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Instruction.payload">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Instruction.</span></span><span class="sig-name descname"><span class="pre">payload</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Switch</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">this['instruction']</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Instruction.payload" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><p>See: <a class="reference internal" href="#dragonBoot.ice40.Payload" title="dragonBoot.ice40.Payload"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dragonBoot.ice40.Payload</span></code></a></p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.Slot">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">Slot</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Struct</span></em><a class="headerlink" href="#dragonBoot.ice40.Slot" title="Permalink to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Slot.bitstreamMagic">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Slot.</span></span><span class="sig-name descname"><span class="pre">bitstreamMagic</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Const</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2125109630</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Slot.bitstreamMagic" title="Permalink to this definition"></a></dt>
+<dd><p><strong>Endian:</strong> big</p>
+<p><strong>Size:</strong> 4</p>
+<p><strong>Underlying Types:</strong></p>
+<blockquote>
+<div><p>Type: int</p>
+<p>Size: 4</p>
+<p>Sign: unsigned</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Slot.bitstream">
+<span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.Slot.</span></span><span class="sig-name descname"><span class="pre">bitstream</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Padded</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Slot.bitstream" title="Permalink to this definition"></a></dt>
+<dd><p>Data block padded to 28 bytes</p>
+<blockquote>
+<div><dl class="py attribute">
+<dt class="sig sig-object py" id="dragonBoot.ice40.dragonBoot.ice40.Slot.bitstream.GreedyRange">
+<span class="sig-prename descclassname"><span class="pre">bitstream.</span></span><span class="sig-name descname"><span class="pre">GreedyRange</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BitStruct</span></em><a class="headerlink" href="#dragonBoot.ice40.dragonBoot.ice40.Slot.bitstream.GreedyRange" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><p>See: <a class="reference internal" href="#dragonBoot.ice40.Instruction" title="dragonBoot.ice40.Instruction"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dragonBoot.ice40.Instruction</span></code></a></p>
+</div></blockquote>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Platform Helpers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../handlers/index.html" class="btn btn-neutral float-right" title="Request Handlers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2022, Rachel Mant.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
