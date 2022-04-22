@@ -5,12 +5,21 @@ The SPI Flash controller
 :hidden:
 ```
 
+The Flash controller is comprised of two major parts - the underlying
+{py:class}`SPI bus <dragonBoot.spi.SPIBus>` engine, and the
+{py:class}`Flash controller <dragonBoot.flash.SPIFlash>` itself.
+
 ```{eval-rst}
 .. automodule:: dragonBoot.spi
   :members:
-```
 
-```{eval-rst}
-.. automodule:: dragonBoot.flash
+.. autoclass:: dragonBoot.flash.SPIFlash
   :members:
+
+.. autoclass:: dragonBoot.flash.SPIFlashCmd
+  :members:
+
+.. autoclass:: dragonBoot.flash.SPIFlashOp
+  :members:
+
 ```

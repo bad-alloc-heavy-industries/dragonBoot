@@ -12,19 +12,57 @@ __all__ = (
 
 @unique
 class SPIFlashOp(IntEnum):
+	""" An enumeration describing the current overarching operation being completed on the Flash """
 	none = auto()
+	""" No action is in progress """
 	erase = auto()
+	""" A sector erase is in progress """
 	write = auto()
+	""" A Flash page write sequence is in progress """
 
 @unique
 class SPIFlashCmd(IntEnum):
+	""" An enumeration of the command opcodes for the Flash """
 	pageProgram = 0x02
 	readStatus = 0x05
 	writeEnable = 0x06
 	releasePowerDown = 0xAB
 
 class SPIFlash(Elaboratable):
+	""" SPI Flash controller gateware.
+
+	Attributes
+	----------
+	ready : Signal(), output
+		Initialisation completion strobe indicating the controller is ready to operate
+	start : Signal(), input
+		Strobe to instruct the controller to start operations
+	done : Signal(), output
+		Signal that signals the completion of operations pending going to idle
+	finish : Signal(), input
+		Strobe used to acknowledge completion so the controller can enter idle
+	resetAddrs : Signal(), input
+		Strobe used to request the controller reset its internal Flash addressing to the
+		current values on the beginAddr adn endAddr signals
+
+	beginAddr : Signal(24), input
+		The Flash address for the start of an operation. Usually set to the beginning
+		of a slot when the alt-mode for that slot is selected by the host
+	endAddr : Signal(24), input
+		The Flash address for the end of an operation. Usually set to the end of a
+		slot when the alt-mode for that slot is selected by the host
+	"""
 	def __init__(self, *, resource, fifo : AsyncFIFO, flashSize : int):
+		"""
+		Parameters
+		----------
+		resource
+			The fully qualified identifier for the platform resource defining the SPI bus to use
+		fifo
+			A FIFO buffer used as the data input to Flash write operations
+		flashSize
+			The platform.flash.size (to be removed)
+		"""
 		self._flashResource = resource
 		self._fifo = fifo
 		self._flashSize = flashSize
