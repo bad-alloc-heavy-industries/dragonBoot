@@ -118,7 +118,7 @@ class DragonICE40Platform(LatticeICE40Platform):
 		""" This is called automatically by the bootloader CLI.
 
 		This function builds both the upgrade bitstream, and the initial Flash layout to be
-		written by either (SPIFlashProgrammer)[https://github.com/bad-alloc-heavy-industries/SPIFlashProgrammer],
+		written by either `SPIFlashProgrammer <https://github.com/bad-alloc-heavy-industries/SPIFlashProgrammer>`_,
 		or any other tool capable of writing a raw Flash image to a target device.
 
 		Once the upgrade bitstream has been created, this then builds the multi-boot slot
