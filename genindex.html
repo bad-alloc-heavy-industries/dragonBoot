@@ -77,6 +77,7 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -84,6 +85,7 @@
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
+ | <a href="#U"><strong>U</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
@@ -214,6 +216,24 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUConfig">DFUConfig (class in dragonBoot.dfu)</a>
+</li>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUState.dfuIdle">dfuIdle (dragonBoot.dfu.DFUState attribute)</a>
+</li>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFURequestHandler">DFURequestHandler (class in dragonBoot.dfu)</a>
+</li>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUState">DFUState (class in dragonBoot.dfu)</a>
+</li>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUStatus">DFUStatus (class in dragonBoot.dfu)</a>
+</li>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUState.downloadBusy">downloadBusy (dragonBoot.dfu.DFUState attribute)</a>
+</li>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUState.downloadIdle">downloadIdle (dragonBoot.dfu.DFUState attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUState.downloadSync">downloadSync (dragonBoot.dfu.DFUState attribute)</a>
+</li>
       <li>
     dragonBoot.spi
 
@@ -221,8 +241,20 @@
         <li><a href="gateware/flash.html#module-dragonBoot.spi">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    dragonBoot.windows
+
+      <ul>
+        <li><a href="gateware/handlers/windows.html#module-dragonBoot.windows">module</a>
+</li>
+      </ul></li>
+      <li>
+    dragonBoot.windows.descriptorSet
+
+      <ul>
+        <li><a href="gateware/handlers/windows.html#module-dragonBoot.windows.descriptorSet">module</a>
+</li>
+      </ul></li>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.platform.DragonICE40Platform">DragonICE40Platform (class in dragonBoot.platform)</a>
 </li>
   </ul></td>
@@ -231,15 +263,25 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlash.elaborate">elaborate() (dragonBoot.flash.SPIFlash method)</a>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFURequestHandler.elaborate">elaborate() (dragonBoot.dfu.DFURequestHandler method)</a>
 
       <ul>
+        <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlash.elaborate">(dragonBoot.flash.SPIFlash method)</a>
+</li>
         <li><a href="gateware/flash.html#dragonBoot.spi.SPIBus.elaborate">(dragonBoot.spi.SPIBus method)</a>
+</li>
+        <li><a href="gateware/handlers/windows.html#dragonBoot.windows.descriptorSet.GetDescriptorSetHandler.elaborate">(dragonBoot.windows.descriptorSet.GetDescriptorSetHandler method)</a>
+</li>
+        <li><a href="gateware/handlers/windows.html#dragonBoot.windows.WindowsRequestHandler.elaborate">(dragonBoot.windows.WindowsRequestHandler method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/handlers/windows.html#dragonBoot.windows.descriptorSet.GetDescriptorSetHandler.elementSize">elementSize (dragonBoot.windows.descriptorSet.GetDescriptorSetHandler attribute)</a>
+</li>
       <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashOp.erase">erase (dragonBoot.flash.SPIFlashOp attribute)</a>
+</li>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUState.error">error (dragonBoot.dfu.DFUState attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -255,8 +297,30 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFURequestHandler.generateROM">generateROM() (dragonBoot.dfu.DFURequestHandler method)</a>
+
+      <ul>
+        <li><a href="gateware/handlers/windows.html#dragonBoot.windows.descriptorSet.GetDescriptorSetHandler.generateROM">(dragonBoot.windows.descriptorSet.GetDescriptorSetHandler method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/handlers/windows.html#dragonBoot.windows.descriptorSet.GetDescriptorSetHandler">GetDescriptorSetHandler (class in dragonBoot.windows.descriptorSet)</a>
+</li>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.Slot.bitstream.GreedyRange">GreedyRange (dragonBoot.ice40.dragonBoot.ice40.Slot.bitstream attribute)</a>
 </li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFURequestHandler.handlerCondition">handlerCondition() (dragonBoot.dfu.DFURequestHandler method)</a>
+
+      <ul>
+        <li><a href="gateware/handlers/windows.html#dragonBoot.windows.WindowsRequestHandler.handlerCondition">(dragonBoot.windows.WindowsRequestHandler method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -283,13 +347,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.BootMode.mode">mode (dragonBoot.ice40.dragonBoot.ice40.BootMode attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     module
 
       <ul>
         <li><a href="gateware/flash.html#module-dragonBoot.spi">dragonBoot.spi</a>
+</li>
+        <li><a href="gateware/handlers/windows.html#module-dragonBoot.windows">dragonBoot.windows</a>
+</li>
+        <li><a href="gateware/handlers/windows.html#module-dragonBoot.windows.descriptorSet">dragonBoot.windows.descriptorSet</a>
 </li>
       </ul></li>
   </ul></td>
@@ -308,6 +374,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.BankOffset.offset">offset (dragonBoot.ice40.dragonBoot.ice40.BankOffset attribute)</a>
 </li>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUStatus.ok">ok (dragonBoot.dfu.DFUStatus attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.Opcodes">Opcodes (class in dragonBoot.ice40)</a>
@@ -322,11 +390,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashCmd.pageProgram">pageProgram (dragonBoot.flash.SPIFlashCmd attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.dragonBoot.ice40.Instruction.payload">payload (dragonBoot.ice40.dragonBoot.ice40.Instruction attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gateware/platforms/helpers/ice40.html#dragonBoot.ice40.Payload">Payload (in module dragonBoot.ice40)</a>
+</li>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFURequestHandler.printSlotInfo">printSlotInfo() (dragonBoot.dfu.DFURequestHandler method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -393,6 +463,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/handlers/dfu.html#dragonBoot.dfu.DFUState.uploadIdle">uploadIdle (dragonBoot.dfu.DFUState attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -410,6 +488,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gateware/handlers/windows.html#dragonBoot.windows.WindowsRequestHandler">WindowsRequestHandler (class in dragonBoot.windows)</a>
+</li>
       <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashOp.write">write (dragonBoot.flash.SPIFlashOp attribute)</a>
 </li>
       <li><a href="gateware/flash.html#dragonBoot.flash.SPIFlashCmd.writeEnable">writeEnable (dragonBoot.flash.SPIFlashCmd attribute)</a>
