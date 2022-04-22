@@ -146,7 +146,7 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield Settle()
 		yield
 
-	def receiveData(*, data : Union[Tuple[int],bytes], check = True):
+	def receiveData(*, data : Union[Tuple[int], bytes], check = True):
 		result = True
 		yield tx.ready.eq(1)
 		yield interface.data_requested.eq(1)

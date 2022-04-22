@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from amaranth import Module, Signal, DomainRenamer, Cat, Memory, Const
-from amaranth.hdl.rec import DIR_FANOUT
 from amaranth.lib.fifo import AsyncFIFO
 from usb_protocol.types import USBRequestType, USBRequestRecipient, USBStandardRequests
 from usb_protocol.types.descriptors.dfu import DFURequests
@@ -298,24 +297,24 @@ class DFURequestHandler(USBRequestHandler):
 		receiverContinue = (receiverConsumed < receiverCount)
 
 		with m.FSM(domain = 'usb', name = 'download'):
-            # IDLE -- we're not actively receiving
+			# IDLE -- we're not actively receiving
 			with m.State('IDLE'):
-                # Keep our consumption count at 0 while we've not yet consumed anything
+				# Keep our consumption count at 0 while we've not yet consumed anything
 				m.d.usb += receiverConsumed.eq(0)
-                # Once the download handler requests we start, begin consuming the data
+				# Once the download handler requests we start, begin consuming the data
 				with m.If(receiverStart):
 					m.d.usb += receiverCount.eq(setup.length - 1)
 					m.next = 'STREAMING'
-            # STREAMING -- we're actively consuming data
+			# STREAMING -- we're actively consuming data
 			with m.State('STREAMING'):
-                # If the current data byte becomes valid, store it and move to the next
+				# If the current data byte becomes valid, store it and move to the next
 				with m.If(rxStream.valid & rxStream.next):
 					m.d.comb += bitstreamFIFO.w_en.eq(1)
 
-                    # Update the counter if we need to continue
+					# Update the counter if we need to continue
 					with m.If(receiverContinue):
 						m.d.usb += receiverConsumed.eq(receiverConsumed + 1)
-                    # Otherwise go back to idle
+					# Otherwise go back to idle
 					with m.Else():
 						m.next = 'IDLE'
 

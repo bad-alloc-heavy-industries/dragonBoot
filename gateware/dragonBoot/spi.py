@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth import Elaboratable, Module, Signal, Cat, ClockSignal
+from amaranth import Elaboratable, Module, Signal, Cat
 
 __all__ = (
 	'SPIBus',
