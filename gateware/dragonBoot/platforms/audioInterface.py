@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth.build import Resource, Pins, Clock, Attrs
+from amaranth.build import Attrs
 from amaranth_boards.resources.interface import SPIResource, ULPIResource
 from ..platform import DragonICE40Platform, Flash, platform
 
@@ -9,20 +9,25 @@ __all__ = (
 
 @platform
 class AudioInterfacePlatform(DragonICE40Platform):
+	""" Platform for `HeadphoneAmp's audio interface <https://github.com/dragonmux/HeadphoneAmp>`_.
+
+	Used to allow the device gateware to be upgraded or swapped out on the fly,
+	this defines the bare minimum of the resources on the board requried to to perform this task:
+
+	* A SPI resource to access the configuration Flash (A GD25Q40C)
+	* The UPLI Phy used to provide USB HS to the board
+
+		* This resource is also responsible for providing our operating clock -
+		  the phy on the board is a USB3318 which produces a 60MHz clock from its associated
+		  13MHz clock source.
+
+	* The Flash configuration object requried to describe the GD25Q40C Flash
+	"""
+
 	device = 'iCE40HX8K'
 	package = 'BG121'
-	toolchain = 'IceStorm'
-
-	default_clk = 'sys_clk'
 
 	resources = [
-		Resource(
-			'sys_clk', 0,
-			Pins('B6', dir = 'i', assert_width = 1),
-			Clock(36.864e6),
-			Attrs(GLOBAL = True, IO_STANDARD = 'SB_LVCMOS')
-		),
-
 		SPIResource(
 			'flash_spi', 0,
 			clk = 'L10',
@@ -62,5 +67,4 @@ class AudioInterfacePlatform(DragonICE40Platform):
 			elaboratable, name, build_dir, do_build, program_opts, do_program,
 			synth_opts = ['-abc9'], nextpnr_opts = ['--tmg-ripup', '--seed=0'],
 			**kwargs
-			#'--opt-timing',
 		)
