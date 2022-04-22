@@ -13,6 +13,7 @@ extensions = [
 	'sphinx.ext.autodoc',
 	'sphinx.ext.intersphinx',
 	'sphinx.ext.todo',
+	'sphinx.ext.githubpages',
 	'sphinx.ext.graphviz',
 	'sphinx.ext.napoleon',
 	'sphinx_rtd_theme',

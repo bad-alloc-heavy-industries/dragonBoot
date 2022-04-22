@@ -1,0 +1,50 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  docs:
+    name: 'build gh-docs'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10
+      - name: Setup Environment
+        shell: bash
+        env:
+          WORKSPACE: ${{ github.workspace }}
+        run: |
+          echo "$HOME/.local/bin:$PATH" >> $GITHUB_PATH
+          echo "GITHUB_WORKSPACE=\"`pwd`\"" >> $GITHUB_ENV
+      - name: Checkout dragonBoot
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          submodules: true
+      - name: Setup Sphinx
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install graphviz
+          sudo pip3 install -U pip setuptools wheel
+          pip3 install --user -r requirements.txt
+          pip3 install --user -r docs/requirements.txt
+      - name: Build
+        shell: bash
+        run: sphinx-build -b html docs build
+      - name: Deploy
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target-branch: gh-pages
+          build_dir: build
+          keep_history: true
+          allow_empty_commit: false
+          jekyll: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
