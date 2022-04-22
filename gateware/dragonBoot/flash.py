@@ -62,7 +62,7 @@ class SPIFlash(Elaboratable):
 	writeAddr : Signal(24)
 		The internal current write address for the Flash
 	"""
-	def __init__(self, *, resource, fifo : AsyncFIFO, flashSize : int):
+	def __init__(self, *, resource, fifo : AsyncFIFO):
 		"""
 		Parameters
 		----------
@@ -70,8 +70,6 @@ class SPIFlash(Elaboratable):
 			The fully qualified identifier for the platform resource defining the SPI bus to use
 		fifo
 			A FIFO buffer used as the data input to Flash write operations
-		flashSize
-			The platform.flash.size (to be removed)
 
 		Notes
 		-----
@@ -85,7 +83,6 @@ class SPIFlash(Elaboratable):
 		"""
 		self._flashResource = resource
 		self._fifo = fifo
-		self._flashSize = flashSize
 
 		self.ready = Signal()
 		self.start = Signal()

@@ -67,7 +67,7 @@ class DFURequestHandler(USBRequestHandler):
 			width = 8, depth = _flash.erasePageSize, r_domain = 'usb', w_domain = 'usb'
 		)
 		flash : SPIFlash = DomainRenamer({'sync': 'usb'})(
-			SPIFlash(resource = self._flashResource, fifo = bitstreamFIFO, flashSize = _flash.size)
+			SPIFlash(resource = self._flashResource, fifo = bitstreamFIFO)
 		)
 		m.submodules.flash = flash
 		m.submodules.transmitter = transmitter = StreamSerializer(
