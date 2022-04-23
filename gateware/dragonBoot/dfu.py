@@ -57,6 +57,25 @@ class DFUConfig:
 		self.state = Signal(4, decoder = DFUState)
 
 class DFURequestHandler(USBRequestHandler):
+	""" The DFU request handling engine
+
+	Parameters
+	----------
+	interface
+		The USB interface number this handler should be bound on - must match value in the descriptors
+	resource
+		The fully qualified identifier for the platform resource defining the SPI bus to use to access
+		the configuration Flash
+
+	Attributes
+	----------
+	triggerReboot : Signal(), output
+		A signal indicating if the bootloader should trigger a reboot into the main gateware slot
+
+	Notes
+	-----
+	#
+	"""
 	def __init__(self, *, interface : int, resource : Tuple[str, int]):
 		super().__init__()
 
@@ -66,6 +85,18 @@ class DFURequestHandler(USBRequestHandler):
 		self.triggerReboot = Signal()
 
 	def elaborate(self, platform) -> Module:
+		""" Describses the specific gateware needed to implement DFU and its handling on USB EP0
+
+		Parameters
+		----------
+		platform
+			The Amaranth platform for which the gateware will be synthesised
+
+		Returns
+		-------
+		:py:class:`amaranth.hdl.dsl.Module`
+			A complete description of the gateware behaviour required
+		"""
 		m = Module()
 		interface = self.interface
 		setup = interface.setup
@@ -339,6 +370,28 @@ class DFURequestHandler(USBRequestHandler):
 		return m
 
 	def handlerCondition(self, setup : SetupPacket):
+		""" Defines the setup packet conditions under which the request handler will operate
+
+		This is used to gate the handler's operation and forms part of the condition under which
+		the stall-only handler in :py:class:`dragonBoot.bootloader.DragonBoot` will be triggered
+
+		Parameters
+		----------
+		setup
+			A grouping of signals used to describe the most recent setup packet the control interface has seen
+
+		Returns
+		-------
+		:py:class:`amranth.hdl.ast.Operator`
+			A combinatorial operation defining the sum conditions under which this handler will operate
+
+		Notes
+		-----
+		The condition for the operation of this handler is defined as being either:
+
+		* A Standard request to the handler's interface, or
+		* A Class-specific (ie, DFU) request to the handler's interface
+		"""
 		return (
 			((setup.type == USBRequestType.CLASS) | (setup.type == USBRequestType.STANDARD)) &
 			(setup.recipient == USBRequestRecipient.INTERFACE) &
