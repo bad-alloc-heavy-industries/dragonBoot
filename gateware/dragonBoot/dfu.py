@@ -74,7 +74,46 @@ class DFURequestHandler(USBRequestHandler):
 
 	Notes
 	-----
-	#
+	The handler operates by reacting to incomming setup packets for the DFU interface. Of most notable
+	interest are how it handles DFU detach and download requests as the rest are essentailly boilerplate
+	requried by the `DFU 1.1 standard <https://www.usb.org/sites/default/files/DFU_1.1.pdf>`_.
+
+	Detach requests are handled by asserting the triggerReboot signal and stalling in the HANDLE_DETACH state.
+	Download requests are handled as follows:
+
+	* First we enter the HANDLE_DOWNLOAD state
+	* The length of the request is checked and if 0, we then enter the HANDLE_DOWNLOAD_COMPLETE state
+
+	 	* Once in the new state we wait for the status phase where we respond with a ZLP,
+		  and change the DFU state back to dfuIdle
+		* After completion of the status phase with the resulting acknowledgment returning to us, we enter IDLE again
+
+	* If the length of the request is non-zero but less than the Flash sector erase page size, we enter
+	  HANDLE_DOWNLOAD_DATA where the following steps are performed:
+
+		* We first trigger the secondary download state machine which handles pulling the payload bytes
+		  from the stream interface as they come in
+		* Once the data phase completes, sends the coresponding acknowledgement to let the
+		  host know it was successfull
+		* As the status phase starts, sends the coresponding ZLP
+		* Then transitions back to IDLE, resetting the trigger on the download state machine,
+		  when the ACK comes back from the host
+
+	* If the length of the request exceeds the Flash device's sector erase page size, then we send the host
+	  a stall response to indicate failure, and return to IDLE - this should technically be impossible in
+	  a conforming implementation of DFU on the host, but we have to act defensively.
+
+	It is of particular note that the download state machine pushes the payload bytes to the bitstream FIFO
+	which is also passed through to the SPI Flash interface. This FIFO is created with enough entires
+	to store a complete Flash sector erase page of data, and re-entry into the HANDLE_DOWNLOAD state is gated
+	using the DFU protocol's status system through which we indicate to a host that Flash operations are busy
+	till not only is the FIFO exhausted, but the SPI Flash engine reports it has completed getting the data
+	written back to the configuration Flash.
+
+	If a DFU implementation tries to send a download request before we tell it we're ready for another,
+	it would be considered non-conforming, however this should not hurt us as while it will corrupt
+	the data written to the Flash, the FIFO can correctly handle exhaustion so should still allow operations
+	to complete. Therefore we have not attempted to further handle this other than "well just don't do that then".
 	"""
 	def __init__(self, *, interface : int, resource : Tuple[str, int]):
 		super().__init__()
