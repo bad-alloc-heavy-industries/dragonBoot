@@ -104,7 +104,50 @@ the configuration Flash</p></li>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>#</p>
+<p>The handler operates by reacting to incomming setup packets for the DFU interface. Of most notable
+interest are how it handles DFU detach and download requests as the rest are essentailly boilerplate
+requried by the <a class="reference external" href="https://www.usb.org/sites/default/files/DFU_1.1.pdf">DFU 1.1 standard</a>.</p>
+<p>Detach requests are handled by asserting the triggerReboot signal and stalling in the HANDLE_DETACH state.
+Download requests are handled as follows:</p>
+<ul>
+<li><p>First we enter the HANDLE_DOWNLOAD state</p></li>
+<li><p>The length of the request is checked and if 0, we then enter the HANDLE_DOWNLOAD_COMPLETE state</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Once in the new state we wait for the status phase where we respond with a ZLP,
+and change the DFU state back to dfuIdle</p></li>
+<li><p>After completion of the status phase with the resulting acknowledgment returning to us, we enter IDLE again</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>If the length of the request is non-zero but less than the Flash sector erase page size, we enter
+HANDLE_DOWNLOAD_DATA where the following steps are performed:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>We first trigger the secondary download state machine which handles pulling the payload bytes
+from the stream interface as they come in</p></li>
+<li><p>Once the data phase completes, sends the coresponding acknowledgement to let the
+host know it was successfull</p></li>
+<li><p>As the status phase starts, sends the coresponding ZLP</p></li>
+<li><p>Then transitions back to IDLE, resetting the trigger on the download state machine,
+when the ACK comes back from the host</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>If the length of the request exceeds the Flash device’s sector erase page size, then we send the host
+a stall response to indicate failure, and return to IDLE - this should technically be impossible in
+a conforming implementation of DFU on the host, but we have to act defensively.</p></li>
+</ul>
+<p>It is of particular note that the download state machine pushes the payload bytes to the bitstream FIFO
+which is also passed through to the SPI Flash interface. This FIFO is created with enough entires
+to store a complete Flash sector erase page of data, and re-entry into the HANDLE_DOWNLOAD state is gated
+using the DFU protocol’s status system through which we indicate to a host that Flash operations are busy
+till not only is the FIFO exhausted, but the SPI Flash engine reports it has completed getting the data
+written back to the configuration Flash.</p>
+<p>If a DFU implementation tries to send a download request before we tell it we’re ready for another,
+it would be considered non-conforming, however this should not hurt us as while it will corrupt
+the data written to the Flash, the FIFO can correctly handle exhaustion so should still allow operations
+to complete. Therefore we have not attempted to further handle this other than “well just don’t do that then”.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.dfu.DFURequestHandler.elaborate">
 <span class="sig-name descname"><span class="pre">elaborate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.dsl.Module</span></span></span><a class="headerlink" href="#dragonBoot.dfu.DFURequestHandler.elaborate" title="Permalink to this definition"></a></dt>
