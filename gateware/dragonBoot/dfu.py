@@ -399,11 +399,49 @@ class DFURequestHandler(USBRequestHandler):
 		)
 
 	def printSlotInfo(self, flash : Flash):
+		""" Prints out the slot configuration information for the given Flash object
+
+		Parameters
+		----------
+		flash
+			A Flash object containing the :py:attr:`Flash.slots` and :py:attr:`Flash.partitions`
+			information to be printed
+		"""
 		logging.info(f'Building for a {flash.humanSize} Flash with {flash.slots} boot slots')
 		for partition, slot in flash.partitions.items():
 			logging.info(f'Boot slot {partition} starts at {slot["beginAddress"]:#08x} and finishes at {slot["endAddress"]:#08x}')
 
-	def generateROM(self, flash : Flash):
+	def generateROM(self, flash : Flash) -> Memory:
+		""" Generates the ROM image for the layout of the Flash
+
+		This image is laid out as follows:
+
+		+---------+--------------+
+		| Address |     Data     |
+		+=========+==============+
+		|    0    | Slot 0 Begin |
+		+---------+--------------+
+		|    1    | Slot 0 End   |
+		+---------+--------------+
+		|    2    | Slot 1 Begin |
+		+---------+--------------+
+		|    3    | Slot 1 End   |
+		+---------+--------------+
+		|            ⋮           |
+		+------------------------+
+
+		Parameters
+		----------
+		flash
+			The Flash object  from which the ROM image will be derived
+
+		Returns
+		-------
+		:py:class:`amaranth.hdl.mem.Memory`
+			a Memory object defining the Flash slot address layout as described above.
+			The memory object uses 24-bit entries as the Flash addresses are 24-bit,
+			and has :py:attr:`Flash.slots` * 2 entries.
+		"""
 		# 4 bytes per address, 2 addresses per slot (but the highest byte of each address will get truncated off)
 		totalSize = flash.slots * 8
 		rom = bytearray(totalSize)
