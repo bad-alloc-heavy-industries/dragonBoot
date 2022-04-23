@@ -22,18 +22,36 @@ __all__ = (
 
 @unique
 class DFUState(IntEnum):
+	""" An enumeration of the states the DFU request handler engine can be in. """
 	dfuIdle = 2
+	""" The DFU request handler is in an idle state """
 	downloadSync = 3
+	""" The engine has just finished processing a download request and is awaiting a status request """
 	downloadBusy = 4
+	""" The engine is processing a download request """
 	downloadIdle = 5
+	""" The engine has processed at least one download request but is currently idle """
 	uploadIdle = 9
+	""" The engine has processed at least one upload request but is currently idle """
 	error = 10
+	""" The engine has encountered an error of some kind """
 
 @unique
 class DFUStatus(IntEnum):
+	""" An enumeration of the status states the DFU request handler engine can be in. """
 	ok = 0
+	""" The engine is not in error and all is in order """
 
 class DFUConfig:
+	""" A tracking type for the current state and status of the DFU request handler engine.
+
+	Attributes
+	----------
+	status : Signal(4, decoder = DFUStatus)
+		A 4-bit register containing the current status of the DFU request handler from the :py:class:DFUStatus enum
+	state : Signal(4, decoder = DFUState)
+		A 4-bit register containing the current state of the DFU request handler from the :py:class:DFUState enum
+	"""
 	def __init__(self):
 		self.status = Signal(4, decoder = DFUStatus)
 		self.state = Signal(4, decoder = DFUState)
