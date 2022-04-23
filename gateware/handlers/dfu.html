@@ -108,7 +108,7 @@ the configuration Flash</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.dfu.DFURequestHandler.elaborate">
 <span class="sig-name descname"><span class="pre">elaborate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.dsl.Module</span></span></span><a class="headerlink" href="#dragonBoot.dfu.DFURequestHandler.elaborate" title="Permalink to this definition"></a></dt>
-<dd><p>Describses the specific gateware needed to implement DFU and its handling on USB EP0</p>
+<dd><p>Describes the specific gateware needed to implement DFU and its handling on USB EP0</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>platform</strong> – The Amaranth platform for which the gateware will be synthesised</p>
@@ -162,8 +162,8 @@ information to be printed</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.dfu.DFURequestHandler.generateROM">
 <span class="sig-name descname"><span class="pre">generateROM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dragonBoot.platform.Flash</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.mem.Memory</span></span></span><a class="headerlink" href="#dragonBoot.dfu.DFURequestHandler.generateROM" title="Permalink to this definition"></a></dt>
-<dd><p>Generates the ROM image for the layout of the Flash</p>
-<p>This image is laid out as follows:</p>
+<dd><p>Generates the ROM for the layout of the Flash</p>
+<p>This ROM is laid out as follows:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 39%" />
@@ -187,7 +187,7 @@ information to be printed</p>
 <tr class="row-odd"><td><p>3</p></td>
 <td><p>Slot 1 End</p></td>
 </tr>
-<tr class="row-even"><td colspan="2"><p>⋮</p></td>
+<tr class="row-even"><td colspan="2"><p>… |</p></td>
 </tr>
 </tbody>
 </table>
@@ -196,7 +196,7 @@ information to be printed</p>
 <dd class="field-odd"><p><strong>flash</strong> – The Flash object  from which the ROM image will be derived</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a Memory object defining the Flash slot address layout as described above.
+<dd class="field-even"><p>A Memory object defining the Flash slot address layout as described above.
 The memory object uses 24-bit entries as the Flash addresses are 24-bit,
 and has <code class="xref py py-attr docutils literal notranslate"><span class="pre">Flash.slots</span></code> * 2 entries.</p>
 </dd>
