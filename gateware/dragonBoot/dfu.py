@@ -85,7 +85,7 @@ class DFURequestHandler(USBRequestHandler):
 		self.triggerReboot = Signal()
 
 	def elaborate(self, platform) -> Module:
-		""" Describses the specific gateware needed to implement DFU and its handling on USB EP0
+		""" Describes the specific gateware needed to implement DFU and its handling on USB EP0
 
 		Parameters
 		----------
@@ -412,9 +412,9 @@ class DFURequestHandler(USBRequestHandler):
 			logging.info(f'Boot slot {partition} starts at {slot["beginAddress"]:#08x} and finishes at {slot["endAddress"]:#08x}')
 
 	def generateROM(self, flash : Flash) -> Memory:
-		""" Generates the ROM image for the layout of the Flash
+		""" Generates the ROM for the layout of the Flash
 
-		This image is laid out as follows:
+		This ROM is laid out as follows:
 
 		+---------+--------------+
 		| Address |     Data     |

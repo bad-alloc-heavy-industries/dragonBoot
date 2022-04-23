@@ -4,7 +4,7 @@ from usb_protocol.types import USBRequestType, USBRequestRecipient
 from usb_protocol.types.descriptors.microsoft import MicrosoftRequests
 from usb_protocol.emitters.descriptors.microsoft import PlatformDescriptorCollection
 from luna.gateware.usb.usb2.request import (
-	USBRequestHandler, SetupPacket, USBOutStreamInterface
+	USBRequestHandler, SetupPacket
 )
 
 from .descriptorSet import GetDescriptorSetHandler

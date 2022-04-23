@@ -10,19 +10,26 @@ __all__ = (
 )
 
 class GetDescriptorSetHandler(Elaboratable):
-	""" Gateware that handles responding to windows-specific GetDescriptorSet requests.
+	""" Gateware that handles responding to platform-specific windows GET_DESCRIPTOR_SET requests.
 
-	I/O port:
-		I: request[8]    -- The request field associated with the Get Descriptor Set request.
-		                    Contains the descriptor set's vendor code.
-		I: length[16]    -- The length field associated with the Get Descriptor Set request.
-		                    Determines the maximum amount allowed in a response.
+	Attributes
+	----------
+		request : Signal(8), input
+			The request field associated with the Get Descriptor Set request.
+			Contains the descriptor set's vendor code.
+		length : Signal(16), input
+			The length field associated with the Get Descriptor Set request.
+			Determines the maximum amount allowed in a response.
 
-		I: start         -- Strobe that indicates when a descriptor should be transmitted.
-		I: startPosition -- Specifies the starting position of the descriptor data to be transmitted.
+		start : Signal(), input
+			Strobe that indicates when a descriptor should be transmitted.
+		startPosition : Signal(11), input
+			Specifies the starting position of the descriptor data to be transmitted.
 
-		*: tx            -- The USBInStreamInterface that streams our descriptor data.
-		O: stall         -- Pulsed if a STALL handshake should be generated, instead of a response.
+		tx : USBInStreamInterface(), inout
+			The USBInStreamInterface that streams our descriptor data.
+		stall : Signal(), output
+			Pulsed if a STALL handshake should be generated, instead of a response.
 	"""
 	elementSize = 4
 
@@ -31,7 +38,7 @@ class GetDescriptorSetHandler(Elaboratable):
 		Parameters
 		----------
 		descriptorCollection : PlatformDescriptorCollection
-			The PlatformDescriptorCollection containing the descriptors to use for windows platform-specific responses.
+			The PlatformDescriptorCollection containing the descriptors to use for platform-specific windows responses.
 		maxPacketLength: int
 			Maximum EP0 packet length.
 		domain: string
@@ -61,10 +68,9 @@ class GetDescriptorSetHandler(Elaboratable):
 	def generateROM(self) -> Tuple[Memory, int, int]:
 		""" Generates a ROM used to hold descriptor sets.
 
-		Memory layout
-		-------------
-
 		All data is aligned to 4 byte boundaries
+
+		This ROM is laid out as follows:
 
 		Index offsets and descriptor set lengths
 		----------------------------------------
@@ -72,15 +78,25 @@ class GetDescriptorSetHandler(Elaboratable):
 		of the descriptor set (2 bytes) and the address of the first data
 		byte (2 bytes).
 
-		0000  Length of the first descriptor set
-		0002  Address of the first descriptor set
-		...
+		+---------+--------------------------------------+
+		| Address |                 Data                 |
+		+=========+======================================+
+		|    0000 | Length of the first descriptor set   |
+		+---------+--------------------------------------+
+		|    0002 | Address of the first descriptor set  |
+		+---------+--------------------------------------+
+		|     ... |                                      |
+		+---------+--------------------------------------+
 
 		Data
 		----
 		Descriptor data for each descriptor set. Padded by 0 to the next 4-byte address.
 
-		...   Descriptor data
+		+---------+--------------------------------------+
+		| Address |                 Data                 |
+		+=========+======================================+
+		|     ... | Descriptor data                      |
+		+---------+--------------------------------------+
 
 		"""
 
@@ -121,6 +137,18 @@ class GetDescriptorSetHandler(Elaboratable):
 		return Memory(width = 32, depth = len(initialiser), init = initialiser), maxDescriptorSize, maxVendorCode
 
 	def elaborate(self, platform) -> Module:
+		""" Describes the specific gateware needed to implement platform-specific windows GET_DESCRIPTOR_SET requests
+
+		Parameters
+		----------
+		platform
+			The Amaranth platform for which the gateware will be synthesised
+
+		Returns
+		-------
+		:py:class:`amaranth.hdl.dsl.Module`
+			A complete description of the gateware behaviour required
+		"""
 		m = Module()
 		rom, descriptorMaxLength, maxVendorCode = self.generateROM()
 		m.submodules.readPort = readPort = rom.read_port(transparent = False)
