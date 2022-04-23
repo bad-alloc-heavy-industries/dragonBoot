@@ -68,36 +68,44 @@ class GetDescriptorSetHandler(Elaboratable):
 	def generateROM(self) -> Tuple[Memory, int, int]:
 		""" Generates a ROM used to hold descriptor sets.
 
+		Notes
+		-----
 		All data is aligned to 4 byte boundaries
 
 		This ROM is laid out as follows:
 
-		Index offsets and descriptor set lengths
-		----------------------------------------
-		Each index of a descriptor set has an entry consistent of the length
-		of the descriptor set (2 bytes) and the address of the first data
-		byte (2 bytes).
+		* Index offsets and descriptor set lengths
 
-		+---------+--------------------------------------+
-		| Address |                 Data                 |
-		+=========+======================================+
-		|    0000 | Length of the first descriptor set   |
-		+---------+--------------------------------------+
-		|    0002 | Address of the first descriptor set  |
-		+---------+--------------------------------------+
-		|     ... |                                      |
-		+---------+--------------------------------------+
+			Each index of a descriptor set has an entry consistent of the length
+			of the descriptor set (2 bytes) and the address of the first data
+			byte (2 bytes).
 
-		Data
-		----
-		Descriptor data for each descriptor set. Padded by 0 to the next 4-byte address.
+			+---------+--------------------------------------+
+			| Address |                 Data                 |
+			+=========+======================================+
+			|    0000 | Length of the first descriptor set   |
+			+---------+--------------------------------------+
+			|    0002 | Address of the first descriptor set  |
+			+---------+--------------------------------------+
+			|     ... |                                      |
+			+---------+--------------------------------------+
 
-		+---------+--------------------------------------+
-		| Address |                 Data                 |
-		+=========+======================================+
-		|     ... | Descriptor data                      |
-		+---------+--------------------------------------+
+		* Data
 
+			Descriptor data for each descriptor set. Padded by 0 to the next 4-byte address.
+
+			+---------+--------------------------------------+
+			| Address |                 Data                 |
+			+=========+======================================+
+			|     ... | Descriptor data                      |
+			+---------+--------------------------------------+
+
+		Returns
+		-------
+		:py:class:`amaranth.hdl.mem.Memory`
+			a Memory object defining the Flash slot address layout as described above.
+			The memory object uses 24-bit entries as the Flash addresses are 24-bit,
+			and has :py:attr:`Flash.slots` * 2 entries.
 		"""
 
 		descriptors = self._descriptors.descriptors
