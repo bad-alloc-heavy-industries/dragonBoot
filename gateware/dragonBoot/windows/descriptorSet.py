@@ -102,10 +102,13 @@ class GetDescriptorSetHandler(Elaboratable):
 
 		Returns
 		-------
-		:py:class:`amaranth.hdl.mem.Memory`
-			a Memory object defining the Flash slot address layout as described above.
-			The memory object uses 24-bit entries as the Flash addresses are 24-bit,
-			and has :py:attr:`Flash.slots` * 2 entries.
+		Tuple[:py:class:`amaranth.hdl.mem.Memory`, int, int]
+			A List containing:
+
+				* A Memory object defining the descriptor data and access information as defined above.
+				  The memory object uses 32-bit entries which the descriptor gateware accesses accordingly.
+				* The length of the largest held descriptor
+				* The highest Vendor code number used by the descriptors for retrieval
 		"""
 
 		descriptors = self._descriptors.descriptors

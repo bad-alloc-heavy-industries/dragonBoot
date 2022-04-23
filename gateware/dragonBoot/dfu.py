@@ -438,7 +438,7 @@ class DFURequestHandler(USBRequestHandler):
 		Returns
 		-------
 		:py:class:`amaranth.hdl.mem.Memory`
-			a Memory object defining the Flash slot address layout as described above.
+			A Memory object defining the Flash slot address layout as described above.
 			The memory object uses 24-bit entries as the Flash addresses are 24-bit,
 			and has :py:attr:`Flash.slots` * 2 entries.
 		"""
