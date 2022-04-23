@@ -14,6 +14,18 @@ __all__ = (
 )
 
 class WindowsRequestHandler(USBRequestHandler):
+	""" The handler for platform-specific Windows requests
+
+	Parameters
+	----------
+	descriptors
+		A collection of the platform-specific descriptors to respond to windows with as requested
+	maxPacketSize
+		The size of the largest allowable packet configured on endpoint 0
+
+	Notes
+	-----
+	"""
 	def __init__(self, descriptors : PlatformDescriptorCollection, maxPacketSize = 64):
 		self.descriptors = descriptors
 		self._maxPacketSize = maxPacketSize
