@@ -57,6 +57,18 @@ class WindowsRequestHandler(USBRequestHandler):
 		super().__init__()
 
 	def elaborate(self, platform) -> Module:
+		""" Describes the specific gateware needed to implement the platform-specific windows descriptor handling on USB EP0
+
+		Parameters
+		----------
+		platform
+			The Amaranth platform for which the gateware will be synthesised
+
+		Returns
+		-------
+		:py:class:`amaranth.hdl.dsl.Module`
+			A complete description of the gateware behaviour required
+		"""
 		m = Module()
 		interface = self.interface
 		setup = interface.setup
@@ -124,6 +136,34 @@ class WindowsRequestHandler(USBRequestHandler):
 		return m
 
 	def handlerCondition(self, setup : SetupPacket):
+		""" Defines the setup packet conditions under which the request handler will operate
+
+		This is used to gate the handler's operation and forms part of the condition under which
+		the stall-only handler in :py:class:`dragonBoot.bootloader.DragonBoot` will be triggered
+
+		Parameters
+		----------
+		setup
+			A grouping of signals used to describe the most recent setup packet the control interface has seen
+
+		Returns
+		-------
+		:py:class:`amranth.hdl.ast.Operator`
+			A combinatorial operation defining the sum conditions under which this handler will operate
+
+		Notes
+		-----
+		The condition for the operation of this handler is defined as being:
+
+		* A Vendor request directly to the device
+		* for either index value 7 or 8, respectively meaning
+
+			* GET_DESCRIPTOR_SET, and
+			* SET_ALTERNATE_ENUM
+
+		The latter has not been given support as we don't currently allow swapping out the device
+		descriptors in this manner.
+		"""
 		return (
 			(setup.type == USBRequestType.VENDOR) &
 			(setup.recipient == USBRequestRecipient.DEVICE) &
