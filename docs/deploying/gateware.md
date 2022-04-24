@@ -13,7 +13,7 @@ The dragonBoot gateware requires the following:
 Installing Python
 -----------------
 
-First install python + pip for your platform:
+First install `python` + `pip` for your platform:
 
 ```{eval-rst}
 .. platform-picker::
@@ -22,14 +22,14 @@ First install python + pip for your platform:
 
     .. code-block:: console
 
-      $ sudo pacman -S python python-pip
+      $ sudo pacman -S python python-pip python-virtualenv
 
   .. platform-choice:: debian
     :title: Debian/Ubuntu Linux
 
     .. code-block:: console
 
-      $ sudo apt install python3 python3-pip
+      $ sudo apt install python3 python3-pip python3-virtualenv
 
   .. platform-choice:: linux
     :title: Other Linux
@@ -44,6 +44,7 @@ First install python + pip for your platform:
     .. code-block:: console
 
       $ brew install python
+      $ pip3 install virtualenv
 
   .. platform-choice:: windows
     :title: Windows
@@ -51,6 +52,27 @@ First install python + pip for your platform:
     Download the latest installer from `the Python downloads page <https://www.python.org/downloads/>`_
     and follow the instructions in the installer to have Python end up on %PATH%
 
+```
+
+Once you have completed the platform-specific steps, please create a virtual environment and activate it
+for all further steps:
+
+```{code-block} console
+
+$ virtualenv env
+created virtual environment CPython3.10.4.final.0-64 in 100ms
+  creator CPython3Posix(dest=/tmp/env, clear=False, no_vcs_ignore=False, global=False)
+  seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/home/dx-mon/.local/share/virtualenv)
+    added seed packages: pip==22.0.4, setuptools==61.1.1, wheel==0.37.1
+  activators BashActivator,CShellActivator,FishActivator,NushellActivator,PowerShellActivator,PythonActivator
+$ . env/bin/activate
+```
+
+```{note}
+
+Windows users will need to either use MSYS2, WSL2 and follow the Linux instructions, or substitute
+`. env/bin/activate` for `call env/bin/activate.bat` if using the windows command line.
+We recomend using Windows Terminal for a better experience doing this.
 ```
 
 Once you have python you will then need Yosys and nextpnr.
@@ -71,10 +93,11 @@ Native Yosys and nextpnr
 
       $ sudo pacman -S yosys
 
-    however, it is preferred due to some features dragonBoot needs for the toolchain to be installed from the AUR.
-    nexpnr is not available in repos, so must be installed from the AUR.
+    however, it is preferred due to some features dragonBoot needs for the toolchain to be installed from the
+    `AUR <https://aur.archlinux.org/>`_. :code:`nexpnr` is not available in repos, so must be installed from the AUR.
 
-    To install yosys from the AUR, install the yosys-nightly package with your favourite AUR helper, or run:
+    To install :code:`Yosys` from the AUR, install the :code:`yosys-nightly` package with your favourite AUR helper,
+    or run:
 
     .. code-block:: console
 
@@ -82,8 +105,8 @@ Native Yosys and nextpnr
       $ cd yosys-nightly
       $ makepkg -sic yosys-nightly
 
-    Once installed you must then pick a nextpnr to install suitable for your target.
-    For the Lattice iCE40 parts, install nextpnr-ice40-nightly with your favourite AUR helper, or run:
+    Once installed you must then pick a :code:`nextpnr` to install suitable for your target.
+    For the Lattice iCE40 parts, install :code:`nextpnr-ice40-nightly` with your favourite AUR helper, or run:
 
     .. code-block:: console
 
@@ -91,7 +114,7 @@ Native Yosys and nextpnr
       $ cd nextpnr-ice40-nightly
       $ makepkg -sic nextpnr-ice40-nightly
 
-    For the Lattice ECP5 parts, install nextpnr-ecp5-nightly with your favourite AUR helper, or run:
+    For the Lattice ECP5 parts, install :code:`nextpnr-ecp5-nightly` with your favourite AUR helper, or run:
 
     .. code-block:: console
 
@@ -99,12 +122,26 @@ Native Yosys and nextpnr
       $ cd nextpnr-ecp5-nightly
       $ makepkg -sic nextpnr-ecp5-nightly
 
+  .. platform-choice:: debian
+    :title: Debian/Ubuntu Linux
+
+    The Debian versions of :code:`Yosys` and :code:`nextpnr` are too old, so you must use the
+    `YoWASP <#yowasp-yosys-and-nextpnr>`_ versions. dragonBoot requires features from :code:`Yosys`
+    0.10 and newer, and will not place and route with :code:`nextpnr` older than 0.4.
+
+  .. platform-choice:: linux
+    :title: Other Linux
+
+    .. todo::
+
+      Write this section
+
 ```
 
 YoWASP Yosys and nextpnr
 ------------------------
 
-Then install Yosys:
+Then install `Yosys`:
 
 ```{code-block} console
 
@@ -121,7 +158,7 @@ Installing collected packages: appdirs, wasmtime, yowasp-yosys
 Successfully installed appdirs-1.4.4 wasmtime-0.30.0 yowasp-yosys-0.16.post31.dev334
 ```
 
-Finally, install nextpnr for your target:
+Finally, install `nextpnr` for your target:
 
 ```{eval-rst}
 .. platform-picker::
