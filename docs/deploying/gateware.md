@@ -50,7 +50,7 @@ First install `python` + `pip` for your platform:
     :title: Windows
 
     Download the latest installer from `the Python downloads page <https://www.python.org/downloads/>`_
-    and follow the instructions in the installer to have Python end up on %PATH%
+    and follow the instructions in the installer to have Python end up on :code:`%PATH%`
 
 ```
 
@@ -135,6 +135,28 @@ Native Yosys and nextpnr
     .. todo::
 
       Write this section
+
+  .. platform-choice:: macos
+    :title: macOS
+
+    Given homebrew doesn't have nextpnr, so for the native tools, please use
+    `oss-cad-suite-builder <https://github.com/YosysHQ/oss-cad-suite-build/releases>`_, extract
+    the latest tarball for darwin-x64, and stick the :code:`oss-cad-suite/bin` directory from
+    the extracted tarball in to your environment's :code:`$PATH`.
+
+  .. platform-choice:: windows
+    :title: Windows
+
+    The easiest way to get started on Windows if not using the `YoWASP <#yowasp-yosys-and-nextpnr>`_ versions
+    of the tools, is to use `oss-cad-suite-builder <https://github.com/YosysHQ/oss-cad-suite-build/releases>`_,
+    run the latest installer for windows-x64, and stick the :code:`oss-cad-suite/bin` directory from
+    the installation in to your environment's :code:`%PATH%`.
+
+    If you do not wish to edit your environment block to do this perminantly, please run
+
+    .. code-block:: console
+
+      $ call <extracted_location>\oss-cad-suite\environment.bat
 
 ```
 
