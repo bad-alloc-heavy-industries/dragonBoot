@@ -144,7 +144,7 @@ for all further steps:</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Windows users will need to either use MSYS2, WSL2 and follow the Linux instructions, or substitute
-<code class="docutils literal notranslate"><span class="pre">.</span> <span class="pre">env/bin/activate</span></code> for <code class="docutils literal notranslate"><span class="pre">call</span> <span class="pre">env/bin/activate.bat</span></code> if using the windows command line.
+<code class="docutils literal notranslate"><span class="pre">.</span> <span class="pre">env/bin/activate</span></code> for <code class="docutils literal notranslate"><span class="pre">call</span> <span class="pre">env/bin/activate.bat</span></code> if using the Windows command line.
 We recomend using Windows Terminal for a better experience doing this.</p>
 </div>
 <p>Once you have python you will then need Yosys and nextpnr.
@@ -156,7 +156,7 @@ There are two ways to get these requirements - <a class="reference internal" hre
 <div class="platform-picker docutils container">
 <div class="platform-choice platform--arch platform-noaltname docutils container">
 <p class="platform-title">Arch Linux</p>
-<p>Yosys can be installed from the community repos with</p>
+<p>Yosys can be installed from the community repos with:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo pacman -S yosys
 </pre></div>
 </div>
@@ -209,17 +209,17 @@ the extracted tarball in to your environment’s <code class="code docutils lite
 of the tools, is to use <a class="reference external" href="https://github.com/YosysHQ/oss-cad-suite-build/releases">oss-cad-suite-builder</a>,
 run the latest installer for windows-x64, and stick the <code class="code docutils literal notranslate"><span class="pre">oss-cad-suite/bin</span></code> directory from
 the installation in to your environment’s <code class="code docutils literal notranslate"><span class="pre">%PATH%</span></code>.</p>
-<p>If you do not wish to edit your environment block to do this perminantly, please run</p>
+<p>If you do not wish to edit your environment block to do this perminantly, please run:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>call &lt;extracted_location&gt;<span class="se">\o</span>ss-cad-suite<span class="se">\e</span>nvironment.bat
 </pre></div>
 </div>
 </div>
 </div>
-<p>Once done, continue setup with <a class="reference internal" href="#setting-up-dragonboot"><span class="std std-doc">setting up dragonBoot</span></a></p>
+<p>Once done, continue setup with <a class="reference internal" href="#setting-up-dragonboot"><span class="std std-doc">setting up dragonBoot</span></a>.</p>
 </section>
 <section id="yowasp-yosys-and-nextpnr">
 <h2>YoWASP Yosys and nextpnr<a class="headerlink" href="#yowasp-yosys-and-nextpnr" title="Permalink to this headline"></a></h2>
-<p>Then install <code class="docutils literal notranslate"><span class="pre">Yosys</span></code>:</p>
+<p>Then install Yosys:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install yowasp-yosys
 <span class="go">Collecting yowasp-yosys</span>
 <span class="go">  Downloading yowasp_yosys-0.16.post31.dev334-py3-none-any.whl (6.8 MB)</span>
@@ -262,13 +262,13 @@ the installation in to your environment’s <code class="code docutils literal n
 </div>
 </div>
 </div>
-<p>Once done, continue setup with <a class="reference internal" href="#setting-up-dragonboot"><span class="std std-doc">setting up dragonBoot</span></a></p>
+<p>Once done, continue setup with <a class="reference internal" href="#setting-up-dragonboot"><span class="std std-doc">setting up dragonBoot</span></a>.</p>
 </section>
 <section id="setting-up-dragonboot">
 <h2>Setting up dragonBoot<a class="headerlink" href="#setting-up-dragonboot" title="Permalink to this headline"></a></h2>
-<p>The next few steps are considerably easier, and consist of a couple of simple pip command and
+<p>The next few steps are considerably easier, and consist of a couple of simple <code class="docutils literal notranslate"><span class="pre">pip</span></code> commands and
 running the bootloader builder.</p>
-<p>First we preinstall the LUNA framework to resovle a dependency issue</p>
+<p>First we preinstall the LUNA framework to resovle a dependency issue:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install git+https://github.com/shrine-maiden-heavy-industries/luna@main#egg<span class="o">=</span>luna
 <span class="go">Collecting luna</span>
 <span class="go">  Cloning https://github.com/shrine-maiden-heavy-industries/luna (to revision main) to /tmp/pip-install-21jaa3jl/luna_d8cb58b30cf84ad5a38f6517eeb86922</span>
@@ -339,7 +339,7 @@ running the bootloader builder.</p>
 <span class="go">Successfully installed Jinja2-3.1.1 MarkupSafe-2.1.1 amaranth-0.4.dev19+g8b85afa amaranth-boards-0.1.dev208+g2d0a23b amaranth-soc-0.1.dev49+g217d4ea amaranth-stdio-0.1.dev11+gae74f17 construct-2.10.68 luna-0.1.0 pyserial-3.5 pyvcd-0.3.0 usb_protocol-0.0</span>
 </pre></div>
 </div>
-<p>Then we install the rest of the requirements</p>
+<p>Then we install the rest of the requirements:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install -r requirements-ci.txt
 <span class="go">Collecting amaranth</span>
 <span class="go">  Cloning https://github.com/amaranth-lang/amaranth.git (to revision main) to /tmp/pip-install-qk963uua/amaranth_fc7092b8b38d4eed93ff74f26847c9ca</span>
