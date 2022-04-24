@@ -71,7 +71,7 @@ $ . env/bin/activate
 ```{note}
 
 Windows users will need to either use MSYS2, WSL2 and follow the Linux instructions, or substitute
-`. env/bin/activate` for `call env/bin/activate.bat` if using the windows command line.
+`. env/bin/activate` for `call env/bin/activate.bat` if using the Windows command line.
 We recomend using Windows Terminal for a better experience doing this.
 ```
 
@@ -87,7 +87,7 @@ Native Yosys and nextpnr
   .. platform-choice:: arch
     :title: Arch Linux
 
-    Yosys can be installed from the community repos with
+    Yosys can be installed from the community repos with:
 
     .. code-block:: console
 
@@ -152,7 +152,7 @@ Native Yosys and nextpnr
     run the latest installer for windows-x64, and stick the :code:`oss-cad-suite/bin` directory from
     the installation in to your environment's :code:`%PATH%`.
 
-    If you do not wish to edit your environment block to do this perminantly, please run
+    If you do not wish to edit your environment block to do this perminantly, please run:
 
     .. code-block:: console
 
@@ -160,12 +160,12 @@ Native Yosys and nextpnr
 
 ```
 
-Once done, continue setup with [setting up dragonBoot](#setting-up-dragonboot)
+Once done, continue setup with [setting up dragonBoot](#setting-up-dragonboot).
 
 YoWASP Yosys and nextpnr
 ------------------------
 
-Then install `Yosys`:
+Then install Yosys:
 
 ```{code-block} console
 
@@ -215,15 +215,15 @@ Finally, install `nextpnr` for your target:
       Successfully installed yowasp-nextpnr-ecp5-0.3.dev303
 ```
 
-Once done, continue setup with [setting up dragonBoot](#setting-up-dragonboot)
+Once done, continue setup with [setting up dragonBoot](#setting-up-dragonboot).
 
 Setting up dragonBoot
 ---------------------
 
-The next few steps are considerably easier, and consist of a couple of simple pip command and
+The next few steps are considerably easier, and consist of a couple of simple `pip` commands and
 running the bootloader builder.
 
-First we preinstall the LUNA framework to resovle a dependency issue
+First we preinstall the LUNA framework to resovle a dependency issue:
 
 ```{code-block} console
 
@@ -297,7 +297,7 @@ Installing collected packages: pyserial, pyvcd, MarkupSafe, construct, usb_proto
 Successfully installed Jinja2-3.1.1 MarkupSafe-2.1.1 amaranth-0.4.dev19+g8b85afa amaranth-boards-0.1.dev208+g2d0a23b amaranth-soc-0.1.dev49+g217d4ea amaranth-stdio-0.1.dev11+gae74f17 construct-2.10.68 luna-0.1.0 pyserial-3.5 pyvcd-0.3.0 usb_protocol-0.0
 ```
 
-Then we install the rest of the requirements
+Then we install the rest of the requirements:
 
 ```{code-block} console
 
