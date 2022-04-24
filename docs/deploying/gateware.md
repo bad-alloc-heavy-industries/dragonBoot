@@ -10,16 +10,10 @@ The dragonBoot gateware requires the following:
 * [Yosys](https://github.com/YosysHQ/yosys) 0.10 or newer
 * [nextpnr](https://github.com/YosysHQ/nextpnr) 0.4 or newer
 
-There are two ways to get the Yosys and nextpnr requirements, [natively](#native-yosys-and-nextpnr)
-or [via YoWASP](#yowasp-yosys-and-nextpnr) - details below.
+Installing Python
+-----------------
 
-Native yosys and nextpnr
-------------------------
-
-YoWASP yosys and nextpnr
-------------------------
-
-First install pip for your platform:
+First install python + pip for your platform:
 
 ```{eval-rst}
 .. platform-picker::
@@ -40,6 +34,10 @@ First install pip for your platform:
   .. platform-choice:: linux
     :title: Other Linux
 
+    .. todo::
+
+      Write this section
+
   .. platform-choice:: macos
     :title: macOS
 
@@ -50,15 +48,37 @@ First install pip for your platform:
   .. platform-choice:: windows
     :title: Windows
 
-    .. code-block:: console
+    Download the latest installer from `the Python downloads page <https://www.python.org/downloads/>`_
+    and follow the instructions in the installer to have Python end up on %PATH%
 
 ```
+
+Once you have python you will then need Yosys and nextpnr.
+There are two ways to get these requirements - [natively](#native-yosys-and-nextpnr) or
+[via YoWASP](#yowasp-yosys-and-nextpnr), details below.
+
+Native yosys and nextpnr
+------------------------
+
+```{eval-rst}
+.. platform-picker::
+  .. platform-choice:: arch
+    :title: Arch Linux
+
+    .. code-block:: console
+
+      $ sudo pacman -S python python-pip
+
+```
+
+YoWASP yosys and nextpnr
+------------------------
 
 Then install Yosys:
 
 ```{code-block} console
 
-$ pip install yowasp-yosys
+$ pip3 install yowasp-yosys
 Collecting yowasp-yosys
   Downloading yowasp_yosys-0.16.post31.dev334-py3-none-any.whl (6.8 MB)
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.8/6.8 MB 10.5 MB/s eta 0:00:00
@@ -80,7 +100,7 @@ Finally, install nextpnr for your target:
 
     .. code-block:: console
 
-      $ pip install yowasp-nextpnr-ice40
+      $ pip3 install yowasp-nextpnr-ice40
       Collecting yowasp-nextpnr-ice40
         Downloading yowasp_nextpnr_ice40-0.3.dev303-py3-none-any.whl (71.9 MB)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 71.9/71.9 MB 8.9 MB/s eta 0:00:00
@@ -94,7 +114,7 @@ Finally, install nextpnr for your target:
 
     .. code-block:: console
 
-      $ pip install yowasp-nextpnr-ecp5
+      $ pip3 install yowasp-nextpnr-ecp5
       Collecting yowasp-nextpnr-ecp5
         Downloading yowasp_nextpnr_ecp5-0.3.dev303-py3-none-any.whl (30.1 MB)
           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 30.1/30.1 MB 14.3 MB/s eta 0:00:00
