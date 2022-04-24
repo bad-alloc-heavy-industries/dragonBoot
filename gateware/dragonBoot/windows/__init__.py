@@ -25,6 +25,30 @@ class WindowsRequestHandler(USBRequestHandler):
 
 	Notes
 	-----
+	The handler operates by reacting to incomming setup packets targeted directly to the device with the
+	request type set to vendor-specific. It handles this and responds in accordance with the
+	`Microsoft OS 2.0 Descriptors Specification <https://docs.microsoft.com/en-us/windows-hardware/drivers/usbcon/microsoft-os-2-0-descriptors-specification>`_.
+
+	The main thing this handler has to deal with are the vendor requests to the device as the
+	:py:class:`usb_protocol.emitters.descriptors.microsoft.PlatformDescriptorCollection` and
+	descriptor system deals with the the rest of the spec.
+
+	To this end, when triggered, the handler works as follows:
+
+	* The state machine does switches from IDLE into the CHECK_GET_DESCRIPTOR_SET state
+	* In the following cycle, we validate the request parameters and if they check out
+	  we enter the GET_DESCRIPTOR_SET state
+	* In the GET_DESCRIPTOR_SET state, when the data phase begins, we set our instance of the
+	  :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` running
+	* While the requested descriptor has not yet been delivered in full, we track data phase acks and
+
+		* When each complete packet is acked, update state in the
+		  :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` to keep the data flowing
+		* Keep the transmit DATA0/1 packet ID value correct
+
+	* Once the data phase concludes and the status phase begins, we then respond to the host with an all-clear ACK
+	* If either the :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` or the status phase
+	  concludes, we return to IDLE
 	"""
 	def __init__(self, descriptors : PlatformDescriptorCollection, maxPacketSize = 64):
 		self.descriptors = descriptors
