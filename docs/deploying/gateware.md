@@ -57,7 +57,7 @@ Once you have python you will then need Yosys and nextpnr.
 There are two ways to get these requirements - [natively](#native-yosys-and-nextpnr) or
 [via YoWASP](#yowasp-yosys-and-nextpnr), details below.
 
-Native yosys and nextpnr
+Native Yosys and nextpnr
 ------------------------
 
 ```{eval-rst}
@@ -65,13 +65,43 @@ Native yosys and nextpnr
   .. platform-choice:: arch
     :title: Arch Linux
 
+    Yosys can be installed from the community repos with
+
     .. code-block:: console
 
-      $ sudo pacman -S python python-pip
+      $ sudo pacman -S yosys
+
+    however, it is preferred due to some features dragonBoot needs for the toolchain to be installed from the AUR.
+    nexpnr is not available in repos, so must be installed from the AUR.
+
+    To install yosys from the AUR, install the yosys-nightly package with your favourite AUR helper, or run:
+
+    .. code-block:: console
+
+      $ git clone https://aur.archlinux.org/yosys-nightly.git
+      $ cd yosys-nightly
+      $ makepkg -sic yosys-nightly
+
+    Once installed you must then pick a nextpnr to install suitable for your target.
+    For the Lattice iCE40 parts, install nextpnr-ice40-nightly with your favourite AUR helper, or run:
+
+    .. code-block:: console
+
+      $ git clone https://aur.archlinux.org/nextpnr-ice40-nightly.git
+      $ cd nextpnr-ice40-nightly
+      $ makepkg -sic nextpnr-ice40-nightly
+
+    For the Lattice ECP5 parts, install nextpnr-ecp5-nightly with your favourite AUR helper, or run:
+
+    .. code-block:: console
+
+      $ git clone https://aur.archlinux.org/nextpnr-ecp5-nightly.git
+      $ cd nextpnr-ecp5-nightly
+      $ makepkg -sic nextpnr-ecp5-nightly
 
 ```
 
-YoWASP yosys and nextpnr
+YoWASP Yosys and nextpnr
 ------------------------
 
 Then install Yosys:
