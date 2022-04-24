@@ -1,4 +1,5 @@
 sphinx
 sphinx_rtd_theme
 myst_parser
+sphinxcontrib-platformpicker
 git+https://github.com/lethalbit/sphinx-construct

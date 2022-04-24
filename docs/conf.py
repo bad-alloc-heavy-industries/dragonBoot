@@ -16,6 +16,7 @@ extensions = [
 	'sphinx.ext.githubpages',
 	'sphinx.ext.graphviz',
 	'sphinx.ext.napoleon',
+	'sphinxcontrib.platformpicker',
 	'sphinx_rtd_theme',
 	'sphinx_construct',
 	'myst_parser',
@@ -43,6 +44,8 @@ todo_include_todos = True
 
 html_theme = 'sphinx_rtd_theme'
 html_copy_source = False
+
+myst_heading_anchors = 2
 
 pygments_style = 'one-dark'
 
