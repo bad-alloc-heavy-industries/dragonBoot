@@ -355,7 +355,7 @@ Using dragonBoot
 ----------------
 
 The gateware builder is run from in the gateware subdirectory of your clone of dragonBoot.
-For example, to build the bootloader for the `HeadphoneAmp audio interface <https://github.com/dragonmux/HeadphoneAmp>`_,
+For example, to build the bootloader for the [HeadphoneAmp audio interface](https://github.com/dragonmux/HeadphoneAmp),
 it is invoked as follows:
 
 ```{code-block} console
