@@ -9,6 +9,7 @@
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
       <link rel="stylesheet" href="../_static/sphinx_construct.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/platformpicker.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -17,6 +18,7 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/platformpicker.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -42,7 +44,13 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../gettingStarted.html">Getting Started</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="firmware.html">Deploying the firmware</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Deploying the gateware</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Deploying the gateware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#system-requirements">System Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installing-python">Installing Python</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#native-yosys-and-nextpnr">Native Yosys and nextpnr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yowasp-yosys-and-nextpnr">YoWASP Yosys and nextpnr</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../firmware/index.html">dragonBoot for microcontroller</a></li>
@@ -75,6 +83,133 @@
              
   <section id="deploying-the-gateware">
 <h1>Deploying the gateware<a class="headerlink" href="#deploying-the-gateware" title="Permalink to this headline"></a></h1>
+<section id="system-requirements">
+<h2>System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline"></a></h2>
+<p>The dragonBoot gateware requires the following:</p>
+<ul class="simple">
+<li><p>Python 3.8 or newer</p></li>
+<li><p><a class="reference external" href="https://github.com/YosysHQ/yosys">Yosys</a> 0.10 or newer</p></li>
+<li><p><a class="reference external" href="https://github.com/YosysHQ/nextpnr">nextpnr</a> 0.4 or newer</p></li>
+</ul>
+</section>
+<section id="installing-python">
+<h2>Installing Python<a class="headerlink" href="#installing-python" title="Permalink to this headline"></a></h2>
+<p>First install python + pip for your platform:</p>
+<div class="platform-picker docutils container">
+<div class="platform-choice platform--arch platform-noaltname docutils container">
+<p class="platform-title">Arch Linux</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo pacman -S python python-pip
+</pre></div>
+</div>
+</div>
+<div class="platform-choice platform--debian platform-noaltname docutils container">
+<p class="platform-title">Debian/Ubuntu Linux</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo apt install python3 python3-pip
+</pre></div>
+</div>
+</div>
+<div class="platform-choice platform--linux platform-noaltname docutils container">
+<p class="platform-title">Other Linux</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Write this section</p>
+</div>
+</div>
+<div class="platform-choice platform--macos platform-noaltname docutils container">
+<p class="platform-title">macOS</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>brew install python
+</pre></div>
+</div>
+</div>
+<div class="platform-choice platform--windows platform-noaltname docutils container">
+<p class="platform-title">Windows</p>
+<p>Download the latest installer from <a class="reference external" href="https://www.python.org/downloads/">the Python downloads page</a>
+and follow the instructions in the installer to have Python end up on %PATH%</p>
+</div>
+</div>
+<p>Once you have python you will then need Yosys and nextpnr.
+There are two ways to get these requirements - <a class="reference internal" href="#native-yosys-and-nextpnr"><span class="std std-doc">natively</span></a> or
+<a class="reference internal" href="#yowasp-yosys-and-nextpnr"><span class="std std-doc">via YoWASP</span></a>, details below.</p>
+</section>
+<section id="native-yosys-and-nextpnr">
+<h2>Native Yosys and nextpnr<a class="headerlink" href="#native-yosys-and-nextpnr" title="Permalink to this headline"></a></h2>
+<div class="platform-picker docutils container">
+<div class="platform-choice platform--arch platform-noaltname docutils container">
+<p class="platform-title">Arch Linux</p>
+<p>Yosys can be installed from the community repos with</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo pacman -S yosys
+</pre></div>
+</div>
+<p>however, it is preferred due to some features dragonBoot needs for the toolchain to be installed from the AUR.
+nexpnr is not available in repos, so must be installed from the AUR.</p>
+<p>To install yosys from the AUR, install the yosys-nightly package with your favourite AUR helper, or run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://aur.archlinux.org/yosys-nightly.git
+<span class="gp">$ </span><span class="nb">cd</span> yosys-nightly
+<span class="gp">$ </span>makepkg -sic yosys-nightly
+</pre></div>
+</div>
+<p>Once installed you must then pick a nextpnr to install suitable for your target.
+For the Lattice iCE40 parts, install nextpnr-ice40-nightly with your favourite AUR helper, or run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://aur.archlinux.org/nextpnr-ice40-nightly.git
+<span class="gp">$ </span><span class="nb">cd</span> nextpnr-ice40-nightly
+<span class="gp">$ </span>makepkg -sic nextpnr-ice40-nightly
+</pre></div>
+</div>
+<p>For the Lattice ECP5 parts, install nextpnr-ecp5-nightly with your favourite AUR helper, or run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://aur.archlinux.org/nextpnr-ecp5-nightly.git
+<span class="gp">$ </span><span class="nb">cd</span> nextpnr-ecp5-nightly
+<span class="gp">$ </span>makepkg -sic nextpnr-ecp5-nightly
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="yowasp-yosys-and-nextpnr">
+<h2>YoWASP Yosys and nextpnr<a class="headerlink" href="#yowasp-yosys-and-nextpnr" title="Permalink to this headline"></a></h2>
+<p>Then install Yosys:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install yowasp-yosys
+<span class="go">Collecting yowasp-yosys</span>
+<span class="go">  Downloading yowasp_yosys-0.16.post31.dev334-py3-none-any.whl (6.8 MB)</span>
+<span class="go">     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.8/6.8 MB 10.5 MB/s eta 0:00:00</span>
+<span class="go">Collecting appdirs~=1.4</span>
+<span class="go">  Using cached appdirs-1.4.4-py2.py3-none-any.whl (9.6 kB)</span>
+<span class="go">Collecting wasmtime&lt;0.31,&gt;=0.30</span>
+<span class="go">  Downloading wasmtime-0.30.0-py3-none-manylinux1_x86_64.whl (5.6 MB)</span>
+<span class="go">     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.6/5.6 MB 20.9 MB/s eta 0:00:00</span>
+<span class="go">Installing collected packages: appdirs, wasmtime, yowasp-yosys</span>
+<span class="go">Successfully installed appdirs-1.4.4 wasmtime-0.30.0 yowasp-yosys-0.16.post31.dev334</span>
+</pre></div>
+</div>
+<p>Finally, install nextpnr for your target:</p>
+<div class="platform-picker docutils container">
+<div class="platform-choice platform--ice40 platform-noaltname docutils container">
+<p class="platform-title">Lattice iCE40</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install yowasp-nextpnr-ice40
+<span class="go">Collecting yowasp-nextpnr-ice40</span>
+<span class="go">  Downloading yowasp_nextpnr_ice40-0.3.dev303-py3-none-any.whl (71.9 MB)</span>
+<span class="go">    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 71.9/71.9 MB 8.9 MB/s eta 0:00:00</span>
+<span class="go">Requirement already satisfied: appdirs~=1.4 in ./env/lib/python3.10/site-packages (from yowasp-nextpnr-ice40) (1.4.4)</span>
+<span class="go">Requirement already satisfied: wasmtime&lt;0.31,&gt;=0.30 in ./env/lib/python3.10/site-packages (from yowasp-nextpnr-ice40) (0.30.0)</span>
+<span class="go">Installing collected packages: yowasp-nextpnr-ice40</span>
+<span class="go">Successfully installed yowasp-nextpnr-ice40-0.3.dev303</span>
+</pre></div>
+</div>
+</div>
+<div class="platform-choice platform--ecp5 platform-noaltname docutils container">
+<p class="platform-title">Lattice ECP5</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install yowasp-nextpnr-ecp5
+<span class="go">Collecting yowasp-nextpnr-ecp5</span>
+<span class="go">  Downloading yowasp_nextpnr_ecp5-0.3.dev303-py3-none-any.whl (30.1 MB)</span>
+<span class="go">    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 30.1/30.1 MB 14.3 MB/s eta 0:00:00</span>
+<span class="go">Requirement already satisfied: appdirs~=1.4 in ./env/lib/python3.10/site-packages (from yowasp-nextpnr-ecp5) (1.4.4)</span>
+<span class="go">Requirement already satisfied: wasmtime&lt;0.31,&gt;=0.30 in ./env/lib/python3.10/site-packages (from yowasp-nextpnr-ecp5) (0.30.0)</span>
+<span class="go">Installing collected packages: yowasp-nextpnr-ecp5</span>
+<span class="go">Successfully installed yowasp-nextpnr-ecp5-0.3.dev303</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 
 
