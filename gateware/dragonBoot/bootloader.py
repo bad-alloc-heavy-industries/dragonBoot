@@ -77,7 +77,7 @@ class DragonBoot(Elaboratable):
 			configDesc.iConfiguration = 'bootloader DFU configuration'
 			# Bus powered with no remote wakeup support
 			configDesc.bmAttributes = 0x80
-			# 1000mA max.
+			# 100mA max.
 			configDesc.bMaxPower = 50
 
 			for slot in platform.flash.partitions:
