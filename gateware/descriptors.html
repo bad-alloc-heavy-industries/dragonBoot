@@ -48,7 +48,9 @@
 <li class="toctree-l2"><a class="reference internal" href="handlers/index.html">Request Handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="luna.html">The LUNA-based USB Device</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flash.html">The SPI Flash controller</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">USB Descriptors</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">USB Descriptors</a><ul class="simple">
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -79,6 +81,46 @@
              
   <section id="usb-descriptors">
 <h1>USB Descriptors<a class="headerlink" href="#usb-descriptors" title="Permalink to this headline"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>The descriptors for dragonBoot gateware work as follows:</p>
+<ul class="simple">
+<li><p>The device descriptor defines the class, subclass and protocol to be in the interfaces.</p></li>
+<li><p>It also defines the device to be USB 2.01 compliant to allow us to use Binary Object Storage (BOS) descriptors.</p>
+<ul>
+<li><p>It is of particular note that even USB FS devices may be USB 2.01 compliant as physical protocol compliance is
+seperate from logical protocol compliance, and a device on an older physical protocol may choose to implement
+any newer logical protocol defined by the spec with the exception of USB 3.x support which requires USB HS as
+fallback.</p></li>
+</ul>
+</li>
+<li><p>We define a single configuration which supports up to 100mA max draw with power required from the bus and no
+wake-up support - this keeps the implmentation simple as we have no need for wakeup support.</p></li>
+<li><p>In the configuration we then define one interface which is coded as being for DFU and already in DFU mode.</p></li>
+<li><p>This interface descriptor is then repeated for each slot with a unique alternate setting number per slot.</p></li>
+<li><p>The interface descriptors each sport a DFU functional descriptor that further defines:</p>
+<ul>
+<li><p>That we can download, not upload, cannot be “manifested” (switched to application mode) in the way the
+standard defines and we control detaching from the bus when a DFU_DETACH request is received.</p></li>
+<li><p>That we have the minimum viable timeout for detach to keep delays caused by tooling down as best as possible.</p></li>
+<li><p>That sets the transfer size to equal the target Flash’s erase page size</p></li>
+</ul>
+</li>
+<li><p>We then define platform-specific Windows descriptors that ask Windows to bind WinUSB.sys to the DFU interface.</p>
+<ul>
+<li><p>This is done to avoid the need for custom INF files and other drudgery so we get a “just works” solution out
+the box on all host platforms where this matters. Windows is the exception, not the rule.</p></li>
+</ul>
+</li>
+</ul>
+<p>The string descriptors are automatically generated from the strings assigned to their respective slots in the
+various descriptors - this is done by
+<a class="reference external" href="https://github.com/shrine-maiden-heavy-industries/python-usb-protocol">python-usb-protocol</a>.</p>
+<p>We manually define the string dscriptors to be in American as part of the setup of the LUNA core. This is not
+strictly required, but means that if any behaviour is required to change in the future, we will be immune.</p>
+<p>The standard USB descriptors are handed off to the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">LUNA</span> <span class="pre">standard</span> <span class="pre">descriptor</span> <span class="pre">handler</span></code> during
+setup of the LUNA core, and the Windows ones to our <a class="reference internal" href="handlers/windows.html#dragonBoot.windows.WindowsRequestHandler" title="dragonBoot.windows.WindowsRequestHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dragonBoot.windows.WindowsRequestHandler</span></code></a>.</p>
 </section>
 
 
