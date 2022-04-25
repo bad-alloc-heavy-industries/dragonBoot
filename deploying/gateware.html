@@ -96,7 +96,7 @@
 </section>
 <section id="installing-python">
 <h2>Installing Python<a class="headerlink" href="#installing-python" title="Permalink to this headline"></a></h2>
-<p>First install <code class="docutils literal notranslate"><span class="pre">python</span></code> + <code class="docutils literal notranslate"><span class="pre">pip</span></code> for your platform:</p>
+<p>First install <code class="docutils literal notranslate"><span class="pre">python</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> for your platform:</p>
 <div class="platform-picker docutils container">
 <div class="platform-choice platform--arch platform-noaltname docutils container">
 <p class="platform-title">Arch Linux</p>
@@ -114,7 +114,9 @@
 <p class="platform-title">Other Linux</p>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
-<p>Write this section</p>
+<p>Using your distro package manager, install <code class="code docutils literal notranslate"><span class="pre">python3</span></code>, <code class="code docutils literal notranslate"><span class="pre">python3-pip</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">python3-virtualenv</span></code> or eqivilent packages that satisfy the minimum version
+requirement of Python 3.8.</p>
 </div>
 </div>
 <div class="platform-choice platform--macos platform-noaltname docutils container">
@@ -127,7 +129,7 @@
 <div class="platform-choice platform--windows platform-noaltname docutils container">
 <p class="platform-title">Windows</p>
 <p>Download the latest installer from <a class="reference external" href="https://www.python.org/downloads/">the Python downloads page</a>
-and follow the instructions in the installer to have Python end up on <code class="code docutils literal notranslate"><span class="pre">%PATH%</span></code></p>
+and follow the instructions in the installer to have Python end up on <code class="code docutils literal notranslate"><span class="pre">%PATH%</span></code>.</p>
 </div>
 </div>
 <p>Once you have completed the platform-specific steps, please create a virtual environment and activate it
@@ -160,16 +162,16 @@ There are two ways to get these requirements - <a class="reference internal" hre
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo pacman -S yosys
 </pre></div>
 </div>
-<p>however, it is preferred due to some features dragonBoot needs for the toolchain to be installed from the
-<a class="reference external" href="https://aur.archlinux.org/">AUR</a>. <code class="code docutils literal notranslate"><span class="pre">nexpnr</span></code> is not available in repos, so must be installed from the AUR.</p>
-<p>To install <code class="code docutils literal notranslate"><span class="pre">Yosys</span></code> from the AUR, install the <code class="code docutils literal notranslate"><span class="pre">yosys-nightly</span></code> package with your favourite AUR helper,
+<p>However, it is preferred due to some features dragonBoot needs for the toolchain to be installed from the
+<a class="reference external" href="https://aur.archlinux.org/">AUR</a>. nextpnr is not available in repos, so must be installed from the AUR.</p>
+<p>To install Yosys from the AUR, install the <code class="code docutils literal notranslate"><span class="pre">yosys-nightly</span></code> package with your favourite AUR helper,
 or run:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://aur.archlinux.org/yosys-nightly.git
 <span class="gp">$ </span><span class="nb">cd</span> yosys-nightly
 <span class="gp">$ </span>makepkg -sic yosys-nightly
 </pre></div>
 </div>
-<p>Once installed you must then pick a <code class="code docutils literal notranslate"><span class="pre">nextpnr</span></code> to install suitable for your target.
+<p>Once installed you must then pick a nextpnr to install suitable for your target.
 For the Lattice iCE40 parts, install <code class="code docutils literal notranslate"><span class="pre">nextpnr-ice40-nightly</span></code> with your favourite AUR helper, or run:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://aur.archlinux.org/nextpnr-ice40-nightly.git
 <span class="gp">$ </span><span class="nb">cd</span> nextpnr-ice40-nightly
@@ -185,9 +187,9 @@ For the Lattice iCE40 parts, install <code class="code docutils literal notransl
 </div>
 <div class="platform-choice platform--debian platform-noaltname docutils container">
 <p class="platform-title">Debian/Ubuntu Linux</p>
-<p>The Debian versions of <code class="code docutils literal notranslate"><span class="pre">Yosys</span></code> and <code class="code docutils literal notranslate"><span class="pre">nextpnr</span></code> are too old, so you must use the
-<a class="reference external" href="#yowasp-yosys-and-nextpnr">YoWASP</a> versions. dragonBoot requires features from <code class="code docutils literal notranslate"><span class="pre">Yosys</span></code>
-0.10 and newer, and will not place and route with <code class="code docutils literal notranslate"><span class="pre">nextpnr</span></code> older than 0.4.</p>
+<p>The Debian versions of Yosys and nextpnr are too old, so you must use the
+<a class="reference external" href="#yowasp-yosys-and-nextpnr">YoWASP</a> versions. dragonBoot requires features from Yosys
+0.10 and newer, and will not place and route with nextpnr older than 0.4.</p>
 </div>
 <div class="platform-choice platform--linux platform-noaltname docutils container">
 <p class="platform-title">Other Linux</p>
@@ -198,20 +200,23 @@ For the Lattice iCE40 parts, install <code class="code docutils literal notransl
 </div>
 <div class="platform-choice platform--macos platform-noaltname docutils container">
 <p class="platform-title">macOS</p>
-<p>Given homebrew doesn’t have nextpnr, so for the native tools, please use
+<p>Given Homebrew doesn’t have nextpnr, so for the native tools, please use
 <a class="reference external" href="https://github.com/YosysHQ/oss-cad-suite-build/releases">oss-cad-suite-builder</a>, extract
-the latest tarball for darwin-x64, and stick the <code class="code docutils literal notranslate"><span class="pre">oss-cad-suite/bin</span></code> directory from
+the latest tarball for <code class="code docutils literal notranslate"><span class="pre">darwin-x64</span></code>, and stick the <code class="code docutils literal notranslate"><span class="pre">oss-cad-suite/bin</span></code> directory from
 the extracted tarball in to your environment’s <code class="code docutils literal notranslate"><span class="pre">$PATH</span></code>.</p>
 </div>
 <div class="platform-choice platform--windows platform-noaltname docutils container">
 <p class="platform-title">Windows</p>
 <p>The easiest way to get started on Windows if not using the <a class="reference external" href="#yowasp-yosys-and-nextpnr">YoWASP</a> versions
 of the tools, is to use <a class="reference external" href="https://github.com/YosysHQ/oss-cad-suite-build/releases">oss-cad-suite-builder</a>,
-run the latest installer for windows-x64, and stick the <code class="code docutils literal notranslate"><span class="pre">oss-cad-suite/bin</span></code> directory from
+run the latest installer for <code class="code docutils literal notranslate"><span class="pre">windows-x64</span></code>, and stick the <code class="code docutils literal notranslate"><span class="pre">oss-cad-suite/bin</span></code> directory from
 the installation in to your environment’s <code class="code docutils literal notranslate"><span class="pre">%PATH%</span></code>.</p>
-<p>If you do not wish to edit your environment block to do this perminantly, please run:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you do not wish to edit your environment block to do this permanently, please run:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>call &lt;extracted_location&gt;<span class="se">\o</span>ss-cad-suite<span class="se">\e</span>nvironment.bat
 </pre></div>
+</div>
 </div>
 </div>
 </div>

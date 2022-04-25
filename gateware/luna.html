@@ -87,16 +87,16 @@
 <span class="target" id="module-dragonBoot.bootloader"></span><dl class="py class">
 <dt class="sig sig-object py" id="dragonBoot.bootloader.DragonBoot">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.bootloader.</span></span><span class="sig-name descname"><span class="pre">DragonBoot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.bootloader.DragonBoot" title="Permalink to this definition"></a></dt>
-<dd><p>The top-level of the dragonBoot gateware and implementation of the descriptors and LUNA USB device</p>
+<dd><p>The top-level of the dragonBoot gateware and implementation of the descriptors and LUNA USB device.</p>
 <p>This top-level <code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.hdl.ir.Elaboratable</span></code> does a few things, some of which are described in
 detail in other sections of the documentation:</p>
 <ul class="simple">
-<li><p>It implements the <a href="#id1"><span class="problematic" id="id2">:ref:`USB descriptors &lt;descriptors&gt;`_</span></a> required to tell the host what we are</p></li>
-<li><p>It houses the LUNA USB device instance used to communicate with the host</p></li>
+<li><p>It implements the <a class="reference internal" href="descriptors.html"><span class="doc">USB descriptors</span></a> required to tell the host what we are.</p></li>
+<li><p>It houses the LUNA USB device instance used to communicate with the host.</p></li>
 <li><p>It houses and connects the platform-specific warmboot block needed to reboot and reconfigure the FPGA
-on completion of operations</p></li>
+on completion of operations.</p></li>
 <li><p>It connects up and provides to the LUNA USB device all the handlers required for USB endpoint 0 to work
-and respond as needed to requests from the host</p></li>
+and respond as needed to requests from the host.</p></li>
 </ul>
 <p>The LUNA USB device uses what is ostensibly an ULPI interface, however it is possible to instead use a raw
 USB LS/FS interface even on a device such as the Lattice iCE40UP5K which is unable to work at ULPI speeds.
@@ -105,13 +105,13 @@ mode and define the <code class="code docutils literal notranslate"><span class=
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.bootloader.DragonBoot.elaborate">
 <span class="sig-name descname"><span class="pre">elaborate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.dsl.Module</span></span></span><a class="headerlink" href="#dragonBoot.bootloader.DragonBoot.elaborate" title="Permalink to this definition"></a></dt>
-<dd><p>Describes the specific gateware needed to provide the descriptors and handlers and device logic to talk USB</p>
+<dd><p>Describes the specific gateware needed to provide the descriptors and handlers and device logic to talk USB.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>platform</strong> – The Amaranth platform for which the gateware will be synthesised</p>
+<dd class="field-odd"><p><strong>platform</strong> – The Amaranth platform for which the gateware will be synthesised.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A complete description of the gateware behaviour required</p>
+<dd class="field-even"><p>A complete description of the gateware behaviour required.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.hdl.dsl.Module</span></code></p>

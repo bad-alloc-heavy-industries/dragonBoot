@@ -97,7 +97,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.platform.</span></span><span class="sig-name descname"><span class="pre">DragonICE40Platform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toolchain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IceStorm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.platform.DragonICE40Platform" title="Permalink to this definition"></a></dt>
 <dd><p>This is the base platform for all Lattice iCE40 bootloaders.</p>
 <p>This platform defines how to build a multi-boot Flash image on top of the normal bitstream building logic.
-It also includes logic required to enforce the presence and facilitate retrieval of Flash descriptor objects</p>
+It also includes logic required to enforce the presence and facilitate retrieval of Flash descriptor objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>toolchain</strong> – Which toolchain synthesis, placement and routing should be performed via.
@@ -108,7 +108,7 @@ should be used.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="dragonBoot.platform.DragonICE40Platform.flash">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flash</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dragonBoot.platform.Flash</span></em><a class="headerlink" href="#dragonBoot.platform.DragonICE40Platform.flash" title="Permalink to this definition"></a></dt>
-<dd><p>A Flash configuration describing the targets FPGA configuration Flash</p>
+<dd><p>A Flash configuration describing the targets FPGA configuration Flash.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -124,24 +124,24 @@ pads out to the start of the next slot after and places a short bitstream there 
 instructs the FPGA to warmboot into the bootloader slot. This is done so that
 unconfigured devices enter the bootloader automatically untill written with a valid bitstream.</p>
 <p>This will then optionally program the initial Flash image to a target device per your
-specification using the function <code class="xref py py-meth docutils literal notranslate"><span class="pre">self.toolchain_program()</span></code></p>
+specification using the function <code class="xref py py-meth docutils literal notranslate"><span class="pre">self.toolchain_program()</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.platform.DragonICE40Platform.buildSlots">
 <span class="sig-name descname"><span class="pre">buildSlots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#dragonBoot.platform.DragonICE40Platform.buildSlots" title="Permalink to this definition"></a></dt>
-<dd><p>Builds a multi-boot slot configuration for the platform</p>
+<dd><p>Builds a multi-boot slot configuration for the platform.</p>
 <p>This first builds the slot configuration block that must sit at the start of Flash
 and then follows it with unset Flash (0xFF) byte padding till we meet the end of the
 first Flash sector erase page where the dragonBoot warmboot slot begins.</p>
-<p>For further details on the inner workings, see <a class="reference internal" href="#dragonBoot.ice40.Slots" title="dragonBoot.ice40.Slots"><code class="xref py py-class docutils literal notranslate"><span class="pre">dragonBoot.ice40.Slots</span></code></a></p>
+<p>For further details on the inner workings, see <a class="reference internal" href="#dragonBoot.ice40.Slots" title="dragonBoot.ice40.Slots"><code class="xref py py-class docutils literal notranslate"><span class="pre">dragonBoot.ice40.Slots</span></code></a>.</p>
 </dd></dl>
 
 </dd></dl>
 
 <section id="ice40-slots-system">
 <h2>iCE40 slots system<a class="headerlink" href="#ice40-slots-system" title="Permalink to this headline"></a></h2>
-<p>Because of the iCE40 warmboot block, dragonBoot also defines a set of types and construct structures for building the slots configuration for a given target platform</p>
+<p>Because of the iCE40 warmboot block, dragonBoot also defines a set of types and construct structures for building the slots configuration for a given target platform.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dragonBoot.ice40.Slots">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">Slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dragonBoot.platform.Flash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.ice40.Slots" title="Permalink to this definition"></a></dt>
@@ -159,22 +159,22 @@ to allow this type to generate a correct multi-boot layout for the target.</p>
 <p>All valid iCE40 slot configurations consist of 5 slots that the FPGA will read from fixed addresses
 in the Flash. The slots are numbered in the order POR, Slot 0, Slot 1, Slot 2 and Slot 3.</p>
 <ol class="arabic simple">
-<li><p>The POR slot is used to configure the FPGA from cold which we set to the Slot 1 configuration</p></li>
-<li><p>Slot 0 is this bootloader, which is only booted when the user asks for FPGA reconfiguration</p></li>
-<li><p>Slot 1 is the main gateware slot, which is booted by default</p></li>
+<li><p>The POR slot is used to configure the FPGA from cold which we set to the Slot 1 configuration.</p></li>
+<li><p>Slot 0 is this bootloader, which is only booted when the user asks for FPGA reconfiguration.</p></li>
+<li><p>Slot 1 is the main gateware slot, which is booted by default.</p></li>
 <li><p>Slot 2 depends on if there is sufficient room in the Flash - if there is, this is an auxilary slot;
-if not, then this is a dupliate of Slot 1</p></li>
-<li><p>Slot 3 also depends on there being sufficient room in the Flash in the same way as Slot 2</p></li>
+if not, then this is a dupliate of Slot 1.</p></li>
+<li><p>Slot 3 also depends on there being sufficient room in the Flash in the same way as Slot 2.</p></li>
 </ol>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.ice40.Slots._buildSlots">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_buildSlots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dragonBoot.platform.Flash</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dragonBoot.ice40.Slots._buildSlots" title="Permalink to this definition"></a></dt>
-<dd><p>Go through the calculated max slots for the Flash and generate the slot data for each</p>
+<dd><p>Go through the calculated max slots for the Flash and generate the slot data for each.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>A list containing the data for each valid warmboot slot</p>
+<dd class="field-odd"><p>A list containing the data for each valid warmboot slot.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -182,19 +182,21 @@ if not, then this is a dupliate of Slot 1</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.ice40.Slots._buildSlot">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_buildSlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.10)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#dragonBoot.ice40.Slots._buildSlot" title="Permalink to this definition"></a></dt>
-<dd><p>Construct the slot configuration for a given slot</p>
+<dd><p>Construct the slot configuration for a given slot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>partition</strong> – A [begin, end) pair expressed as a dictionary of the area of Flash the slot covers</p>
+<dd class="field-odd"><p><strong>partition</strong> – A [begin, end) pair expressed as a dictionary of the area of Flash the slot covers.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>The partition dict comes from the Flash object’s partition data and contains two entires:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
         <span class="s1">&#39;beginAddress&#39;</span><span class="p">:</span> <span class="n">begin</span><span class="p">,</span>
         <span class="s1">&#39;endAddress: end</span>
 <span class="p">}</span>
 </pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -203,7 +205,7 @@ if not, then this is a dupliate of Slot 1</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">Opcodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.ice40.Opcodes" title="Permalink to this definition"></a></dt>
-<dd><p>Opcodes for operations the bitstream can request of the FPGA</p>
+<dd><p>Opcodes for operations the bitstream can request of the FPGA.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dragonBoot.ice40.Opcodes.Special">
 <span class="sig-name descname"><span class="pre">Special</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#dragonBoot.ice40.Opcodes.Special" title="Permalink to this definition"></a></dt>
@@ -254,7 +256,7 @@ if not, then this is a dupliate of Slot 1</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dragonBoot.ice40.SpecialOpcodes">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">SpecialOpcodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.ice40.SpecialOpcodes" title="Permalink to this definition"></a></dt>
-<dd><p>Opcodes requested via <a class="reference internal" href="#dragonBoot.ice40.Opcodes.Special" title="dragonBoot.ice40.Opcodes.Special"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Opcodes.Special</span></code></a></p>
+<dd><p>Opcodes requested via <a class="reference internal" href="#dragonBoot.ice40.Opcodes.Special" title="dragonBoot.ice40.Opcodes.Special"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Opcodes.Special</span></code></a>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dragonBoot.ice40.SpecialOpcodes.CRAMData">
 <span class="sig-name descname"><span class="pre">CRAMData</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#dragonBoot.ice40.SpecialOpcodes.CRAMData" title="Permalink to this definition"></a></dt>
@@ -285,7 +287,7 @@ if not, then this is a dupliate of Slot 1</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dragonBoot.ice40.BootModes">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.ice40.</span></span><span class="sig-name descname"><span class="pre">BootModes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.ice40.BootModes" title="Permalink to this definition"></a></dt>
-<dd><p>Boot mode bits that can be or’d together</p>
+<dd><p>Boot mode bits that can be <code class="code docutils literal notranslate"><span class="pre">or</span></code>’d together.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dragonBoot.ice40.BootModes.SimpleBoot">
 <span class="sig-name descname"><span class="pre">SimpleBoot</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#dragonBoot.ice40.BootModes.SimpleBoot" title="Permalink to this definition"></a></dt>
