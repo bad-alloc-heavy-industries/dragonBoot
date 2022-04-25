@@ -15,13 +15,13 @@ class AudioInterfacePlatform(DragonICE40Platform):
 	this defines the bare minimum of the resources on the board requried to to perform this task:
 
 	* A SPI resource to access the configuration Flash (A GD25Q40C)
-	* The UPLI Phy used to provide USB HS to the board
+	* The UPLI PHY used to provide USB HS to the board
 
 		* This resource is also responsible for providing our operating clock -
-		  the phy on the board is a USB3318 which produces a 60MHz clock from its associated
+		  the PHY on the board is a USB3318 which produces a 60MHz clock from its associated
 		  13MHz clock source.
 
-	* The Flash configuration object requried to describe the GD25Q40C Flash
+	* The Flash configuration object required to describe the GD25Q40C Flash
 	"""
 
 	device = 'iCE40HX8K'

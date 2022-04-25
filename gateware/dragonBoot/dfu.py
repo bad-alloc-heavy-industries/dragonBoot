@@ -24,23 +24,23 @@ __all__ = (
 class DFUState(IntEnum):
 	""" An enumeration of the states the DFU request handler engine can be in. """
 	dfuIdle = 2
-	""" The DFU request handler is in an idle state """
+	""" The DFU request handler is in an idle state. """
 	downloadSync = 3
-	""" The engine has just finished processing a download request and is awaiting a status request """
+	""" The engine has just finished processing a download request and is awaiting a status request. """
 	downloadBusy = 4
-	""" The engine is processing a download request """
+	""" The engine is processing a download request. """
 	downloadIdle = 5
-	""" The engine has processed at least one download request but is currently idle """
+	""" The engine has processed at least one download request but is currently idle. """
 	uploadIdle = 9
-	""" The engine has processed at least one upload request but is currently idle """
+	""" The engine has processed at least one upload request but is currently idle. """
 	error = 10
-	""" The engine has encountered an error of some kind """
+	""" The engine has encountered an error of some kind. """
 
 @unique
 class DFUStatus(IntEnum):
 	""" An enumeration of the status states the DFU request handler engine can be in. """
 	ok = 0
-	""" The engine is not in error and all is in order """
+	""" The engine is not in error and all is in order. """
 
 class DFUConfig:
 	""" A tracking type for the current state and status of the DFU request handler engine.
@@ -48,9 +48,9 @@ class DFUConfig:
 	Attributes
 	----------
 	status : Signal(4, decoder = DFUStatus)
-		A 4-bit register containing the current status of the DFU request handler from the :py:class:DFUStatus enum
+		A 4-bit register containing the current status of the DFU request handler from the :py:class:DFUStatus enum.
 	state : Signal(4, decoder = DFUState)
-		A 4-bit register containing the current state of the DFU request handler from the :py:class:DFUState enum
+		A 4-bit register containing the current state of the DFU request handler from the :py:class:DFUState enum.
 	"""
 	def __init__(self):
 		self.status = Signal(4, decoder = DFUStatus)
@@ -62,15 +62,15 @@ class DFURequestHandler(USBRequestHandler):
 	Parameters
 	----------
 	interface
-		The USB interface number this handler should be bound on - must match value in the descriptors
+		The USB interface number this handler should be bound on - must match value in the descriptors.
 	resource
 		The fully qualified identifier for the platform resource defining the SPI bus to use to access
-		the configuration Flash
+		the configuration Flash.
 
 	Attributes
 	----------
 	triggerReboot : Signal(), output
-		A signal indicating if the bootloader should trigger a reboot into the main gateware slot
+		A signal indicating if the bootloader should trigger a reboot into the main gateware slot.
 
 	Notes
 	-----
@@ -81,23 +81,23 @@ class DFURequestHandler(USBRequestHandler):
 	Detach requests are handled by asserting the triggerReboot signal and stalling in the HANDLE_DETACH state.
 	Download requests are handled as follows:
 
-	* First we enter the HANDLE_DOWNLOAD state
-	* The length of the request is checked and if 0, we then enter the HANDLE_DOWNLOAD_COMPLETE state
+	* First we enter the HANDLE_DOWNLOAD state.
+	* The length of the request is checked and if 0, we then enter the HANDLE_DOWNLOAD_COMPLETE state.
 
 	 	* Once in the new state we wait for the status phase where we respond with a ZLP,
-		  and change the DFU state back to dfuIdle
-		* After completion of the status phase with the resulting acknowledgment returning to us, we enter IDLE again
+		  and change the DFU state back to dfuIdle.
+		* After completion of the status phase with the resulting acknowledgment returning to us, we enter IDLE again.
 
 	* If the length of the request is non-zero but less than the Flash sector erase page size, we enter
 	  HANDLE_DOWNLOAD_DATA where the following steps are performed:
 
 		* We first trigger the secondary download state machine which handles pulling the payload bytes
-		  from the stream interface as they come in
+		  from the stream interface as they come in.
 		* Once the data phase completes, sends the coresponding acknowledgement to let the
-		  host know it was successfull
-		* As the status phase starts, sends the coresponding ZLP
+		  host know it was successfull.
+		* As the status phase starts, sends the coresponding ZLP.
 		* Then transitions back to IDLE, resetting the trigger on the download state machine,
-		  when the ACK comes back from the host
+		  when the ACK comes back from the host.
 
 	* If the length of the request exceeds the Flash device's sector erase page size, then we send the host
 	  a stall response to indicate failure, and return to IDLE - this should technically be impossible in
@@ -124,17 +124,17 @@ class DFURequestHandler(USBRequestHandler):
 		self.triggerReboot = Signal()
 
 	def elaborate(self, platform) -> Module:
-		""" Describes the specific gateware needed to implement DFU and its handling on USB EP0
+		""" Describes the specific gateware needed to implement DFU and its handling on USB EP0.
 
 		Parameters
 		----------
 		platform
-			The Amaranth platform for which the gateware will be synthesised
+			The Amaranth platform for which the gateware will be synthesised.
 
 		Returns
 		-------
 		:py:class:`amaranth.hdl.dsl.Module`
-			A complete description of the gateware behaviour required
+			A complete description of the gateware behaviour required.
 		"""
 		m = Module()
 		interface = self.interface
@@ -409,27 +409,27 @@ class DFURequestHandler(USBRequestHandler):
 		return m
 
 	def handlerCondition(self, setup : SetupPacket):
-		""" Defines the setup packet conditions under which the request handler will operate
+		""" Defines the setup packet conditions under which the request handler will operate.
 
 		This is used to gate the handler's operation and forms part of the condition under which
-		the stall-only handler in :py:class:`dragonBoot.bootloader.DragonBoot` will be triggered
+		the stall-only handler in :py:class:`dragonBoot.bootloader.DragonBoot` will be triggered.
 
 		Parameters
 		----------
 		setup
-			A grouping of signals used to describe the most recent setup packet the control interface has seen
+			A grouping of signals used to describe the most recent setup packet the control interface has seen.
 
 		Returns
 		-------
 		:py:class:`amranth.hdl.ast.Operator`
-			A combinatorial operation defining the sum conditions under which this handler will operate
+			A combinatorial operation defining the sum conditions under which this handler will operate.
 
 		Notes
 		-----
 		The condition for the operation of this handler is defined as being either:
 
 		* A Standard request to the handler's interface, or
-		* A Class-specific (ie, DFU) request to the handler's interface
+		* A Class-specific (ie, DFU) request to the handler's interface.
 		"""
 		return (
 			((setup.type == USBRequestType.CLASS) | (setup.type == USBRequestType.STANDARD)) &
@@ -438,13 +438,13 @@ class DFURequestHandler(USBRequestHandler):
 		)
 
 	def printSlotInfo(self, flash : Flash):
-		""" Prints out the slot configuration information for the given Flash object
+		""" Prints out the slot configuration information for the given Flash object.
 
 		Parameters
 		----------
 		flash
 			A Flash object containing the :py:attr:`Flash.slots` and :py:attr:`Flash.partitions`
-			information to be printed
+			information to be printed.
 		"""
 		logging.info(f'Building for a {flash.humanSize} Flash with {flash.slots} boot slots')
 		for partition, slot in flash.partitions.items():
@@ -472,14 +472,14 @@ class DFURequestHandler(USBRequestHandler):
 		Parameters
 		----------
 		flash
-			The Flash object  from which the ROM image will be derived
+			The Flash object  from which the ROM image will be derived.
 
 		Returns
 		-------
 		:py:class:`amaranth.hdl.mem.Memory`
 			A Memory object defining the Flash slot address layout as described above.
 			The memory object uses 24-bit entries as the Flash addresses are 24-bit,
-			and has :py:attr:`Flash.slots` * 2 entries.
+			and has :math:`flash.slots * 2` entries.
 		"""
 		# 4 bytes per address, 2 addresses per slot (but the highest byte of each address will get truncated off)
 		totalSize = flash.slots * 8

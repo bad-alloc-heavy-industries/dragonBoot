@@ -15,7 +15,7 @@ To reduce boilerplate and aid platform implementation, an iCE40 platform helper 
 iCE40 slots system
 ------------------
 
-Because of the iCE40 warmboot block, dragonBoot also defines a set of types and construct structures for building the slots configuration for a given target platform
+Because of the iCE40 warmboot block, dragonBoot also defines a set of types and construct structures for building the slots configuration for a given target platform.
 
 ```{eval-rst}
 .. autoclass:: dragonBoot.ice40.Slots

@@ -13,7 +13,7 @@ The dragonBoot gateware requires the following:
 Installing Python
 -----------------
 
-First install `python` + `pip` for your platform:
+First install `python`, `pip` and `virtualenv` for your platform:
 
 ```{eval-rst}
 .. platform-picker::
@@ -36,7 +36,9 @@ First install `python` + `pip` for your platform:
 
     .. todo::
 
-      Write this section
+      Using your distro package manager, install :code:`python3`, :code:`python3-pip` and
+      :code:`python3-virtualenv` or eqivilent packages that satisfy the minimum version
+      requirement of Python 3.8.
 
   .. platform-choice:: macos
     :title: macOS
@@ -50,7 +52,7 @@ First install `python` + `pip` for your platform:
     :title: Windows
 
     Download the latest installer from `the Python downloads page <https://www.python.org/downloads/>`_
-    and follow the instructions in the installer to have Python end up on :code:`%PATH%`
+    and follow the instructions in the installer to have Python end up on :code:`%PATH%`.
 
 ```
 
@@ -93,10 +95,10 @@ Native Yosys and nextpnr
 
       $ sudo pacman -S yosys
 
-    however, it is preferred due to some features dragonBoot needs for the toolchain to be installed from the
-    `AUR <https://aur.archlinux.org/>`_. :code:`nexpnr` is not available in repos, so must be installed from the AUR.
+    However, it is preferred due to some features dragonBoot needs for the toolchain to be installed from the
+    `AUR <https://aur.archlinux.org/>`_. nextpnr is not available in repos, so must be installed from the AUR.
 
-    To install :code:`Yosys` from the AUR, install the :code:`yosys-nightly` package with your favourite AUR helper,
+    To install Yosys from the AUR, install the :code:`yosys-nightly` package with your favourite AUR helper,
     or run:
 
     .. code-block:: console
@@ -105,7 +107,7 @@ Native Yosys and nextpnr
       $ cd yosys-nightly
       $ makepkg -sic yosys-nightly
 
-    Once installed you must then pick a :code:`nextpnr` to install suitable for your target.
+    Once installed you must then pick a nextpnr to install suitable for your target.
     For the Lattice iCE40 parts, install :code:`nextpnr-ice40-nightly` with your favourite AUR helper, or run:
 
     .. code-block:: console
@@ -125,9 +127,9 @@ Native Yosys and nextpnr
   .. platform-choice:: debian
     :title: Debian/Ubuntu Linux
 
-    The Debian versions of :code:`Yosys` and :code:`nextpnr` are too old, so you must use the
-    `YoWASP <#yowasp-yosys-and-nextpnr>`_ versions. dragonBoot requires features from :code:`Yosys`
-    0.10 and newer, and will not place and route with :code:`nextpnr` older than 0.4.
+    The Debian versions of Yosys and nextpnr are too old, so you must use the
+    `YoWASP <#yowasp-yosys-and-nextpnr>`_ versions. dragonBoot requires features from Yosys
+    0.10 and newer, and will not place and route with nextpnr older than 0.4.
 
   .. platform-choice:: linux
     :title: Other Linux
@@ -139,9 +141,9 @@ Native Yosys and nextpnr
   .. platform-choice:: macos
     :title: macOS
 
-    Given homebrew doesn't have nextpnr, so for the native tools, please use
+    Given Homebrew doesn't have nextpnr, so for the native tools, please use
     `oss-cad-suite-builder <https://github.com/YosysHQ/oss-cad-suite-build/releases>`_, extract
-    the latest tarball for darwin-x64, and stick the :code:`oss-cad-suite/bin` directory from
+    the latest tarball for :code:`darwin-x64`, and stick the :code:`oss-cad-suite/bin` directory from
     the extracted tarball in to your environment's :code:`$PATH`.
 
   .. platform-choice:: windows
@@ -149,14 +151,16 @@ Native Yosys and nextpnr
 
     The easiest way to get started on Windows if not using the `YoWASP <#yowasp-yosys-and-nextpnr>`_ versions
     of the tools, is to use `oss-cad-suite-builder <https://github.com/YosysHQ/oss-cad-suite-build/releases>`_,
-    run the latest installer for windows-x64, and stick the :code:`oss-cad-suite/bin` directory from
+    run the latest installer for :code:`windows-x64`, and stick the :code:`oss-cad-suite/bin` directory from
     the installation in to your environment's :code:`%PATH%`.
 
-    If you do not wish to edit your environment block to do this perminantly, please run:
+    .. note::
 
-    .. code-block:: console
+        If you do not wish to edit your environment block to do this permanently, please run:
 
-      $ call <extracted_location>\oss-cad-suite\environment.bat
+        .. code-block:: console
+
+          $ call <extracted_location>\oss-cad-suite\environment.bat
 
 ```
 

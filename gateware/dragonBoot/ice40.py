@@ -13,7 +13,7 @@ __all__ = (
 
 @unique
 class Opcodes(IntEnum):
-	"""Opcodes for operations the bitstream can request of the FPGA"""
+	""" Opcodes for operations the bitstream can request of the FPGA. """
 	Special = 0
 	BankNumber = 1
 	CRCCheck = 2
@@ -26,7 +26,7 @@ class Opcodes(IntEnum):
 
 @unique
 class SpecialOpcodes(IntEnum):
-	"""Opcodes requested via :py:attr:`Opcodes.Special`"""
+	""" Opcodes requested via :py:attr:`Opcodes.Special`. """
 	CRAMData = 1
 	BRAMData = 3
 	ResetCRC = 5
@@ -35,7 +35,7 @@ class SpecialOpcodes(IntEnum):
 
 @unique
 class BootModes(IntFlag):
-	"""Boot mode bits that can be or'd together"""
+	""" Boot mode bits that can be :code:`or`'d together. """
 	SimpleBoot = 0
 	ColdBoot = 16
 	WarmBoot = 32
@@ -99,12 +99,12 @@ class Slots:
 		All valid iCE40 slot configurations consist of 5 slots that the FPGA will read from fixed addresses
 		in the Flash. The slots are numbered in the order POR, Slot 0, Slot 1, Slot 2 and Slot 3.
 
-		1. The POR slot is used to configure the FPGA from cold which we set to the Slot 1 configuration
-		2. Slot 0 is this bootloader, which is only booted when the user asks for FPGA reconfiguration
-		3. Slot 1 is the main gateware slot, which is booted by default
+		1. The POR slot is used to configure the FPGA from cold which we set to the Slot 1 configuration.
+		2. Slot 0 is this bootloader, which is only booted when the user asks for FPGA reconfiguration.
+		3. Slot 1 is the main gateware slot, which is booted by default.
 		4. Slot 2 depends on if there is sufficient room in the Flash - if there is, this is an auxilary slot;
-		   if not, then this is a dupliate of Slot 1
-		5. Slot 3 also depends on there being sufficient room in the Flash in the same way as Slot 2
+		   if not, then this is a dupliate of Slot 1.
+		5. Slot 3 also depends on there being sufficient room in the Flash in the same way as Slot 2.
 		"""
 		data = bytearray(32 * 5)
 		logging.info(f'Serialising {len(data)} bytes of slot data')
@@ -127,11 +127,11 @@ class Slots:
 
 	@staticmethod
 	def _buildSlots(flash : Flash) -> List[bytes]:
-		""" Go through the calculated max slots for the Flash and generate the slot data for each
+		""" Go through the calculated max slots for the Flash and generate the slot data for each.
 
 		Returns
 		-------
-		A list containing the data for each valid warmboot slot
+		A list containing the data for each valid warmboot slot.
 		"""
 		partitions = flash.partitions
 		slots = []
@@ -141,15 +141,15 @@ class Slots:
 
 	@staticmethod
 	def _buildSlot(partition : Dict[str, int]) -> bytes:
-		""" Construct the slot configuration for a given slot
+		""" Construct the slot configuration for a given slot.
 
 		Parameters
 		----------
 		partition
-			A [begin, end) pair expressed as a dictionary of the area of Flash the slot covers
+			A [begin, end) pair expressed as a dictionary of the area of Flash the slot covers.
 
-		Notes
-		-----
+		Note
+		----
 		.. highlight:: python
 
 		The partition dict comes from the Flash object's partition data and contains two entires::

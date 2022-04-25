@@ -86,13 +86,13 @@ class DragonICE40Platform(LatticeICE40Platform):
 	""" This is the base platform for all Lattice iCE40 bootloaders.
 
 	This platform defines how to build a multi-boot Flash image on top of the normal bitstream building logic.
-	It also includes logic required to enforce the presence and facilitate retrieval of Flash descriptor objects
+	It also includes logic required to enforce the presence and facilitate retrieval of Flash descriptor objects.
 	"""
 
 	@property
 	@abstractmethod
 	def flash(self) -> Flash:
-		""" A Flash configuration describing the targets FPGA configuration Flash """
+		""" A Flash configuration describing the targets FPGA configuration Flash. """
 		return self._flash
 
 	@flash.setter
@@ -128,7 +128,7 @@ class DragonICE40Platform(LatticeICE40Platform):
 		unconfigured devices enter the bootloader automatically untill written with a valid bitstream.
 
 		This will then optionally program the initial Flash image to a target device per your
-		specification using the function :py:meth:`self.toolchain_program`
+		specification using the function :py:meth:`self.toolchain_program`.
 		"""
 		products : LocalBuildProducts = super().build(
 			elaboratable, name, build_dir, do_build, do_program = False,
@@ -155,13 +155,13 @@ class DragonICE40Platform(LatticeICE40Platform):
 		self.toolchain_program(products, name, **(program_opts or {}))
 
 	def buildSlots(self) -> bytes:
-		""" Builds a multi-boot slot configuration for the platform
+		""" Builds a multi-boot slot configuration for the platform.
 
 		This first builds the slot configuration block that must sit at the start of Flash
 		and then follows it with unset Flash (0xFF) byte padding till we meet the end of the
 		first Flash sector erase page where the dragonBoot warmboot slot begins.
 
-		For further details on the inner workings, see :py:class:`dragonBoot.ice40.Slots`
+		For further details on the inner workings, see :py:class:`dragonBoot.ice40.Slots`.
 		"""
 		from .ice40 import Slots
 		slotData = bytearray(self.flash.erasePageSize)

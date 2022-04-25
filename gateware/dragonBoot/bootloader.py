@@ -23,17 +23,17 @@ __all__ = (
 )
 
 class DragonBoot(Elaboratable):
-	""" The top-level of the dragonBoot gateware and implementation of the descriptors and LUNA USB device
+	""" The top-level of the dragonBoot gateware and implementation of the descriptors and LUNA USB device.
 
 	This top-level :py:class:`amaranth.hdl.ir.Elaboratable` does a few things, some of which are described in
 	detail in other sections of the documentation:
 
-	* It implements the :ref:`USB descriptors <descriptors>`_ required to tell the host what we are
-	* It houses the LUNA USB device instance used to communicate with the host
+	* It implements the :doc:`USB descriptors </gateware/descriptors>` required to tell the host what we are.
+	* It houses the LUNA USB device instance used to communicate with the host.
 	* It houses and connects the platform-specific warmboot block needed to reboot and reconfigure the FPGA
-	  on completion of operations
+	  on completion of operations.
 	* It connects up and provides to the LUNA USB device all the handlers required for USB endpoint 0 to work
-	  and respond as needed to requests from the host
+	  and respond as needed to requests from the host.
 
 	The LUNA USB device uses what is ostensibly an ULPI interface, however it is possible to instead use a raw
 	USB LS/FS interface even on a device such as the Lattice iCE40UP5K which is unable to work at ULPI speeds.
@@ -41,17 +41,17 @@ class DragonBoot(Elaboratable):
 	mode and define the :code:`usb` clock domain, while LUNA handles setting up clocking that domain appropriately.
 	"""
 	def elaborate(self, platform) -> Module:
-		""" Describes the specific gateware needed to provide the descriptors and handlers and device logic to talk USB
+		""" Describes the specific gateware needed to provide the descriptors and handlers and device logic to talk USB.
 
 		Parameters
 		----------
 		platform
-			The Amaranth platform for which the gateware will be synthesised
+			The Amaranth platform for which the gateware will be synthesised.
 
 		Returns
 		-------
 		:py:class:`amaranth.hdl.dsl.Module`
-			A complete description of the gateware behaviour required
+			A complete description of the gateware behaviour required.
 		"""
 		m = Module()
 		m.domains.usb = ClockDomain()
