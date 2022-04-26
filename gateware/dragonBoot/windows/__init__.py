@@ -14,12 +14,12 @@ __all__ = (
 )
 
 class WindowsRequestHandler(USBRequestHandler):
-	""" The handler for platform-specific Windows requests.
+	""" The platform-specific handler for Windows requests.
 
 	Parameters
 	----------
 	descriptors
-		A collection of the platform-specific descriptors to respond to windows with as requested.
+		A collection of the platform-specific descriptors to respond to Windows with as requested.
 	maxPacketSize
 		The size of the largest allowable packet configured on endpoint 0.
 
@@ -35,20 +35,20 @@ class WindowsRequestHandler(USBRequestHandler):
 
 	To this end, when triggered, the handler works as follows:
 
-	* The state machine does switches from IDLE into the CHECK_GET_DESCRIPTOR_SET state,
+	* The state machine does switches from :code:`IDLE` into the :code:`CHECK_GET_DESCRIPTOR_SET` state,
 	* In the following cycle, we validate the request parameters and if they check out
-	  we enter the GET_DESCRIPTOR_SET state,
-	* In the GET_DESCRIPTOR_SET state, when the data phase begins, we set our instance of the
+	  we enter the :code:`GET_DESCRIPTOR_SET` state,
+	* In the :code:`GET_DESCRIPTOR_SET` state, when the data phase begins, we set our instance of the
 	  :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` running,
 	* While the requested descriptor has not yet been delivered in full, we track data phase acks and:
 
 		* When each complete packet is acked, update state in the
 		  :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` to keep the data flowing.
-		* Keep the transmit DATA0/1 packet ID value correct.
+		* Keep the transmit :code:`DATA0`/:code:`DATA1` packet ID value correct.
 
 	* Once the data phase concludes and the status phase begins, we then respond to the host with an all-clear ACK
 	* If either the :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` or the status phase
-	  concludes, we return to IDLE.
+	  concludes, we return to :code:`IDLE`.
 	"""
 	def __init__(self, descriptors : PlatformDescriptorCollection, maxPacketSize = 64):
 		self.descriptors = descriptors
