@@ -123,11 +123,11 @@ class DragonICE40Platform(LatticeICE40Platform):
 
 		Once the upgrade bitstream has been created, this then builds the multi-boot slot
 		configuration page, appends the upgrade bitstream in its proper location and then
-		pads out to the start of the next slot after and places a short bitstream there which
-		instructs the FPGA to warmboot into the bootloader slot. This is done so that
+		pads out to the start of the next slot after and finally places a short bitstream there
+		which instructs the FPGA to warmboot into the bootloader slot. This is done so that
 		unconfigured devices enter the bootloader automatically untill written with a valid bitstream.
 
-		This will then optionally program the initial Flash image to a target device per your
+		Finally, this will then optionally program the initial Flash image to a target device per your
 		specification using the function :py:meth:`self.toolchain_program`.
 		"""
 		products : LocalBuildProducts = super().build(
@@ -158,8 +158,8 @@ class DragonICE40Platform(LatticeICE40Platform):
 		""" Builds a multi-boot slot configuration for the platform.
 
 		This first builds the slot configuration block that must sit at the start of Flash
-		and then follows it with unset Flash (0xFF) byte padding till we meet the end of the
-		first Flash sector erase page where the dragonBoot warmboot slot begins.
+		and then follows it with unset Flash (:code:`0xFF`) byte padding till we meet the
+		end of the first Flash sector erase page where the dragonBoot warmboot slot begins.
 
 		For further details on the inner workings, see :py:class:`dragonBoot.ice40.Slots`.
 		"""

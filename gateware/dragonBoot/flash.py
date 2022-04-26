@@ -12,17 +12,17 @@ __all__ = (
 
 @unique
 class SPIFlashOp(IntEnum):
-	""" An enumeration describing the current overarching operation being completed on the Flash """
+	""" An enumeration describing the current overarching operation being completed on the Flash. """
 	none = auto()
-	""" No action is in progress """
+	""" No action is in progress. """
 	erase = auto()
-	""" A sector erase is in progress """
+	""" A sector erase is in progress. """
 	write = auto()
-	""" A Flash page write sequence is in progress """
+	""" A Flash page write sequence is in progress. """
 
 @unique
 class SPIFlashCmd(IntEnum):
-	""" An enumeration of the command opcodes for the Flash """
+	""" An enumeration of the command opcodes for the Flash. """
 	pageProgram = 0x02
 	readStatus = 0x05
 	writeEnable = 0x06
@@ -34,42 +34,42 @@ class SPIFlash(Elaboratable):
 	Attributes
 	----------
 	ready : Signal(), output
-		Initialisation completion strobe indicating the controller is ready to operate
+		Initialisation completion strobe indicating the controller is ready to operate.
 	start : Signal(), input
-		Strobe to instruct the controller to start operations (this is further explained below)
+		Strobe to instruct the controller to start operations (this is further explained below).
 	done : Signal(), output
-		Signal that signals the completion of operations pending going to idle
+		Signal that signals the completion of operations pending going to idle.
 	finish : Signal(), input
-		Strobe used to acknowledge completion so the controller can enter idle
+		Strobe used to acknowledge completion so the controller can enter idle.
 	resetAddrs : Signal(), input
 		Strobe used to request the controller reset its internal Flash addressing to the
-		current values on the beginAddr adn endAddr signals
+		current values on the beginAddr adn endAddr signals.
 
 	beginAddr : Signal(24), input
 		The Flash address for the start of an operation. Usually set to the beginning
-		of a slot when the alt-mode for that slot is selected by the host
+		of a slot when the alt-mode for that slot is selected by the host.
 	endAddr : Signal(24), input
 		The Flash address for the end of an operation. Usually set to the end of a
-		slot when the alt-mode for that slot is selected by the host
+		slot when the alt-mode for that slot is selected by the host.
 	byteCount : Signal(24), input
 		A count of the number of bytes loaded (or being loaded) into the FIFO for the requested
-		write operation
+		write operation.
 
 	readAddr : Signal(24)
-		The internal current read address for the Flash
+		The internal current read address for the Flash.
 	eraseAddr : Signal(24)
-		The internal current erase address for the Flash
+		The internal current erase address for the Flash.
 	writeAddr : Signal(24)
-		The internal current write address for the Flash
+		The internal current write address for the Flash.
 	"""
 	def __init__(self, *, resource, fifo : AsyncFIFO):
 		"""
 		Parameters
 		----------
 		resource
-			The fully qualified identifier for the platform resource defining the SPI bus to use
+			The fully qualified identifier for the platform resource defining the SPI bus to use.
 		fifo
-			A FIFO buffer used as the data input to Flash write operations
+			A FIFO buffer used as the data input to Flash write operations.
 
 		Notes
 		-----
@@ -79,7 +79,7 @@ class SPIFlash(Elaboratable):
 		page by Flash page the data from the FIFO is read out and written for up to byteCount bytes.
 
 		This system is designed with byteCount being equal to a multiple of platform.flash.erasePageSize
-		right up until the final cycle prior to either a warmboot of the Flash addressing being reset
+		right up until the final cycle prior to either a warmboot of the Flash addressing being reset.
 		"""
 		self._flashResource = resource
 		self._fifo = fifo
@@ -98,17 +98,17 @@ class SPIFlash(Elaboratable):
 		self.writeAddr = Signal(24)
 
 	def elaborate(self, platform) -> Module:
-		""" Describes the specific gateware needed to talk to and erase + rewrite the data in a SPI Flash device
+		""" Describes the specific gateware needed to talk to and erase + rewrite the data in a SPI Flash device.
 
 		Parameters
 		----------
 		platform
-			The Amaranth platform for which the gateware will be synthesised
+			The Amaranth platform for which the gateware will be synthesised.
 
 		Returns
 		-------
-		amaranth.hdl.dsl.Module
-			A complete description of the gateware behaviour required
+		:py:class:`amaranth.hdl.dsl.Module`
+			A complete description of the gateware behaviour required.
 		"""
 		m = Module()
 		m.submodules.spi = flash = SPIBus(resource = self._flashResource)

@@ -14,18 +14,18 @@ __all__ = (
 )
 
 class WindowsRequestHandler(USBRequestHandler):
-	""" The handler for platform-specific Windows requests
+	""" The handler for platform-specific Windows requests.
 
 	Parameters
 	----------
 	descriptors
-		A collection of the platform-specific descriptors to respond to windows with as requested
+		A collection of the platform-specific descriptors to respond to windows with as requested.
 	maxPacketSize
-		The size of the largest allowable packet configured on endpoint 0
+		The size of the largest allowable packet configured on endpoint 0.
 
 	Notes
 	-----
-	The handler operates by reacting to incomming setup packets targeted directly to the device with the
+	The handler operates by reacting to incoming setup packets targeted directly to the device with the
 	request type set to vendor-specific. It handles this and responds in accordance with the
 	`Microsoft OS 2.0 Descriptors Specification <https://docs.microsoft.com/en-us/windows-hardware/drivers/usbcon/microsoft-os-2-0-descriptors-specification>`_.
 
@@ -35,20 +35,20 @@ class WindowsRequestHandler(USBRequestHandler):
 
 	To this end, when triggered, the handler works as follows:
 
-	* The state machine does switches from IDLE into the CHECK_GET_DESCRIPTOR_SET state
+	* The state machine does switches from IDLE into the CHECK_GET_DESCRIPTOR_SET state,
 	* In the following cycle, we validate the request parameters and if they check out
-	  we enter the GET_DESCRIPTOR_SET state
+	  we enter the GET_DESCRIPTOR_SET state,
 	* In the GET_DESCRIPTOR_SET state, when the data phase begins, we set our instance of the
-	  :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` running
-	* While the requested descriptor has not yet been delivered in full, we track data phase acks and
+	  :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` running,
+	* While the requested descriptor has not yet been delivered in full, we track data phase acks and:
 
 		* When each complete packet is acked, update state in the
-		  :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` to keep the data flowing
-		* Keep the transmit DATA0/1 packet ID value correct
+		  :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` to keep the data flowing.
+		* Keep the transmit DATA0/1 packet ID value correct.
 
 	* Once the data phase concludes and the status phase begins, we then respond to the host with an all-clear ACK
 	* If either the :py:class:`dragonBoot.windows.descriptorSet.GetDescriptorSetHandler` or the status phase
-	  concludes, we return to IDLE
+	  concludes, we return to IDLE.
 	"""
 	def __init__(self, descriptors : PlatformDescriptorCollection, maxPacketSize = 64):
 		self.descriptors = descriptors
@@ -57,17 +57,17 @@ class WindowsRequestHandler(USBRequestHandler):
 		super().__init__()
 
 	def elaborate(self, platform) -> Module:
-		""" Describes the specific gateware needed to implement the platform-specific windows descriptor handling on USB EP0
+		""" Describes the specific gateware needed to implement the platform-specific windows descriptor handling on USB EP0.
 
 		Parameters
 		----------
 		platform
-			The Amaranth platform for which the gateware will be synthesised
+			The Amaranth platform for which the gateware will be synthesised.
 
 		Returns
 		-------
 		:py:class:`amaranth.hdl.dsl.Module`
-			A complete description of the gateware behaviour required
+			A complete description of the gateware behaviour required.
 		"""
 		m = Module()
 		interface = self.interface
@@ -136,27 +136,27 @@ class WindowsRequestHandler(USBRequestHandler):
 		return m
 
 	def handlerCondition(self, setup : SetupPacket):
-		""" Defines the setup packet conditions under which the request handler will operate
+		""" Defines the setup packet conditions under which the request handler will operate.
 
 		This is used to gate the handler's operation and forms part of the condition under which
-		the stall-only handler in :py:class:`dragonBoot.bootloader.DragonBoot` will be triggered
+		the stall-only handler in :py:class:`dragonBoot.bootloader.DragonBoot` will be triggered.
 
 		Parameters
 		----------
 		setup
-			A grouping of signals used to describe the most recent setup packet the control interface has seen
+			A grouping of signals used to describe the most recent setup packet the control interface has seen.
 
 		Returns
 		-------
 		:py:class:`amranth.hdl.ast.Operator`
-			A combinatorial operation defining the sum conditions under which this handler will operate
+			A combinatorial operation defining the sum conditions under which this handler will operate.
 
 		Notes
 		-----
 		The condition for the operation of this handler is defined as being:
 
-		* A Vendor request directly to the device
-		* for either index value 7 or 8, respectively meaning
+		* A Vendor request directly to the device.
+		* for either index value 7 or 8, respectively meaning:
 
 			* GET_DESCRIPTOR_SET, and
 			* SET_ALTERNATE_ENUM

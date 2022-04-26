@@ -57,7 +57,7 @@ class DFUConfig:
 		self.state = Signal(4, decoder = DFUState)
 
 class DFURequestHandler(USBRequestHandler):
-	""" The DFU request handling engine
+	""" The DFU request handling engine.
 
 	Parameters
 	----------
@@ -74,7 +74,7 @@ class DFURequestHandler(USBRequestHandler):
 
 	Notes
 	-----
-	The handler operates by reacting to incomming setup packets for the DFU interface. Of most notable
+	The handler operates by reacting to incoming setup packets for the DFU interface. Of most notable
 	interest are how it handles DFU detach and download requests as the rest are essentailly boilerplate
 	requried by the `DFU 1.1 standard <https://www.usb.org/sites/default/files/DFU_1.1.pdf>`_.
 
@@ -93,9 +93,9 @@ class DFURequestHandler(USBRequestHandler):
 
 		* We first trigger the secondary download state machine which handles pulling the payload bytes
 		  from the stream interface as they come in.
-		* Once the data phase completes, sends the coresponding acknowledgement to let the
-		  host know it was successfull.
-		* As the status phase starts, sends the coresponding ZLP.
+		* Once the data phase completes, sends the corresponding acknowledgement to let the
+		  host know it was successful.
+		* As the status phase starts, sends the corresponding ZLP.
 		* Then transitions back to IDLE, resetting the trigger on the download state machine,
 		  when the ACK comes back from the host.
 

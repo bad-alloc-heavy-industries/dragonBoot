@@ -37,7 +37,7 @@ First install `python`, `pip` and `virtualenv` for your platform:
     .. todo::
 
       Using your distro package manager, install :code:`python3`, :code:`python3-pip` and
-      :code:`python3-virtualenv` or eqivilent packages that satisfy the minimum version
+      :code:`python3-virtualenv` or equivalent packages that satisfy the minimum version
       requirement of Python 3.8.
 
   .. platform-choice:: macos
@@ -141,8 +141,8 @@ Native Yosys and nextpnr
   .. platform-choice:: macos
     :title: macOS
 
-    Given Homebrew doesn't have nextpnr, so for the native tools, please use
-    `oss-cad-suite-builder <https://github.com/YosysHQ/oss-cad-suite-build/releases>`_, extract
+    Given Homebrew doesn't have nextpnr, for the native tools please use
+    `oss-cad-suite-builder <https://github.com/YosysHQ/oss-cad-suite-build/releases>`_. Extract
     the latest tarball for :code:`darwin-x64`, and stick the :code:`oss-cad-suite/bin` directory from
     the extracted tarball in to your environment's :code:`$PATH`.
 
@@ -150,8 +150,8 @@ Native Yosys and nextpnr
     :title: Windows
 
     The easiest way to get started on Windows if not using the `YoWASP <#yowasp-yosys-and-nextpnr>`_ versions
-    of the tools, is to use `oss-cad-suite-builder <https://github.com/YosysHQ/oss-cad-suite-build/releases>`_,
-    run the latest installer for :code:`windows-x64`, and stick the :code:`oss-cad-suite/bin` directory from
+    of the tools, is to use `oss-cad-suite-builder <https://github.com/YosysHQ/oss-cad-suite-build/releases>`_.
+    Run the latest installer for :code:`windows-x64`, and stick the :code:`oss-cad-suite/bin` directory from
     the installation in to your environment's :code:`%PATH%`.
 
     .. note::

@@ -70,7 +70,7 @@ class GetDescriptorSetHandler(Elaboratable):
 
 		Notes
 		-----
-		All data is aligned to 4 byte boundaries
+		All data is aligned to 4 byte boundaries.
 
 		This ROM is laid out as follows:
 
@@ -107,8 +107,8 @@ class GetDescriptorSetHandler(Elaboratable):
 
 				* A Memory object defining the descriptor data and access information as defined above.
 				  The memory object uses 32-bit entries which the descriptor gateware accesses accordingly.
-				* The length of the largest held descriptor
-				* The highest Vendor code number used by the descriptors for retrieval
+				* The length of the largest held descriptor.
+				* The highest Vendor code number used by the descriptors for retrieval.
 		"""
 
 		descriptors = self._descriptors.descriptors
@@ -148,17 +148,17 @@ class GetDescriptorSetHandler(Elaboratable):
 		return Memory(width = 32, depth = len(initialiser), init = initialiser), maxDescriptorSize, maxVendorCode
 
 	def elaborate(self, platform) -> Module:
-		""" Describes the specific gateware needed to implement platform-specific windows GET_DESCRIPTOR_SET requests
+		""" Describes the specific gateware needed to implement platform-specific windows GET_DESCRIPTOR_SET requests.
 
 		Parameters
 		----------
 		platform
-			The Amaranth platform for which the gateware will be synthesised
+			The Amaranth platform for which the gateware will be synthesised.
 
 		Returns
 		-------
 		:py:class:`amaranth.hdl.dsl.Module`
-			A complete description of the gateware behaviour required
+			A complete description of the gateware behaviour required.
 		"""
 		m = Module()
 		rom, descriptorMaxLength, maxVendorCode = self.generateROM()

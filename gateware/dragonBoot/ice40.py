@@ -94,7 +94,7 @@ class Slots:
 		self._flash = flash
 
 	def build(self) -> bytearray:
-		""" Generate a bytearray encoding the slot configuration for the Flash passed to the constructor.
+		""" Generate a :py:class:`bytearray` encoding the slot configuration for the Flash passed to the constructor.
 
 		All valid iCE40 slot configurations consist of 5 slots that the FPGA will read from fixed addresses
 		in the Flash. The slots are numbered in the order POR, Slot 0, Slot 1, Slot 2 and Slot 3.
@@ -102,8 +102,8 @@ class Slots:
 		1. The POR slot is used to configure the FPGA from cold which we set to the Slot 1 configuration.
 		2. Slot 0 is this bootloader, which is only booted when the user asks for FPGA reconfiguration.
 		3. Slot 1 is the main gateware slot, which is booted by default.
-		4. Slot 2 depends on if there is sufficient room in the Flash - if there is, this is an auxilary slot;
-		   if not, then this is a dupliate of Slot 1.
+		4. Slot 2 depends on if there is sufficient room in the Flash - if there is, this is an auxiliary slot;
+		   if not, then this is a duplicate of Slot 1.
 		5. Slot 3 also depends on there being sufficient room in the Flash in the same way as Slot 2.
 		"""
 		data = bytearray(32 * 5)
