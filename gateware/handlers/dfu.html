@@ -196,7 +196,7 @@ the stall-only handler in <a class="reference internal" href="../luna.html#drago
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.dfu.DFURequestHandler.printSlotInfo">
-<span class="sig-name descname"><span class="pre">printSlotInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dragonBoot.platform.Flash</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.dfu.DFURequestHandler.printSlotInfo" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">printSlotInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../flash.html#dragonBoot.platform.Flash" title="dragonBoot.platform.Flash"><span class="pre">dragonBoot.platform.Flash</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.dfu.DFURequestHandler.printSlotInfo" title="Permalink to this definition"></a></dt>
 <dd><p>Prints out the slot configuration information for the given Flash object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -208,7 +208,7 @@ information to be printed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.dfu.DFURequestHandler.generateROM">
-<span class="sig-name descname"><span class="pre">generateROM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dragonBoot.platform.Flash</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.mem.Memory</span></span></span><a class="headerlink" href="#dragonBoot.dfu.DFURequestHandler.generateROM" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">generateROM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../flash.html#dragonBoot.platform.Flash" title="dragonBoot.platform.Flash"><span class="pre">dragonBoot.platform.Flash</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.mem.Memory</span></span></span><a class="headerlink" href="#dragonBoot.dfu.DFURequestHandler.generateROM" title="Permalink to this definition"></a></dt>
 <dd><p>Generates the ROM for the layout of the Flash</p>
 <p>This ROM is laid out as follows:</p>
 <table class="docutils align-default">
@@ -234,7 +234,8 @@ information to be printed.</p>
 <tr class="row-odd"><td><p>3</p></td>
 <td><p>Slot 1 End</p></td>
 </tr>
-<tr class="row-even"><td colspan="2"><p>… |</p></td>
+<tr class="row-even"><td><p>…</p></td>
+<td></td>
 </tr>
 </tbody>
 </table>

@@ -94,30 +94,30 @@
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cs</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Chip Select (non-inverted) signal to be passed through to the Flash</p></li>
-<li><p><strong>xfer</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Strobe that signals to start a SPI transfer</p></li>
-<li><p><strong>done</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>output</em>) – Strobe that indicates the completion of a SPI transfer</p></li>
-<li><p><strong>r_data</strong> (<em>Signal</em><em>(</em><em>8</em><em>)</em><em>, </em><em>output</em>) – Data read from the Flash in the last completed transfer</p></li>
-<li><p><strong>w_data</strong> (<em>Signal</em><em>(</em><em>8</em><em>)</em><em>, </em><em>input</em>) – Data to be written to the Flash in the next transfer</p></li>
+<li><p><strong>cs</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Chip Select (non-inverted) signal to be passed through to the Flash.</p></li>
+<li><p><strong>xfer</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Strobe that signals to start a SPI transfer.</p></li>
+<li><p><strong>done</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>output</em>) – Strobe that indicates the completion of a SPI transfer.</p></li>
+<li><p><strong>r_data</strong> (<em>Signal</em><em>(</em><em>8</em><em>)</em><em>, </em><em>output</em>) – Data read from the Flash in the last completed transfer.</p></li>
+<li><p><strong>w_data</strong> (<em>Signal</em><em>(</em><em>8</em><em>)</em><em>, </em><em>input</em>) – Data to be written to the Flash in the next transfer.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>resource</strong> – The fully qualified identifier for the platform resource defining the SPI bus to use</p>
+<dd class="field-even"><p><strong>resource</strong> – The fully qualified identifier for the platform resource defining the SPI bus to use.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.spi.SPIBus.elaborate">
 <span class="sig-name descname"><span class="pre">elaborate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.dsl.Module</span></span></span><a class="headerlink" href="#dragonBoot.spi.SPIBus.elaborate" title="Permalink to this definition"></a></dt>
-<dd><p>Describes the specific gateware needed to talk SPI protocol</p>
+<dd><p>Describes the specific gateware needed to talk SPI protocol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>platform</strong> – The Amaranth platform for which the gateware will be synthesised</p>
+<dd class="field-odd"><p><strong>platform</strong> – The Amaranth platform for which the gateware will be synthesised.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A complete description of the gateware behaviour required</p>
+<dd class="field-even"><p>A complete description of the gateware behaviour required.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>amaranth.hdl.dsl.Module</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.hdl.dsl.Module</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -228,6 +228,59 @@ right up until the final cycle prior to either a warmboot of the Flash addressin
 <span class="sig-name descname"><span class="pre">write</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#dragonBoot.flash.SPIFlashOp.write" title="Permalink to this definition"></a></dt>
 <dd><p>A Flash page write sequence is in progress.</p>
 </dd></dl>
+
+</dd></dl>
+
+<p>Additionaly there is also a configuration class used by platforms to define their configuration Flash to the bootloader.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dragonBoot.platform.Flash">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.platform.</span></span><span class="sig-name descname"><span class="pre">Flash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pageSize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">erasePageSize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">eraseCommand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.platform.Flash" title="Permalink to this definition"></a></dt>
+<dd><p>The platform Flash configuration type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> – The total size, in bytes, of the SPI Flash on the target platform</p></li>
+<li><p><strong>pageSize</strong> – The size, in bytes, of a programable, readable page of Flash</p></li>
+<li><p><strong>erasePageSize</strong> – The size, in bytes, of an erase sector on the target Flash</p></li>
+<li><p><strong>eraseCommand</strong> – The numerical value of the command byte to send to the target Flash to erase a sector</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dragonBoot.platform.Flash.platform">
+<span class="sig-name descname"><span class="pre">platform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">amaranth.build.plat.Platform</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.platform.Flash.platform" title="Permalink to this definition"></a></dt>
+<dd><p>Called during the initialisation of the platform, this calculates the slot information.</p>
+<p>The size of the bitstream and therefore of a slot cannot be derived without the platform instance the
+Flash instance is for, so initilisation of the object is two-stepped with this being the second step.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dragonBoot.platform.Flash.slots">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">slots</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#dragonBoot.platform.Flash.slots" title="Permalink to this definition"></a></dt>
+<dd><p>This property returns the number of configuration slots the Flash device has.</p>
+<p>Initially calculated when :py:member:platform is called, this can actually be overriden
+by the setter if one wishes to restrict the numeber of slots made available for any reason.
+Additionally, even if one tries to write a value outside the range of the Flash, this
+property ensures on retreival that a value in range is returned.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dragonBoot.platform.Flash.partitions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">partitions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dragonBoot.platform.Flash.partitions" title="Permalink to this definition"></a></dt>
+<dd><p>This property returns a dictionary describing the slot configuration Flash partioning.</p>
+<p>The dictionary returned is in the form:</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dragonBoot.platform.Flash.humanSize">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">humanSize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#dragonBoot.platform.Flash.humanSize" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the Flash total size expressed in human readable units.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dragonBoot.platform.Flash._calculateSlots">
+<span class="sig-name descname"><span class="pre">_calculateSlots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.platform.Flash._calculateSlots" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

@@ -101,7 +101,7 @@ wake-up support - this keeps the implmentation simple as we have no need for wak
 <li><p>The interface descriptors each sport a DFU functional descriptor that further defines:</p>
 <ul>
 <li><p>That we can download, not upload, cannot be “manifested” (switched to application mode) in the way the
-standard defines and we control detaching from the bus when a DFU_DETACH request is received.</p></li>
+standard defines and we control detaching from the bus when a <code class="docutils literal notranslate"><span class="pre">DFU_DETACH</span></code> request is received.</p></li>
 <li><p>That we have the minimum viable timeout for detach to keep delays caused by tooling down as best as possible.</p></li>
 <li><p>That sets the transfer size to equal the target Flash’s erase page size</p></li>
 </ul>
