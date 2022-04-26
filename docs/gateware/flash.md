@@ -28,4 +28,5 @@ Additionaly there is also a configuration class used by platforms to define thei
 ```{eval-rst}
 .. autoclass:: dragonBoot.platform.Flash
   :members:
+  :private-members:
 ```

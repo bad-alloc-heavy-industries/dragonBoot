@@ -468,7 +468,7 @@ class DFURequestHandler(USBRequestHandler):
 		|    3    | Slot 1 End   |
 		+---------+--------------+
 		|     ... |              |
-		+------------------------+
+		+---------+--------------+
 
 		Parameters
 		----------
