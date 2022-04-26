@@ -21,5 +21,11 @@ The Flash controller is comprised of two major parts - the underlying
 
 .. autoclass:: dragonBoot.flash.SPIFlashOp
   :members:
+```
 
+Additionaly there is also a configuration class used by platforms to define their configuration Flash to the bootloader.
+
+```{eval-rst}
+.. autoclass:: dragonBoot.platform.Flash
+  :members:
 ```

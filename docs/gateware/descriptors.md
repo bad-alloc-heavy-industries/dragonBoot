@@ -19,7 +19,7 @@ The descriptors for dragonBoot gateware work as follows:
 * This interface descriptor is then repeated for each slot with a unique alternate setting number per slot.
 * The interface descriptors each sport a DFU functional descriptor that further defines:
   * That we can download, not upload, cannot be "manifested" (switched to application mode) in the way the
-    standard defines and we control detaching from the bus when a DFU_DETACH request is received.
+    standard defines and we control detaching from the bus when a `DFU_DETACH` request is received.
   * That we have the minimum viable timeout for detach to keep delays caused by tooling down as best as possible.
   * That sets the transfer size to equal the target Flash's erase page size
 * We then define platform-specific Windows descriptors that ask Windows to bind WinUSB.sys to the DFU interface.

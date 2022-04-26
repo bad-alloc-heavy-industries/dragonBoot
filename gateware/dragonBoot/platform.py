@@ -4,7 +4,7 @@ from amaranth.build import Platform
 from amaranth.build.run import BuildPlan, BuildProducts, LocalBuildProducts
 from amaranth.vendor.lattice_ice40 import LatticeICE40Platform
 from abc import abstractmethod
-from typing import Dict, Type, Union
+from typing import Dict, Union
 
 __all__ = (
 	'Flash',
@@ -20,13 +20,31 @@ sizeSuffixes = {
 }
 
 class Flash:
+	""" The platform Flash configuration type. """
 	def __init__(self, *, size : int, pageSize : int, erasePageSize : int, eraseCommand : int):
+		"""
+		Parameters
+		----------
+		size
+			The total size, in bytes, of the SPI Flash on the target platform
+		pageSize
+			The size, in bytes, of a programable, readable page of Flash
+		erasePageSize
+			The size, in bytes, of an erase sector on the target Flash
+		eraseCommand
+			The numerical value of the command byte to send to the target Flash to erase a sector
+		"""
 		self.size = size
 		self.pageSize = pageSize
 		self.erasePageSize = erasePageSize
 		self.eraseCommand = eraseCommand
 
-	def platform(self, platform : Type):
+	def platform(self, platform : Platform):
+		""" Called during the initialisation of the platform, this calculates the slot information.
+
+		The size of the bitstream and therefore of a slot cannot be derived without the platform instance the
+		Flash instance is for, so initilisation of the object is two-stepped with this being the second step.
+		"""
 		assert isinstance(platform, Platform), 'platform must be derived from Platform'
 		self._platform = platform
 
@@ -34,6 +52,13 @@ class Flash:
 
 	@property
 	def slots(self) -> int:
+		""" This property returns the number of configuration slots the Flash device has.
+
+		Initially calculated when :py:member:platform is called, this can actually be overriden
+		by the setter if one wishes to restrict the numeber of slots made available for any reason.
+		Additionally, even if one tries to write a value outside the range of the Flash, this
+		property ensures on retreival that a value in range is returned.
+		"""
 		usableSlots = self.size // self.slotSize
 		slots = min(self._slots, usableSlots)
 		assert slots > 1, f'Flash for platform has space for {slots} slots, need at least 2'
@@ -46,6 +71,10 @@ class Flash:
 
 	@property
 	def partitions(self) -> Dict[int, Dict[str, int]]:
+		""" This property returns a dictionary describing the slot configuration Flash partioning.
+
+		The dictionary returned is in the form:
+		"""
 		partitions = {}
 		beginAddress = self.erasePageSize
 		for slot in range(self.slots):
@@ -92,7 +121,7 @@ class DragonICE40Platform(LatticeICE40Platform):
 	@property
 	@abstractmethod
 	def flash(self) -> Flash:
-		""" A Flash configuration describing the targets FPGA configuration Flash. """
+		""" A :py:class:`Flash configuration <dragonBoot.platform.Flash>` describing the targets FPGA configuration Flash. """
 		return self._flash
 
 	@flash.setter
