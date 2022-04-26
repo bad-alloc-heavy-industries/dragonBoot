@@ -120,10 +120,10 @@ written by either <a class="reference external" href="https://github.com/bad-all
 or any other tool capable of writing a raw Flash image to a target device.</p>
 <p>Once the upgrade bitstream has been created, this then builds the multi-boot slot
 configuration page, appends the upgrade bitstream in its proper location and then
-pads out to the start of the next slot after and places a short bitstream there which
-instructs the FPGA to warmboot into the bootloader slot. This is done so that
+pads out to the start of the next slot after and finally places a short bitstream there
+which instructs the FPGA to warmboot into the bootloader slot. This is done so that
 unconfigured devices enter the bootloader automatically untill written with a valid bitstream.</p>
-<p>This will then optionally program the initial Flash image to a target device per your
+<p>Finally, this will then optionally program the initial Flash image to a target device per your
 specification using the function <code class="xref py py-meth docutils literal notranslate"><span class="pre">self.toolchain_program()</span></code>.</p>
 </dd></dl>
 
@@ -132,8 +132,8 @@ specification using the function <code class="xref py py-meth docutils literal n
 <span class="sig-name descname"><span class="pre">buildSlots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#dragonBoot.platform.DragonICE40Platform.buildSlots" title="Permalink to this definition"></a></dt>
 <dd><p>Builds a multi-boot slot configuration for the platform.</p>
 <p>This first builds the slot configuration block that must sit at the start of Flash
-and then follows it with unset Flash (0xFF) byte padding till we meet the end of the
-first Flash sector erase page where the dragonBoot warmboot slot begins.</p>
+and then follows it with unset Flash (<code class="code docutils literal notranslate"><span class="pre">0xFF</span></code>) byte padding till we meet the
+end of the first Flash sector erase page where the dragonBoot warmboot slot begins.</p>
 <p>For further details on the inner workings, see <a class="reference internal" href="#dragonBoot.ice40.Slots" title="dragonBoot.ice40.Slots"><code class="xref py py-class docutils literal notranslate"><span class="pre">dragonBoot.ice40.Slots</span></code></a>.</p>
 </dd></dl>
 
@@ -155,15 +155,15 @@ to allow this type to generate a correct multi-boot layout for the target.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.ice40.Slots.build">
 <span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.10)"><span class="pre">bytearray</span></a></span></span><a class="headerlink" href="#dragonBoot.ice40.Slots.build" title="Permalink to this definition"></a></dt>
-<dd><p>Generate a bytearray encoding the slot configuration for the Flash passed to the constructor.</p>
+<dd><p>Generate a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytearray</span></code></a> encoding the slot configuration for the Flash passed to the constructor.</p>
 <p>All valid iCE40 slot configurations consist of 5 slots that the FPGA will read from fixed addresses
 in the Flash. The slots are numbered in the order POR, Slot 0, Slot 1, Slot 2 and Slot 3.</p>
 <ol class="arabic simple">
 <li><p>The POR slot is used to configure the FPGA from cold which we set to the Slot 1 configuration.</p></li>
 <li><p>Slot 0 is this bootloader, which is only booted when the user asks for FPGA reconfiguration.</p></li>
 <li><p>Slot 1 is the main gateware slot, which is booted by default.</p></li>
-<li><p>Slot 2 depends on if there is sufficient room in the Flash - if there is, this is an auxilary slot;
-if not, then this is a dupliate of Slot 1.</p></li>
+<li><p>Slot 2 depends on if there is sufficient room in the Flash - if there is, this is an auxiliary slot;
+if not, then this is a duplicate of Slot 1.</p></li>
 <li><p>Slot 3 also depends on there being sufficient room in the Flash in the same way as Slot 2.</p></li>
 </ol>
 </dd></dl>

@@ -131,27 +131,27 @@
 <dl class="field-list simple">
 <dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ready</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>output</em>) – Initialisation completion strobe indicating the controller is ready to operate</p></li>
-<li><p><strong>start</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Strobe to instruct the controller to start operations (this is further explained below)</p></li>
-<li><p><strong>done</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>output</em>) – Signal that signals the completion of operations pending going to idle</p></li>
-<li><p><strong>finish</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Strobe used to acknowledge completion so the controller can enter idle</p></li>
+<li><p><strong>ready</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>output</em>) – Initialisation completion strobe indicating the controller is ready to operate.</p></li>
+<li><p><strong>start</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Strobe to instruct the controller to start operations (this is further explained below).</p></li>
+<li><p><strong>done</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>output</em>) – Signal that signals the completion of operations pending going to idle.</p></li>
+<li><p><strong>finish</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Strobe used to acknowledge completion so the controller can enter idle.</p></li>
 <li><p><strong>resetAddrs</strong> (<em>Signal</em><em>(</em><em>)</em><em>, </em><em>input</em>) – Strobe used to request the controller reset its internal Flash addressing to the
-current values on the beginAddr adn endAddr signals</p></li>
+current values on the beginAddr adn endAddr signals.</p></li>
 <li><p><strong>beginAddr</strong> (<em>Signal</em><em>(</em><em>24</em><em>)</em><em>, </em><em>input</em>) – The Flash address for the start of an operation. Usually set to the beginning
-of a slot when the alt-mode for that slot is selected by the host</p></li>
+of a slot when the alt-mode for that slot is selected by the host.</p></li>
 <li><p><strong>endAddr</strong> (<em>Signal</em><em>(</em><em>24</em><em>)</em><em>, </em><em>input</em>) – The Flash address for the end of an operation. Usually set to the end of a
-slot when the alt-mode for that slot is selected by the host</p></li>
+slot when the alt-mode for that slot is selected by the host.</p></li>
 <li><p><strong>byteCount</strong> (<em>Signal</em><em>(</em><em>24</em><em>)</em><em>, </em><em>input</em>) – A count of the number of bytes loaded (or being loaded) into the FIFO for the requested
-write operation</p></li>
-<li><p><strong>readAddr</strong> (<em>Signal</em><em>(</em><em>24</em><em>)</em>) – The internal current read address for the Flash</p></li>
-<li><p><strong>eraseAddr</strong> (<em>Signal</em><em>(</em><em>24</em><em>)</em>) – The internal current erase address for the Flash</p></li>
-<li><p><strong>writeAddr</strong> (<em>Signal</em><em>(</em><em>24</em><em>)</em>) – The internal current write address for the Flash</p></li>
+write operation.</p></li>
+<li><p><strong>readAddr</strong> (<em>Signal</em><em>(</em><em>24</em><em>)</em>) – The internal current read address for the Flash.</p></li>
+<li><p><strong>eraseAddr</strong> (<em>Signal</em><em>(</em><em>24</em><em>)</em>) – The internal current erase address for the Flash.</p></li>
+<li><p><strong>writeAddr</strong> (<em>Signal</em><em>(</em><em>24</em><em>)</em>) – The internal current write address for the Flash.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>resource</strong> – The fully qualified identifier for the platform resource defining the SPI bus to use</p></li>
-<li><p><strong>fifo</strong> – A FIFO buffer used as the data input to Flash write operations</p></li>
+<li><p><strong>resource</strong> – The fully qualified identifier for the platform resource defining the SPI bus to use.</p></li>
+<li><p><strong>fifo</strong> – A FIFO buffer used as the data input to Flash write operations.</p></li>
 </ul>
 </dd>
 </dl>
@@ -161,20 +161,20 @@ the required Flash pages to write the incomming data from the FIFO erased ready 
 On the completion of the required erase operations it then enters into write mode where Flash
 page by Flash page the data from the FIFO is read out and written for up to byteCount bytes.</p>
 <p>This system is designed with byteCount being equal to a multiple of platform.flash.erasePageSize
-right up until the final cycle prior to either a warmboot of the Flash addressing being reset</p>
+right up until the final cycle prior to either a warmboot of the Flash addressing being reset.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.flash.SPIFlash.elaborate">
 <span class="sig-name descname"><span class="pre">elaborate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.dsl.Module</span></span></span><a class="headerlink" href="#dragonBoot.flash.SPIFlash.elaborate" title="Permalink to this definition"></a></dt>
-<dd><p>Describes the specific gateware needed to talk to and erase + rewrite the data in a SPI Flash device</p>
+<dd><p>Describes the specific gateware needed to talk to and erase + rewrite the data in a SPI Flash device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>platform</strong> – The Amaranth platform for which the gateware will be synthesised</p>
+<dd class="field-odd"><p><strong>platform</strong> – The Amaranth platform for which the gateware will be synthesised.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A complete description of the gateware behaviour required</p>
+<dd class="field-even"><p>A complete description of the gateware behaviour required.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>amaranth.hdl.dsl.Module</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.hdl.dsl.Module</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -184,7 +184,7 @@ right up until the final cycle prior to either a warmboot of the Flash addressin
 <dl class="py class">
 <dt class="sig sig-object py" id="dragonBoot.flash.SPIFlashCmd">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.flash.</span></span><span class="sig-name descname"><span class="pre">SPIFlashCmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.flash.SPIFlashCmd" title="Permalink to this definition"></a></dt>
-<dd><p>An enumeration of the command opcodes for the Flash</p>
+<dd><p>An enumeration of the command opcodes for the Flash.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dragonBoot.flash.SPIFlashCmd.pageProgram">
 <span class="sig-name descname"><span class="pre">pageProgram</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#dragonBoot.flash.SPIFlashCmd.pageProgram" title="Permalink to this definition"></a></dt>
@@ -210,23 +210,23 @@ right up until the final cycle prior to either a warmboot of the Flash addressin
 <dl class="py class">
 <dt class="sig sig-object py" id="dragonBoot.flash.SPIFlashOp">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.flash.</span></span><span class="sig-name descname"><span class="pre">SPIFlashOp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.flash.SPIFlashOp" title="Permalink to this definition"></a></dt>
-<dd><p>An enumeration describing the current overarching operation being completed on the Flash</p>
+<dd><p>An enumeration describing the current overarching operation being completed on the Flash.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dragonBoot.flash.SPIFlashOp.none">
 <span class="sig-name descname"><span class="pre">none</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#dragonBoot.flash.SPIFlashOp.none" title="Permalink to this definition"></a></dt>
-<dd><p>No action is in progress</p>
+<dd><p>No action is in progress.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dragonBoot.flash.SPIFlashOp.erase">
 <span class="sig-name descname"><span class="pre">erase</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#dragonBoot.flash.SPIFlashOp.erase" title="Permalink to this definition"></a></dt>
-<dd><p>A sector erase is in progress</p>
+<dd><p>A sector erase is in progress.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dragonBoot.flash.SPIFlashOp.write">
 <span class="sig-name descname"><span class="pre">write</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#dragonBoot.flash.SPIFlashOp.write" title="Permalink to this definition"></a></dt>
-<dd><p>A Flash page write sequence is in progress</p>
+<dd><p>A Flash page write sequence is in progress.</p>
 </dd></dl>
 
 </dd></dl>
