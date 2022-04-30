@@ -156,10 +156,10 @@ class WindowsRequestHandler(USBRequestHandler):
 		The condition for the operation of this handler is defined as being:
 
 		* A Vendor request directly to the device.
-		* for either index value 7 or 8, respectively meaning:
+		* for either index value 0x07 or 0x08, respectively meaning:
 
-			* GET_DESCRIPTOR_SET, and
-			* SET_ALTERNATE_ENUM
+			* :code:`GET_DESCRIPTOR_SET`, and
+			* :code:`SET_ALTERNATE_ENUM`
 
 		The latter has not been given support as we don't currently allow swapping out the device
 		descriptors in this manner.

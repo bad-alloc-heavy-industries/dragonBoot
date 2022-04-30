@@ -10,7 +10,7 @@ __all__ = (
 )
 
 class GetDescriptorSetHandler(Elaboratable):
-	""" Gateware that handles responding to platform-specific windows GET_DESCRIPTOR_SET requests.
+	""" Gateware that handles responding to Windows GET_DESCRIPTOR_SET requests.
 
 	Attributes
 	----------
@@ -38,7 +38,7 @@ class GetDescriptorSetHandler(Elaboratable):
 		Parameters
 		----------
 		descriptorCollection : PlatformDescriptorCollection
-			The PlatformDescriptorCollection containing the descriptors to use for platform-specific windows responses.
+			The PlatformDescriptorCollection containing the descriptors to use for Windows responses.
 		maxPacketLength: int
 			Maximum EP0 packet length.
 		domain: string
@@ -102,7 +102,7 @@ class GetDescriptorSetHandler(Elaboratable):
 
 		Returns
 		-------
-		Tuple[:py:class:`amaranth.hdl.mem.Memory`, int, int]
+		:py:class:`Tuple <tuple>` [ :py:class:`amaranth.hdl.mem.Memory`, :py:class:`int`, :py:class:`int` ]
 			A List containing:
 
 				* A Memory object defining the descriptor data and access information as defined above.
@@ -148,7 +148,7 @@ class GetDescriptorSetHandler(Elaboratable):
 		return Memory(width = 32, depth = len(initialiser), init = initialiser), maxDescriptorSize, maxVendorCode
 
 	def elaborate(self, platform) -> Module:
-		""" Describes the specific gateware needed to implement platform-specific windows GET_DESCRIPTOR_SET requests.
+		""" Describes the specific gateware needed to implement Windows :code:`GET_DESCRIPTOR_SET` requests.
 
 		Parameters
 		----------

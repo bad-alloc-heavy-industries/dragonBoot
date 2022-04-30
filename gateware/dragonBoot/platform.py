@@ -151,14 +151,14 @@ class DragonICE40Platform(LatticeICE40Platform):
 		written by either `SPIFlashProgrammer <https://github.com/bad-alloc-heavy-industries/SPIFlashProgrammer>`_,
 		or any other tool capable of writing a raw Flash image to a target device.
 
-		Once the upgrade bitstream has been created, this: then builds the multi-boot slot
-		configuration page; appends the upgrade bitstream in its proper location; then pads
+		Once the upgrade bitstream has been created, this: builds the multi-boot slot
+		configuration page; appends the upgrade bitstream in its proper location; pads
 		out to the start of the next slot after; and, finally places a short bitstream there
 		which instructs the FPGA to warmboot into the bootloader slot. This is done so that
 		unconfigured devices enter the bootloader automatically untill written with a valid bitstream.
 
-		Finally, this will (optionally) program the initial Flash image to a target device per your
-		specification using the function :py:meth:`self.toolchain_program`.
+		Once building this initial Flash image has been built, this will (optionally) program the initial
+		Flash image to a target device per your specification using the function :py:meth:`self.toolchain_program`.
 		"""
 		products : LocalBuildProducts = super().build(
 			elaboratable, name, build_dir, do_build, do_program = False,
