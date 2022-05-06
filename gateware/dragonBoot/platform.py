@@ -73,7 +73,14 @@ class Flash:
 	def partitions(self) -> Dict[int, Dict[str, int]]:
 		""" This property returns a dictionary describing the slot configuration Flash partioning.
 
-		The dictionary returned is in the form:
+		The dictionary returned is in the form::
+
+			{
+				slot: {
+					'beginAddress': begin,
+					'endAddress': end,
+				}
+			}
 		"""
 		partitions = {}
 		beginAddress = self.erasePageSize
