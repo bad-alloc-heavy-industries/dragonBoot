@@ -269,6 +269,14 @@ property ensures on retreival that a value in range is returned.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">partitions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dragonBoot.platform.Flash.partitions" title="Permalink to this definition"></a></dt>
 <dd><p>This property returns a dictionary describing the slot configuration Flash partioning.</p>
 <p>The dictionary returned is in the form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+        <span class="n">slot</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;beginAddress&#39;</span><span class="p">:</span> <span class="n">begin</span><span class="p">,</span>
+                <span class="s1">&#39;endAddress&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
