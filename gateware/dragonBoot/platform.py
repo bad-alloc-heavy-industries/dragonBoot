@@ -169,7 +169,7 @@ class DragonICE40Platform(LatticeICE40Platform):
 		"""
 		products : LocalBuildProducts = super().build(
 			elaboratable, name, build_dir, do_build, do_program = False,
-			synth_opts = ['-abc9'], nextpnr_opts = ['--tmg-ripup', '--seed=0'],
+			synth_opts = '-abc9', nextpnr_opts = '--tmg-ripup --seed=0',
 			**kwargs
 		)
 
