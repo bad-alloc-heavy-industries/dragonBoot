@@ -61,8 +61,10 @@ class DFURequestHandler(USBRequestHandler):
 
 	Parameters
 	----------
+	configuration
+		The USB configuration this handler should be bound on - must match the value in the descriptors.
 	interface
-		The USB interface number this handler should be bound on - must match value in the descriptors.
+		The USB interface number this handler should be bound on - must match the value in the descriptors.
 	resource
 		The fully qualified identifier for the platform resource defining the SPI bus to use to access
 		the configuration Flash.
@@ -116,9 +118,10 @@ class DFURequestHandler(USBRequestHandler):
 	the data written to the Flash, the FIFO can correctly handle exhaustion so should still allow operations
 	to complete. Therefore we have not attempted to further handle this other than "well just don't do that then".
 	"""
-	def __init__(self, *, interface : int, resource : Tuple[str, int]):
+	def __init__(self, *, configuration : int, interface : int, resource : Tuple[str, int]):
 		super().__init__()
 
+		self._configuration = configuration
 		self._interface = interface
 		self._flashResource = resource
 
@@ -435,8 +438,11 @@ class DFURequestHandler(USBRequestHandler):
 
 		* A Standard request to the handler's interface, or
 		* A Class-specific (ie, DFU) request to the handler's interface.
+
+		This is as well as the current device configuration matching the one for this handler.
 		"""
 		return (
+			(self.interface.active_config == self._configuration) &
 			((setup.type == USBRequestType.CLASS) | (setup.type == USBRequestType.STANDARD)) &
 			(setup.recipient == USBRequestRecipient.INTERFACE) &
 			(setup.index == self._interface)

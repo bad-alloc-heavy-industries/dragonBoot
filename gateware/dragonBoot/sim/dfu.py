@@ -63,7 +63,7 @@ dfuData = (
 @sim_case(
 	domains = (('usb', 60e6),),
 	platform = Platform(),
-	dut = DFURequestHandler(interface = 0, resource = ('flash', 0))
+	dut = DFURequestHandler(configuration = 1, interface = 0, resource = ('flash', 0))
 )
 def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 	interface = dut.interface
@@ -201,6 +201,8 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield
 
 	def domainUSB():
+		yield interface.active_config.eq(1)
+		yield Settle()
 		yield
 		yield
 		while (yield bus.cs.o) == 1:

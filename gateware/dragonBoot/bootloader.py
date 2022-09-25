@@ -115,7 +115,7 @@ class DragonBoot(Elaboratable):
 
 		descriptors.add_language_descriptor((LanguageIDs.ENGLISH_US, ))
 		ep0 = device.add_standard_control_endpoint(descriptors)
-		dfuRequestHandler = DFURequestHandler(interface = 0, resource = ('flash_spi', 0))
+		dfuRequestHandler = DFURequestHandler(configuration = 1, interface = 0, resource = ('flash_spi', 0))
 		windowsRequestHandler = WindowsRequestHandler(platformDescriptors)
 
 		def stallCondition(setup : SetupPacket):
