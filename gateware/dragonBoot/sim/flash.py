@@ -38,9 +38,9 @@ class Platform:
 		return bus
 
 class DUT(Elaboratable):
-	def __init__(self, *, resource, flashSize):
+	def __init__(self, *, resource):
 		self._fifo = AsyncFIFO(width = 8, depth = Platform.flash.erasePageSize, r_domain = 'sync', w_domain = 'usb')
-		self._flash = SPIFlash(resource = resource, fifo = self._fifo, flashSize = flashSize)
+		self._flash = SPIFlash(resource = resource, fifo = self._fifo)
 
 		self.fillFIFO = False
 
@@ -64,7 +64,7 @@ class DUT(Elaboratable):
 @sim_case(
 	domains = (('sync', 60e6), ('usb', 60e6)),
 	platform = Platform(),
-	dut = DUT(resource = ('flash', 0), flashSize = 512 * 1024)
+	dut = DUT(resource = ('flash', 0))
 )
 def spiFlash(sim : Simulator, dut : SPIFlash):
 	fifo = dut._fifo
