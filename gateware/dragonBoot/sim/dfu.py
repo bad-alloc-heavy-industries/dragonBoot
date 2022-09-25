@@ -81,7 +81,8 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield
 
 	def sendSetup(*, type : USBRequestType, retrieve : bool, request,
-		value : Union[Tuple[int, int], int], index : Union[Tuple[int, int], int], length : int):
+		value : Union[Tuple[int, int], int], index : Union[Tuple[int, int], int], length : int
+	):
 		yield setup.recipient.eq(USBRequestRecipient.INTERFACE)
 		yield setup.type.eq(type)
 		yield setup.is_in_request.eq(1 if retrieve else 0)
@@ -230,6 +231,7 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield from receiveData(data = (0, 0, 0, 0, DFUState.downloadSync, 0))
 		yield
 		yield from sendDFUDetach()
+		yield from receiveZLP()
 		assert (yield dut.triggerReboot) == 1
 		yield Settle()
 		yield

@@ -216,7 +216,11 @@ class DFURequestHandler(USBRequestHandler):
 
 			# HANDLE_DETACH -- The host wishes us to reboot into run mode
 			with m.State('HANDLE_DETACH'):
-				m.d.comb += self.triggerReboot.eq(1)
+				with m.If(interface.status_requested):
+					m.d.comb += self.send_zlp()
+
+				with m.If(interface.handshakes_in.ack):
+					m.d.usb += self.triggerReboot.eq(1)
 
 			# HANDLE_DOWNLOAD -- The host is trying to send us some data to program
 			with m.State('HANDLE_DOWNLOAD'):
@@ -327,8 +331,8 @@ class DFURequestHandler(USBRequestHandler):
 				m.d.comb += [
 					transmitter.stream.connect(interface.tx),
 					transmitter.max_length.eq(1),
+					transmitter.data[0].eq(slot),
 				]
-				m.d.comb += transmitter.data[0].eq(slot)
 
 				# ... then trigger it when requested if the lengths match ...
 				with m.If(self.interface.data_requested):
