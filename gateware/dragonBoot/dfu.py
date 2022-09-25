@@ -265,8 +265,6 @@ class DFURequestHandler(USBRequestHandler):
 				m.d.comb += [
 					transmitter.stream.connect(interface.tx),
 					transmitter.max_length.eq(6),
-				]
-				m.d.comb += [
 					transmitter.data[0].eq(config.status),
 					Cat(transmitter.data[1:4]).eq(0),
 					transmitter.data[4].eq(Cat(config.state, 0)),
@@ -312,8 +310,8 @@ class DFURequestHandler(USBRequestHandler):
 				m.d.comb += [
 					transmitter.stream.connect(interface.tx),
 					transmitter.max_length.eq(1),
+					transmitter.data[0].eq(Cat(config.state, 0)),
 				]
-				m.d.comb += transmitter.data[0].eq(Cat(config.state, 0))
 
 				# ... then trigger it when requested if the lengths match ...
 				with m.If(self.interface.data_requested):

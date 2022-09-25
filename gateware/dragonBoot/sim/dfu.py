@@ -231,6 +231,8 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 		yield from receiveData(data = (DFUState.downloadSync,))
 		yield from sendDFUGetStatus()
 		yield from receiveData(data = (0, 0, 0, 0, DFUState.downloadSync, 0))
+		yield from sendDFUGetState()
+		yield from receiveData(data = (DFUState.downloadIdle,))
 		yield
 		yield from sendDFUDetach()
 		yield from receiveZLP()

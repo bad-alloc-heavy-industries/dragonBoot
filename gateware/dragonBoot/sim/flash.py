@@ -145,8 +145,6 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 		assert (yield fifo.r_rdy) == 0
 		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x00), partial = True)
 		yield
-		assert (yield bus.cs.o) == 1
-		assert (yield bus.clk.o) == 1
 		assert (yield fifo.r_rdy) == 0
 		assert (yield bus.cs.o) == 1
 		assert (yield bus.clk.o) == 1
