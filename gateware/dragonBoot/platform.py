@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # If you're looking for the target platforms this bootloader can be built for, look in platforms/
-from amaranth.build import Platform
-from amaranth.build.run import BuildPlan, BuildProducts, LocalBuildProducts
-from amaranth.vendor.lattice_ice40 import LatticeICE40Platform
+from torii.build import Platform
+from torii.build.run import BuildPlan, BuildProducts, LocalBuildProducts
+from torii.platform.vendor.lattice_ice40 import LatticeICE40Platform
 from abc import abstractmethod
 from typing import Dict, Union
 

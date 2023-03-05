@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth.build import Attrs
-from amaranth_boards.resources.interface import SPIResource, ULPIResource
+from torii.build import Attrs
+from torii.platform.resources.interface import SPIResource, ULPIResource
 from ..platform import DragonICE40Platform, Flash, platform
 
 __all__ = (

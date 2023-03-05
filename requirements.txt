@@ -1,6 +1,5 @@
-git+https://github.com/amaranth-lang/amaranth.git@main#egg=amaranth
+git+https://github.com/shrine-maiden-heavy-industries/torii-hdl.git@main#egg=torii
 git+https://github.com/amaranth-lang/amaranth-soc@main#egg=amaranth-soc
-git+https://github.com/dragonmux/amaranth-boards@main#egg=amaranth-boards
 git+https://github.com/shrine-maiden-heavy-industries/arachne@main#egg=arachne
-git+https://github.com/shrine-maiden-heavy-industries/luna@main#egg=luna
-git+https://github.com/shrine-maiden-heavy-industries/python-usb-protocol@main#egg=usb-protocol
+git+https://github.com/shrine-maiden-heavy-industries/sol@main#egg=sol-usb
+git+https://github.com/shrine-maiden-heavy-industries/usb-construct@main#egg=usb-construct

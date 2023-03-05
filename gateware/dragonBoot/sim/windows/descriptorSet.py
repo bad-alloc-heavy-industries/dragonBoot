@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from arachne.core.sim import sim_case
-from amaranth.sim import Simulator, Settle
-from usb_protocol.emitters.descriptors.microsoft import SetHeaderDescriptorEmitter, PlatformDescriptorCollection
+from ..framework import sim_case
+from torii.sim import Simulator, Settle
+from usb_construct.emitters.descriptors.microsoft import SetHeaderDescriptorEmitter, PlatformDescriptorCollection
 
 from ...windows.descriptorSet import GetDescriptorSetHandler
 

@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth import Elaboratable, Module, ClockDomain, ResetSignal
-from luna.usb2 import USBDevice
-from luna.gateware.usb.request import SetupPacket
-from luna.gateware.usb.usb2.request import StallOnlyRequestHandler
-from usb_protocol.types import USBRequestType
-from usb_protocol.emitters.descriptors.standard import (
+from torii import Elaboratable, Module, ClockDomain, ResetSignal
+from sol_usb.usb2 import USBDevice
+from sol_usb.gateware.usb.request import SetupPacket
+from sol_usb.gateware.usb.usb2.request import StallOnlyRequestHandler
+from usb_construct.types import USBRequestType
+from usb_construct.emitters.descriptors.standard import (
 	DeviceDescriptorCollection, LanguageIDs, DeviceClassCodes, InterfaceClassCodes,
 	ApplicationSubclassCodes, DFUProtocolCodes
 )
-from usb_protocol.types.descriptors.dfu import *
-from usb_protocol.contextmgrs.descriptors.dfu import *
-from usb_protocol.types.descriptors.microsoft import *
-from usb_protocol.emitters.descriptors.microsoft import PlatformDescriptorCollection
-from usb_protocol.contextmgrs.descriptors.microsoft import *
+from usb_construct.types.descriptors.dfu import *
+from usb_construct.contextmgrs.descriptors.dfu import *
+from usb_construct.types.descriptors.microsoft import *
+from usb_construct.emitters.descriptors.microsoft import PlatformDescriptorCollection
+from usb_construct.contextmgrs.descriptors.microsoft import *
 
 from .dfu import DFURequestHandler
 from .windows import WindowsRequestHandler
@@ -23,22 +23,22 @@ __all__ = (
 )
 
 class DragonBoot(Elaboratable):
-	""" The top-level of the dragonBoot gateware and implementation of the descriptors and LUNA USB device.
+	""" The top-level of the dragonBoot gateware and implementation of the descriptors and SOL USB device.
 
 	This top-level :py:class:`amaranth.hdl.ir.Elaboratable` does a few things, some of which are described in
 	detail in other sections of the documentation:
 
 	* It implements the :doc:`USB descriptors </gateware/descriptors>` required to tell the host what we are.
-	* It houses the LUNA USB device instance used to communicate with the host.
+	* It houses the SOL USB device instance used to communicate with the host.
 	* It houses and connects the platform-specific warmboot block needed to reboot and reconfigure the FPGA
 	  on completion of operations.
-	* It connects up and provides to the LUNA USB device all the handlers required for USB endpoint 0 to work
+	* It connects up and provides to the SOL USB device all the handlers required for USB endpoint 0 to work
 	  and respond as needed to requests from the host.
 
-	The LUNA USB device uses what is ostensibly an ULPI interface, however it is possible to instead use a raw
+	The SOL USB device uses what is ostensibly an ULPI interface, however it is possible to instead use a raw
 	USB LS/FS interface even on a device such as the Lattice iCE40UP5K which is unable to work at ULPI speeds.
-	We configure by default for the :py:class:`luna.gateware.usb.usb2.device.USBDevice` to connect in high speed
-	mode and define the :code:`usb` clock domain, while LUNA handles setting up clocking that domain appropriately.
+	We configure by default for the :py:class:`sol.gateware.usb.usb2.device.USBDevice` to connect in high speed
+	mode and define the :code:`usb` clock domain, while SOL handles setting up clocking that domain appropriately.
 	"""
 	def elaborate(self, platform) -> Module:
 		""" Describes the specific gateware needed to provide the descriptors and handlers and device logic to talk USB.
@@ -91,7 +91,7 @@ class DragonBoot(Elaboratable):
 
 					with FunctionalDescriptor(interfaceDesc) as functionalDesc:
 						functionalDesc.bmAttributes = (
-							DFUWillDetach.YES | DFUManifestationTollerant.NO | DFUCanUpload.NO | DFUCanDownload.YES
+							DFUWillDetach.YES | DFUManifestationTolerant.NO | DFUCanUpload.NO | DFUCanDownload.YES
 						)
 						functionalDesc.wDetachTimeOut = 1000
 						functionalDesc.wTransferSize = platform.flash.erasePageSize
@@ -115,19 +115,11 @@ class DragonBoot(Elaboratable):
 
 		descriptors.add_language_descriptor((LanguageIDs.ENGLISH_US, ))
 		ep0 = device.add_standard_control_endpoint(descriptors)
+
 		dfuRequestHandler = DFURequestHandler(configuration = 1, interface = 0, resource = ('flash_spi', 0))
-		windowsRequestHandler = WindowsRequestHandler(platformDescriptors)
-
-		def stallCondition(setup : SetupPacket):
-			return ~(
-				(setup.type == USBRequestType.STANDARD) |
-				dfuRequestHandler.handlerCondition(setup) |
-				windowsRequestHandler.handlerCondition(setup)
-			)
-
 		ep0.add_request_handler(dfuRequestHandler)
-		ep0.add_request_handler(windowsRequestHandler)
-		ep0.add_request_handler(StallOnlyRequestHandler(stall_condition = stallCondition))
+
+		ep0.add_request_handler(WindowsRequestHandler(platformDescriptors))
 
 		# Signal that we always want LUNA to try connecting
 		m.d.comb += [

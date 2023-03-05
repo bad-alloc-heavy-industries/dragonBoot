@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from arachne.core.sim import sim_case
-from amaranth import Record
-from amaranth.hdl.rec import DIR_FANOUT, DIR_FANIN
-from amaranth.sim import Simulator, Settle
+from .framework import sim_case
+from torii import Record
+from torii.hdl.rec import DIR_FANOUT, DIR_FANIN
+from torii.sim import Simulator, Settle
 
 from ..spi import SPIBus
 

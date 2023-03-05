@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth import Elaboratable, Module, Signal
-from amaranth.lib.fifo import AsyncFIFO
+from torii import Elaboratable, Module, Signal
+from torii.lib.fifo import AsyncFIFO
 from enum import IntEnum, auto, unique
 
 from .spi import SPIBus
@@ -107,7 +107,7 @@ class SPIFlash(Elaboratable):
 
 		Returns
 		-------
-		:py:class:`amaranth.hdl.dsl.Module`
+		:py:class:`torii.hdl.dsl.Module`
 			A complete description of the gateware behaviour required.
 		"""
 		m = Module()

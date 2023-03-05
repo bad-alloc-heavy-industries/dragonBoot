@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth import Elaboratable, Module, Signal, Cat
+from torii import Elaboratable, Module, Signal, Cat
 from typing import Tuple
 
 __all__ = (
@@ -50,7 +50,7 @@ class SPIBus(Elaboratable):
 
 		Returns
 		-------
-		:py:class:`amaranth.hdl.dsl.Module`
+		:py:class:`torii.hdl.dsl.Module`
 			A complete description of the gateware behaviour required.
 		"""
 		m = Module()

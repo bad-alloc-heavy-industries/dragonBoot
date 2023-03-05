@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from arachne.core.sim import sim_case
-from amaranth import Elaboratable, Module, Record
-from amaranth.lib.fifo import AsyncFIFO
-from amaranth.hdl.rec import DIR_FANOUT, DIR_FANIN
-from amaranth.sim import Simulator, Settle
+from .framework import sim_case
+from torii import Elaboratable, Module, Record
+from torii.lib.fifo import AsyncFIFO
+from torii.hdl.rec import DIR_FANOUT, DIR_FANIN
+from torii.sim import Simulator, Settle
 
 from ..platform import Flash
 from ..flash import SPIFlash

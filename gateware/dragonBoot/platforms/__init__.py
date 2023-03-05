@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth.build.plat import Platform
+from torii.build.plat import Platform
 from inspect import isclass
 from typing import Dict
 

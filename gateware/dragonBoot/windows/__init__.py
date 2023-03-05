@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth import Module, Signal
-from usb_protocol.types import USBRequestType, USBRequestRecipient
-from usb_protocol.types.descriptors.microsoft import MicrosoftRequests
-from usb_protocol.emitters.descriptors.microsoft import PlatformDescriptorCollection
-from luna.gateware.usb.usb2.request import (
+from torii import Module, Signal
+from usb_construct.types import USBRequestType, USBRequestRecipient
+from usb_construct.types.descriptors.microsoft import MicrosoftRequests
+from usb_construct.emitters.descriptors.microsoft import PlatformDescriptorCollection
+from sol_usb.gateware.usb.usb2.request import (
 	USBRequestHandler, SetupPacket
 )
 
@@ -30,7 +30,7 @@ class WindowsRequestHandler(USBRequestHandler):
 	`Microsoft OS 2.0 Descriptors Specification <https://docs.microsoft.com/en-us/windows-hardware/drivers/usbcon/microsoft-os-2-0-descriptors-specification>`_.
 
 	The main thing this handler has to deal with are the vendor requests to the device as the
-	:py:class:`usb_protocol.emitters.descriptors.microsoft.PlatformDescriptorCollection` and
+	:py:class:`usb_construct.emitters.descriptors.microsoft.PlatformDescriptorCollection` and
 	descriptor system deals with the the rest of the spec.
 
 	To this end, when triggered, the handler works as follows:
@@ -62,11 +62,11 @@ class WindowsRequestHandler(USBRequestHandler):
 		Parameters
 		----------
 		platform
-			The Amaranth platform for which the gateware will be synthesised.
+			The Torii platform for which the gateware will be synthesised.
 
 		Returns
 		-------
-		:py:class:`amaranth.hdl.dsl.Module`
+		:py:class:`torii.hdl.dsl.Module`
 			A complete description of the gateware behaviour required.
 		"""
 		m = Module()
@@ -80,7 +80,7 @@ class WindowsRequestHandler(USBRequestHandler):
 			descriptorSetHandler.length.eq(setup.length),
 		]
 
-		with m.If(self.handlerCondition(setup)):
+		with m.If(self.handler_condition(setup)):
 			with m.FSM(domain = 'usb'):
 				# IDLE -- not handling any active request
 				with m.State('IDLE'):
@@ -135,7 +135,7 @@ class WindowsRequestHandler(USBRequestHandler):
 
 		return m
 
-	def handlerCondition(self, setup : SetupPacket):
+	def handler_condition(self, setup : SetupPacket):
 		""" Defines the setup packet conditions under which the request handler will operate.
 
 		This is used to gate the handler's operation and forms part of the condition under which
@@ -148,7 +148,7 @@ class WindowsRequestHandler(USBRequestHandler):
 
 		Returns
 		-------
-		:py:class:`amranth.hdl.ast.Operator`
+		:py:class:`torii.hdl.ast.Operator`
 			A combinatorial operation defining the sum conditions under which this handler will operate.
 
 		Notes

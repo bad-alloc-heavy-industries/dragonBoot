@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth import Elaboratable, Module, Signal, Memory, DomainRenamer
+from torii import Elaboratable, Module, Signal, Memory, DomainRenamer
 from struct import pack as structPack, unpack as structUnpack
-from usb_protocol.emitters.descriptors.microsoft import PlatformDescriptorCollection
-from luna.gateware.usb.stream import USBInStreamInterface
+from usb_construct.emitters.descriptors.microsoft import PlatformDescriptorCollection
+from sol_usb.gateware.usb.stream import USBInStreamInterface
 from typing import Tuple
 
 __all__ = (
@@ -102,7 +102,7 @@ class GetDescriptorSetHandler(Elaboratable):
 
 		Returns
 		-------
-		:py:class:`Tuple <tuple>` [ :py:class:`amaranth.hdl.mem.Memory`, :py:class:`int`, :py:class:`int` ]
+		:py:class:`Tuple <tuple>` [ :py:class:`torii.hdl.mem.Memory`, :py:class:`int`, :py:class:`int` ]
 			A List containing:
 
 				* A Memory object defining the descriptor data and access information as defined above.
@@ -157,7 +157,7 @@ class GetDescriptorSetHandler(Elaboratable):
 
 		Returns
 		-------
-		:py:class:`amaranth.hdl.dsl.Module`
+		:py:class:`torii.hdl.dsl.Module`
 			A complete description of the gateware behaviour required.
 		"""
 		m = Module()

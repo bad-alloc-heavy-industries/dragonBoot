@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from arachne.core.sim import sim_case
-from amaranth.sim import Simulator, Settle
-from usb_protocol.types import USBRequestType, USBRequestRecipient
-from usb_protocol.types.descriptors.microsoft import MicrosoftRequests
+from ..framework import sim_case
+from torii.sim import Simulator, Settle
+from usb_construct.types import USBRequestType, USBRequestRecipient
+from usb_construct.types.descriptors.microsoft import MicrosoftRequests
 from typing import Tuple, Union
 
 from ...windows import WindowsRequestHandler

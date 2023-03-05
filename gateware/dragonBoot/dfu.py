@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from amaranth import Module, Signal, DomainRenamer, Cat, Memory, Const
-from amaranth.lib.fifo import AsyncFIFO
-from usb_protocol.types import USBRequestType, USBRequestRecipient, USBStandardRequests
-from usb_protocol.types.descriptors.dfu import DFURequests
-from luna.gateware.usb.usb2.request import (
+from torii import Module, Signal, DomainRenamer, Cat, Memory, Const
+from torii.lib.fifo import AsyncFIFO
+from usb_construct.types import USBRequestType, USBRequestRecipient, USBStandardRequests
+from usb_construct.types.descriptors.dfu import DFURequests
+from sol_usb.gateware.usb.usb2.request import (
 	USBRequestHandler, SetupPacket
 )
-from luna.gateware.usb.stream import USBInStreamInterface, USBOutStreamInterface
-from luna.gateware.stream.generator import StreamSerializer
+from sol_usb.gateware.usb.stream import USBInStreamInterface, USBOutStreamInterface
+from sol_usb.gateware.stream.generator import StreamSerializer
 from enum import IntEnum, unique
 from struct import pack as structPack, unpack as structUnpack
 from typing import Tuple
@@ -137,7 +137,7 @@ class DFURequestHandler(USBRequestHandler):
 
 		Returns
 		-------
-		:py:class:`amaranth.hdl.dsl.Module`
+		:py:class:`torii.hdl.dsl.Module`
 			A complete description of the gateware behaviour required.
 		"""
 		m = Module()
@@ -187,7 +187,7 @@ class DFURequestHandler(USBRequestHandler):
 			# IDLE -- no active request being handled
 			with m.State('IDLE'):
 				# If we've received a new setup packet
-				with m.If(setup.received & self.handlerCondition(setup)):
+				with m.If(setup.received & self.handler_condition(setup)):
 					with m.If(setup.type == USBRequestType.CLASS):
 						# Switch to the right state for what we need to handle
 						with m.Switch(setup.request):
@@ -414,7 +414,7 @@ class DFURequestHandler(USBRequestHandler):
 
 		return m
 
-	def handlerCondition(self, setup : SetupPacket):
+	def handler_condition(self, setup : SetupPacket):
 		""" Defines the setup packet conditions under which the request handler will operate.
 
 		This is used to gate the handler's operation and forms part of the condition under which
@@ -485,7 +485,7 @@ class DFURequestHandler(USBRequestHandler):
 
 		Returns
 		-------
-		:py:class:`amaranth.hdl.mem.Memory`
+		:py:class:`torii.hdl.mem.Memory`
 			A Memory object defining the Flash slot address layout as described above.
 			The memory object uses 24-bit entries as the Flash addresses are 24-bit,
 			and has :math:`flash.slots * 2` entries.

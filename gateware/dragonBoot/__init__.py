@@ -25,7 +25,7 @@ def cli():
 	args = parser.parse_args()
 
 	if args.action == 'arachne-sim':
-		from arachne.core.sim import run_sims
+		from .sim.framework import run_sims
 		run_sims(pkg = 'dragonBoot/sim', result_dir = 'build')
 		return 0
 	elif args.action == 'build':
