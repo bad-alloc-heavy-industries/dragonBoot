@@ -88,6 +88,12 @@ class WindowsRequestHandler(USBRequestHandler):
 					with m.If(setup.received):
 						with m.Switch(setup.index):
 							with m.Case(MicrosoftRequests.GET_DESCRIPTOR_SET):
+								m.d.usb += [
+									# Start at the beginning of our next / fresh GET_DESCRIPTOR request.
+									descriptorSetHandler.startPosition.eq(0),
+									# Always start our responses with DATA1 pids, per [USB 2.0: 8.5.3].
+									self.interface.tx_data_pid.eq(1)
+								]
 								m.next = 'CHECK_GET_DESCRIPTOR_SET'
 							with m.Default():
 								m.next = 'UNHANDLED'
