@@ -4,12 +4,16 @@ add_global_arguments(
 	language: 'cpp'
 )
 
-platform = dependency(
+platform = subproject(
 	'dragonAVR',
 	required: true,
 	version: '>=0.0.1',
-	fallback: ['dragonAVR', 'dragonAVR_dep']
-).partial_dependency(compile_args: true, includes: true)
+).get_variable(
+	'dragonAVR_dep'
+).partial_dependency(
+	compile_args: true,
+	includes: true
+)
 
 add_project_arguments(
 	cxx.get_supported_arguments('-Wno-misspelled-isr'),
