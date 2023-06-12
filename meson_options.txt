@@ -1,2 +1,9 @@
-option('chip', type: 'combo', description: 'Which Tiva-C you wish you use',
-	choices: ['unknown', 'tm4c123gh6pm', 'atxmega256a3u'])
+option(
+	'chip', type: 'combo', description: 'Which microcontroller you wish you target', choices:
+	[
+		'unknown',
+		'tm4c123gh6pm',
+		'stm32f1',
+		'atxmega256a3u'
+	]
+)

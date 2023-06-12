@@ -7,6 +7,12 @@ if chip in ['tm4c123gh6pm']
 		'dfuFlashPageSize=4096',
 		'dfuFlashEraseSize=1024'
 	]
+elif chip in ['stm32f1']
+	dfuOptions = [
+		'dfuFlashBufferSize=1024',
+		'dfuFlashPageSize=4096',
+		'dfuFlashEraseSize=1024'
+	]
 elif chip in ['atxmega256a3u']
 	dfuOptions = [
 		'dfuFlashBufferSize=256',
