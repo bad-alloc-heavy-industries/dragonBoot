@@ -36,11 +36,11 @@ struct nvicTable_t final
 		irqSysTick, /* Sys Tick */
 
 		/* Peripheral handlers */
-		irqEmptyDef, /* GPIO Port A */
-		irqEmptyDef, /* GPIO Port B */
-		irqEmptyDef, /* GPIO Port C */
-		irqEmptyDef, /* GPIO Port D */
-		irqEmptyDef, /* GPIO Port E */
+		irqGPIOPortA, /* GPIO Port A */
+		irqGPIOPortB, /* GPIO Port B */
+		irqGPIOPortC, /* GPIO Port C */
+		irqGPIOPortD, /* GPIO Port D */
+		irqGPIOPortE, /* GPIO Port E */
 		irqEmptyDef, /* UART 0 */
 		irqEmptyDef, /* UART 1 */
 		irqEmptyDef, /* SSI 0 */
@@ -177,3 +177,20 @@ struct nvicTable_t final
 		irqEmptyDef, /* PWM 1 Fault */
 	}
 };
+
+// This weak-linked implementation of irqEmptyDef() is required
+// to satisfy the compiler's requirements on function aliasing.
+// It will be replaced during linking with the implementation
+// in aarch32/irqs.cxx. It could even be an empty function, as
+// long as the definition is here to make it a defined symbol.
+[[gnu::weak]] void irqEmptyDef() noexcept
+{
+	while (true)
+		continue;
+}
+
+WEAK_IRQ(void irqGPIOPortA() noexcept);
+WEAK_IRQ(void irqGPIOPortB() noexcept);
+WEAK_IRQ(void irqGPIOPortC() noexcept);
+WEAK_IRQ(void irqGPIOPortD() noexcept);
+WEAK_IRQ(void irqGPIOPortE() noexcept);

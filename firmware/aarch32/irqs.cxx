@@ -32,7 +32,8 @@ void irqReset() noexcept
 
 void irqNMI() noexcept
 {
-	while (true);
+	while (true)
+		continue;
 }
 
 void irqHardFault() noexcept
@@ -65,7 +66,8 @@ void irqHardFault() noexcept
 
 void irqEmptyDef() noexcept
 {
-	while (true);
+	while (true)
+		continue;
 }
 
 WEAK_IRQ(void irqMMUFault() noexcept);

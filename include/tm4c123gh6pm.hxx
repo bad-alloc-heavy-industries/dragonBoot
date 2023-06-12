@@ -4,6 +4,11 @@
 
 #include "aarch32.hxx"
 
+extern void irqGPIOPortA() noexcept;
+extern void irqGPIOPortB() noexcept;
+extern void irqGPIOPortC() noexcept;
+extern void irqGPIOPortD() noexcept;
+extern void irqGPIOPortE() noexcept;
 extern void irqUSB() noexcept;
 
 #endif /*TM4C123GH6PM_HXX*/

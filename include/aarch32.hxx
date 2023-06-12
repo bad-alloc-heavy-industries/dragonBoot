@@ -2,6 +2,7 @@
 #ifndef AARCH32_HXX
 #define AARCH32_HXX
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define WEAK_IRQ(function) [[gnu::weak, gnu::alias("irqEmptyDef")]] function
 
 // Unused IRQ function
