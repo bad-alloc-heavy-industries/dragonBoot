@@ -11,5 +11,5 @@ platform = subproject(
 )
 
 platformSrc = files(
-	'startup.cxx', 'platform.cxx'
+	'startup.cxx', 'platform.cxx', '../aarch32/irqs.cxx'
 )
