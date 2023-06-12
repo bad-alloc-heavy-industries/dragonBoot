@@ -68,4 +68,10 @@ void irqEmptyDef() noexcept
 	while (true);
 }
 
+WEAK_IRQ(void irqMMUFault() noexcept);
+WEAK_IRQ(void irqBusFault() noexcept);
+WEAK_IRQ(void irqUsageFault() noexcept);
+WEAK_IRQ(void irqServiceCall() noexcept);
+WEAK_IRQ(void irqDebugMonitor() noexcept);
+WEAK_IRQ(void irqPendingServiceCall() noexcept);
 WEAK_IRQ(void irqSysTick() noexcept);

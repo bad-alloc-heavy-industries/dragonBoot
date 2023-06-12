@@ -13,6 +13,12 @@ void irqNMI() noexcept;
 [[gnu::naked]] void irqHardFault() noexcept;
 
 // Configurable priority system handlers
+void irqMMUFault() noexcept;
+void irqBusFault() noexcept;
+void irqUsageFault() noexcept;
+void irqServiceCall() noexcept;
+void irqDebugMonitor() noexcept;
+void irqPendingServiceCall() noexcept;
 void irqSysTick() noexcept;
 
 #endif /*AARCH32_HXX*/

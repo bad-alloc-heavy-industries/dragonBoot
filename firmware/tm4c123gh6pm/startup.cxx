@@ -22,17 +22,17 @@ struct nvicTable_t final
 		irqHardFault, /* Hard Fault handler */
 
 		/* Configurable priority handlers */
-		irqEmptyDef, /* MMU Fault handler */
-		irqEmptyDef, /* Bus Fault handler */
-		irqEmptyDef, /* Usage Fault */
+		irqMMUFault, /* MMU Fault handler */
+		irqBusFault, /* Bus Fault handler */
+		irqUsageFault, /* Usage Fault */
 		nullptr, /* Reserved */
 		nullptr, /* Reserved */
 		nullptr, /* Reserved */
 		nullptr, /* Reserved */
-		irqEmptyDef, /* SV Call */
-		irqEmptyDef, /* Debug Monitor */
+		irqServiceCall, /* SV Call */
+		irqDebugMonitor, /* Debug Monitor */
 		nullptr, /* Reserved */
-		irqEmptyDef, /* Pending SV */
+		irqPendingServiceCall, /* Pending SV */
 		irqSysTick, /* Sys Tick */
 
 		/* Peripheral handlers */
