@@ -21,6 +21,36 @@ const std::array<usb::dfu::zone_t, 1> firmwareZone
 
 constexpr static uint16_t bootMagicDFU{0xBADB};
 
+namespace osc
+{
+	void init() noexcept
+	{
+		// Start by bringing up the HSE (High-speed external) oscillator and wait for it to become ready.
+		rcc.clockCtrl |= vals::rcc::clockCtrlHSEEnable;
+		while (!(rcc.clockCtrl & vals::rcc::clockCtrlHSEReady))
+			continue;
+		// Switch to the HSE for the moment
+		rcc.clockConfig = (rcc.clockConfig & vals::rcc::clockConfigSourceMask) | vals::rcc::clockConfigSourceHSE;
+		// Now configure the prescalers
+		rcc.clockConfig &= ~(vals::rcc::clockConfigAHBPrescaleMask | vals::rcc::clockConfigAPB1PrescaleMask |
+			vals::rcc::clockConfigAPB2PrescaleMask | vals::rcc::clockConfigADCPrescaleMask |
+			vals::rcc::clockConfigPLLSourceMask | vals::rcc::clockConfigPLLPrescaleMask |
+			vals::rcc::clockConfigPLLMultiplierMask | vals::rcc::clockConfigOutputMask);
+		rcc.clockConfig |= vals::rcc::clockConfigAHBPrescale(0) | vals::rcc::clockConfigAPB1Prescale(2) |
+			vals::rcc::clockConfigAPB2Prescale(0) | vals::rcc::clockConfigADCPrescale(8) |
+			vals::rcc::clockConfigPLLPrescale(0);
+		// Now the prescalers are configured, set the Flash wait states appropriately and ready for the PLL'd clock
+		flashCtrl.accessCtrl &= ~vals::flash::accessCtrlLatencyMask;
+		flashCtrl.accessCtrl |= vals::flash::acccesCtrlLatency(2);
+		// Set up the PLL and wait for it to come up, stabilise, then switch to it.
+		rcc.clockConfig |= vals::rcc::clockConfigPLLMultiplier(9);
+		rcc.clockCtrl |= vals::rcc::clockCtrlPLLEnable;
+		while (!(rcc.clockCtrl & vals::rcc::clockCtrlPLLReady))
+			continue;
+		rcc.clockConfig = (rcc.clockConfig & vals::rcc::clockConfigSourceMask) | vals::rcc::clockConfigSourcePLL;
+	}
+} // namespace osc
+
 void enableInterrupts() noexcept { }
 void idle() noexcept { __asm__("wfi"); }
 
