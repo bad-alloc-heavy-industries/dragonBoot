@@ -69,6 +69,7 @@ bool mustEnterBootloader() noexcept
 
 void rebootToFirmware() noexcept
 {
+	// Set the vector table to the application's
 	scb.vtable = applicationBaseAddr;
 	__asm__(R"(
 		ldr		r0, =%[baseAddr]
@@ -86,10 +87,50 @@ namespace usb::dfu
 {
 	void reboot() noexcept
 	{
+		// Reset the boot magic, and ask the system controller to reboot the device.
 		bootMagic = 0;
 		scb.apint = vals::scb::apintKey | vals::scb::apintSystemResetRequest;
 		while (true)
 			continue;
+	}
+
+	bool flashBusy() noexcept
+	{
+		// Read back the Flash controller status
+		const auto status{flashCtrl.status};
+		// If we don't see EOP set, or the busy bit is still set, Flash is still busy.
+		return !(status & vals::flash::statusEndOfOperation) && (status & vals::flash::statusBusy);
+	}
+
+	// XXX: Neither this nor the write routine work for bank2, because there are technically
+	// 2 Flash controllers and dragonSTM32 currently doesn't deal with that properly.
+	void erase(const std::uintptr_t address) noexcept
+	{
+		// Unlock the Flash controller if necessary
+		if (flashCtrl.control & vals::flash::controlLock)
+		{
+			flashCtrl.flashKey = vals::flash::unlockKey1;
+			flashCtrl.flashKey = vals::flash::unlockKey2;
+			// Assume that the controller is now unlocked.. not much we can do otherwise!
+		}
+		// Set up the page erase
+		flashCtrl.control |= vals::flash::controlPageErase;
+		flashCtrl.address = address;
+		// And then trigger the operation
+		flashCtrl.control |= vals::flash::controlStartErase;
+	}
+
+	void write(const std::uintptr_t address, const std::size_t count, const uint8_t *const buffer) noexcept
+	{
+		if (!count || count > flashBufferSize)
+			return;
+
+		// Clear the EOP bit (Write 1 to clear)
+		flashCtrl.status |= vals::flash::statusEndOfOperation;
+		// The controller should already be unlocked because of the erase that occured, so..
+		// Set up the programming operation.
+		flashCtrl.control |= vals::flash::controlProgram;
+		std::memcpy(reinterpret_cast<void *>(address), buffer, count);
 	}
 } // namespace usb::dfu
 
