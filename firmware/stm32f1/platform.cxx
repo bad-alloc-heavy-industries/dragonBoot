@@ -30,7 +30,9 @@ namespace osc
 		while (!(rcc.clockCtrl & vals::rcc::clockCtrlHSEReady))
 			continue;
 		// Switch to the HSE for the moment
-		rcc.clockConfig = (rcc.clockConfig & vals::rcc::clockConfigSourceMask) | vals::rcc::clockConfigSourceHSE;
+		rcc.clockConfig = (rcc.clockConfig & ~vals::rcc::clockConfigSourceMask) | vals::rcc::clockConfigSourceHSE;
+		// Switch off the HSI and PLL (just in case)
+		rcc.clockCtrl &= ~(vals::rcc::clockCtrlHSIEnable | vals::rcc::clockCtrlPLLEnable);
 		// Now configure the prescalers
 		rcc.clockConfig &= ~(vals::rcc::clockConfigAHBPrescaleMask | vals::rcc::clockConfigAPB1PrescaleMask |
 			vals::rcc::clockConfigAPB2PrescaleMask | vals::rcc::clockConfigADCPrescaleMask |
@@ -43,11 +45,11 @@ namespace osc
 		flashCtrl.accessCtrl &= ~vals::flash::accessCtrlLatencyMask;
 		flashCtrl.accessCtrl |= vals::flash::acccesCtrlLatency(2);
 		// Set up the PLL and wait for it to come up, stabilise, then switch to it.
-		rcc.clockConfig |= vals::rcc::clockConfigPLLMultiplier(9);
+		rcc.clockConfig |= vals::rcc::clockConfigPLLMultiplier(9) | vals::rcc::clockConfigPLLSourceHSE;
 		rcc.clockCtrl |= vals::rcc::clockCtrlPLLEnable;
 		while (!(rcc.clockCtrl & vals::rcc::clockCtrlPLLReady))
 			continue;
-		rcc.clockConfig = (rcc.clockConfig & vals::rcc::clockConfigSourceMask) | vals::rcc::clockConfigSourcePLL;
+		rcc.clockConfig = (rcc.clockConfig & ~vals::rcc::clockConfigSourceMask) | vals::rcc::clockConfigSourcePLL;
 	}
 } // namespace osc
 
