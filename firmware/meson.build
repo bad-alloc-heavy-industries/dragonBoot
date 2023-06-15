@@ -7,18 +7,27 @@ if chip in ['tm4c123gh6pm']
 		'dfuFlashPageSize=4096',
 		'dfuFlashEraseSize=1024'
 	]
+	chipFlash = 262144 # 256KiB of Flash
+	chipRAM = 32768 # 32KiB of RAM
+	chipBaseAddr = 0 # Flash starts at 0x00000000
 elif chip in ['stm32f1']
 	dfuOptions = [
 		'dfuFlashBufferSize=1024',
 		'dfuFlashPageSize=4096',
 		'dfuFlashEraseSize=1024'
 	]
+	chipFlash = 131072 # 128KiB of Flash
+	chipRAM = 20480 # 20KiB of RAM
+	chipBaseAddr = 0x08000000 # Flash starts at 0x08000000
 elif chip in ['atxmega256a3u']
 	dfuOptions = [
 		'dfuFlashBufferSize=256',
 		'dfuFlashPageSize=4096',
 		'dfuFlashEraseSize=256'
 	]
+	chipFlash = 270336 # 256KiB + 8KiB of Flash
+	chipRAM = 32768 # 32KiB of RAM
+	chipBaseAddr = 0 # Flash starts at 0x00000000
 endif
 
 subdir(chip)
@@ -68,8 +77,9 @@ run_target(
 	'size',
 	command: [
 		size,
-		'--flash-size=262144', # 256KiB of Flash
-		'--ram-size=32768', # 32KiB of RAM
+		'--flash-size=@0@'.format(chipFlash),
+		'--ram-size=@0@'.format(chipRAM),
+		'--base-addr=@0@'.format(chipBaseAddr),
 		'--size-prog=@0@'.format(find_program('size').path()),
 		bootloader
 	]

@@ -103,7 +103,7 @@ class TermUI:
 BAR_LEN = TermUI.columns_length(COLUMNS)
 
 
-def analyze_elf(elf, size_prog):
+def analyze_elf(elf, size_prog, base_address):
     fw_size_output = subprocess.check_output([size_prog, "-A", "-d", elf])
     fw_size_output = fw_size_output.decode("utf-8").split("\n")[2:]
     sections = {}
@@ -115,7 +115,7 @@ def analyze_elf(elf, size_prog):
         parts = line.split(None)
         sections[parts[0]] = int(parts[1], 10)
         if parts[0] == ".text" and not size_prog.name.startswith('avr-'):
-            bootloader_size = int(parts[2], 10)
+            bootloader_size = int(parts[2], 10) - base_address
 
     program_size = sections[".text"] + sections.get(".relocate", 0) + sections.get(".data", 0)
     stack_size = sections[".stack"]
@@ -198,6 +198,7 @@ def main():
     parser.add_argument("--ram-size", type=lambda x: int(x, 0))
     parser.add_argument("--no-last", type=bool, default=False)
     parser.add_argument("--size-prog", type=pathlib.Path, default="arm-none-eabi-size")
+    parser.add_argument("--base-addr", type=lambda x: int(x, 0))
 
     args = parser.parse_args()
 
@@ -213,7 +214,7 @@ def main():
         last_variables_size = None
 
     bootloader_size, program_size, stack_size, variables_size = analyze_elf(
-        args.elf_file, args.size_prog
+        args.elf_file, args.size_prog, args.base_addr
     )
     if last_file.exists():
         last_data = json.loads(last_file.read_text())
