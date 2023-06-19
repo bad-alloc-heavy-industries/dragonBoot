@@ -108,11 +108,10 @@ void rebootToFirmware() noexcept
 	// Set the vector table to the application's
 	scb.vtable = applicationBaseAddr;
 	__asm__(R"(
-		ldr		r0, =%[baseAddr]
-		ldr		r1, [r0]    // Read out the stack pointer
-		msr		msp, r1     // Stuff it into the main stack pointer special register
-		ldr		pc, [r0, 4] // Hop into the firmware (fake reboot)
-		)" : : [baseAddr] "i" (applicationBaseAddr) :
+		ldr		r1, [%[baseAddr]] // Read out the stack pointer
+		msr		msp, r1           // Stuff it into the main stack pointer special register
+		ldr		pc, [r0, 4]       // Hop into the firmware (fake reboot)
+		)" : : [baseAddr] "l" (applicationBaseAddr) :
 			"r0", "r1"
 	);
 	while (true)
