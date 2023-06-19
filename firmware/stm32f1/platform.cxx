@@ -128,6 +128,7 @@ namespace usb::dfu
 		flashCtrl.bank[1].control |= vals::flash::controlLock;
 		// Reset the boot magic, and ask the system controller to reboot the device.
 #if BOOTLOADER_TARGET == BMP
+		vals::gpio::config<vals::gpio_t::pin12>(gpioB, vals::gpio::mode_t::input, vals::gpio::config_t::inputFloating);
 		vals::gpio::set(gpioB, vals::gpio_t::pin12);
 #else
 		bootMagic = 0;
