@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <cstring>
 #include <usb/core.hxx>
+#include <substrate/indexed_iterator>
 #include "platform.hxx"
 #include "stm32f1.hxx"
 
@@ -60,6 +61,24 @@ void idle() noexcept { __asm__("wfi"); }
 
 void readSerialNumber() noexcept
 {
+#if SERIAL_LENGTH == 8
+	// Grab the device's unique ID and compute the raw serial number
+	const uint32_t uniqueID = deviceInfo.uniqueID[0] + deviceInfo.uniqueID[1] + deviceInfo.uniqueID[2];
+	// Convert that into a series of hex encoded characters
+	for (auto [i, digit] : substrate::indexedIterator_t{serialNumber})
+	{
+		digit = [&](const size_t shift)
+		{
+			auto hexDigit{static_cast<uint16_t>((uniqueID >> shift) & 0x0fU)};
+			hexDigit += 0x30U;
+			if (hexDigit > 0x39U)
+				hexDigit += 7U; // 'A' - '9' == 8, less 1 gives 7.
+			return hexDigit;
+		}((7U - i) * 4U);
+	}
+#else
+#warning "Unhandled SERIAL_LENGTH"
+#endif
 }
 
 bool mustEnterBootloader() noexcept
