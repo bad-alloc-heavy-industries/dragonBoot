@@ -87,6 +87,9 @@ bool mustEnterBootloader() noexcept
 
 void rebootToFirmware() noexcept
 {
+	// Disable the currently enabled interrupts
+	nvic.disableInterrupt(uint32_t(tivaC::IRQn_t::usb0));
+	// Set the vector table to the application's
 	scb.vtable = applicationBaseAddr;
 	__asm__(R"(
 		mov		r0, %[baseAddr]
