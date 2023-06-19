@@ -47,8 +47,8 @@ namespace osc
 			vals::rcc::clockConfigAPB2Prescale(0) | vals::rcc::clockConfigADCPrescale(8) |
 			vals::rcc::clockConfigPLLPrescale(0);
 		// Now the prescalers are configured, set the Flash wait states appropriately and ready for the PLL'd clock
-		flashCtrl.accessCtrl &= ~vals::flash::accessCtrlLatencyMask;
-		flashCtrl.accessCtrl |= vals::flash::acccesCtrlLatency(2);
+		flashCtrl.bank[0].accessCtrl &= ~vals::flash::accessCtrlLatencyMask;
+		flashCtrl.bank[0].accessCtrl |= vals::flash::acccesCtrlLatency(2);
 		// Set up the PLL and wait for it to come up, stabilise, then switch to it.
 		rcc.clockConfig |= vals::rcc::clockConfigPLLMultiplier(9) | vals::rcc::clockConfigPLLSourceHSE;
 		rcc.clockCtrl |= vals::rcc::clockCtrlPLLEnable;
@@ -120,8 +120,12 @@ void rebootToFirmware() noexcept
 
 namespace usb::dfu
 {
+	static size_t flashBank{};
+
 	void reboot() noexcept
 	{
+		flashCtrl.bank[0].control |= vals::flash::controlLock;
+		flashCtrl.bank[1].control |= vals::flash::controlLock;
 		// Reset the boot magic, and ask the system controller to reboot the device.
 #if BOOTLOADER_TARGET == BMP
 		vals::gpio::set(gpioB, vals::gpio_t::pin12);
@@ -136,7 +140,7 @@ namespace usb::dfu
 	bool flashBusy() noexcept
 	{
 		// Read back the Flash controller status
-		const auto status{flashCtrl.status};
+		const auto status{flashCtrl.bank[flashBank].status};
 		// If we don't see EOP set, or the busy bit is still set, Flash is still busy.
 		return !(status & vals::flash::statusEndOfOperation) && (status & vals::flash::statusBusy);
 	}
@@ -145,30 +149,32 @@ namespace usb::dfu
 	// 2 Flash controllers and dragonSTM32 currently doesn't deal with that properly.
 	void erase(const std::uintptr_t address) noexcept
 	{
+		flashBank = address < vals::flash::bankSplit ? 0U : 1U;
 		// Unlock the Flash controller if necessary
-		if (flashCtrl.control & vals::flash::controlLock)
+		if (flashCtrl.bank[flashBank].control & vals::flash::controlLock)
 		{
-			flashCtrl.flashKey = vals::flash::unlockKey1;
-			flashCtrl.flashKey = vals::flash::unlockKey2;
+			flashCtrl.bank[flashBank].flashKey = vals::flash::unlockKey1;
+			flashCtrl.bank[flashBank].flashKey = vals::flash::unlockKey2;
 			// Assume that the controller is now unlocked.. not much we can do otherwise!
 		}
 		// Set up the page erase
-		flashCtrl.control |= vals::flash::controlPageErase;
-		flashCtrl.address = address;
+		flashCtrl.bank[flashBank].control |= vals::flash::controlPageErase;
+		flashCtrl.bank[flashBank].address = address;
 		// And then trigger the operation
-		flashCtrl.control |= vals::flash::controlStartErase;
+		flashCtrl.bank[flashBank].control |= vals::flash::controlStartErase;
 	}
 
 	void write(const std::uintptr_t address, const std::size_t count, const uint8_t *const buffer) noexcept
 	{
 		if (!count || count > flashBufferSize)
 			return;
+		flashBank = address < vals::flash::bankSplit ? 0U : 1U;
 
 		// Clear the EOP bit (Write 1 to clear)
-		flashCtrl.status |= vals::flash::statusEndOfOperation;
+		flashCtrl.bank[flashBank].status |= vals::flash::statusEndOfOperation;
 		// The controller should already be unlocked because of the erase that occured, so..
 		// Set up the programming operation.
-		flashCtrl.control |= vals::flash::controlProgram;
+		flashCtrl.bank[flashBank].control |= vals::flash::controlProgram;
 		std::memcpy(reinterpret_cast<void *>(address), buffer, count);
 	}
 } // namespace usb::dfu
