@@ -2,36 +2,65 @@
 chip = get_option('chip')
 
 if chip in ['tm4c123gh6pm']
+	# Set up the DFU driver with appropriate sizing information
 	dfuOptions = [
 		'dfuFlashBufferSize=128',
 		'dfuFlashPageSize=4096',
 		'dfuFlashEraseSize=1024'
 	]
+	# These control `size` target output
 	chipFlash = 262144 # 256KiB of Flash
 	chipRAM = 32768 # 32KiB of RAM
 	chipBaseAddr = 0 # Flash starts at 0x00000000
+	# Define the number of characters in a serial number for the platform
 	bootloaderSerialLength = 0
+	# Define the platform-specific compilation options required
+	cpuFlags = [
+		# Tiva-C is a Cortex-M4F
+		'-mcpu=cortex-m4',
+		'-march=armv7e-m+fp',
+		'-mfpu=fpv4-sp-d16',
+		'-mfloat-abi=softfp'
+	]
 elif chip in ['stm32f1']
+	# Set up the DFU driver with appropriate sizing information
 	dfuOptions = [
 		'dfuFlashBufferSize=1024',
 		'dfuFlashPageSize=4096',
 		'dfuFlashEraseSize=1024'
 	]
+	# These control `size` target output
 	chipFlash = 131072 # 128KiB of Flash
 	chipRAM = 20480 # 20KiB of RAM
 	chipBaseAddr = 0x08000000 # Flash starts at 0x08000000
+	# Define the number of characters in a serial number for the platform
 	bootloaderSerialLength = 8
+	# Define the platform-specific compilation options required
+	cpuFlags = [
+		# STM32F1 is a Cortex-M3
+		'-mcpu=cortex-m3',
+		'-mfloat-abi=softfp'
+	]
 elif chip in ['atxmega256a3u']
+	# Set up the DFU driver with appropriate sizing information
 	dfuOptions = [
 		'dfuFlashBufferSize=256',
 		'dfuFlashPageSize=4096',
 		'dfuFlashEraseSize=256'
 	]
+	# These control `size` target output
 	chipFlash = 270336 # 256KiB + 8KiB of Flash
 	chipRAM = 32768 # 32KiB of RAM
 	chipBaseAddr = 0 # Flash starts at 0x00000000
+	# Define the number of characters in a serial number for the platform
 	bootloaderSerialLength = 0
+	# Define the platform-specific compilation options required
+	cpuFlags = []
 endif
+
+# Add the platform-specific compilation options globally
+add_global_arguments(cpuFlags, language: 'cpp')
+add_global_link_arguments(cpuFlags, language: 'cpp')
 
 subdir(chip)
 
