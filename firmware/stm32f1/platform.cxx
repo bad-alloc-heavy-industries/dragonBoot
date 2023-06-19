@@ -19,10 +19,12 @@ const std::array<usb::dfu::zone_t, 1> firmwareZone
 
 std::array<char16_t, serialLength> serialNumber{{}};
 
+#if BOOTLOADER_TARGET != BMP
 // The linker script pins this to 0x20001000
 [[gnu::section(".bootMagic")]] static uint16_t bootMagic;
 
 constexpr static uint16_t bootMagicDFU{0xBADB};
+#endif
 
 namespace osc
 {
@@ -83,9 +85,16 @@ void readSerialNumber() noexcept
 
 bool mustEnterBootloader() noexcept
 {
+#if BOOTLOADER_TARGET == BMP
+	rcc.apb2PeriphClockEn |= vals::rcc::apb2PeriphClockEnGPIOPortB;
+	// If PB12 is low, then either the button is pressed, or the firmware set it low
+	if (!vals::gpio::value(gpioB, vals::gpio_t::pin12))
+		return true;
+#else
 	if (!(rcc.ctrlStatus & vals::rcc::ctrlStatusResetCausePOR) && bootMagic == bootMagicDFU)
 		return true;
 	bootMagic = 0;
+#endif
 	rcc.ctrlStatus |= vals::rcc::ctrlStatusClearResetCause;
 	uint32_t stackPointer{};
 	static_assert(sizeof(uint32_t) == 4);
@@ -115,7 +124,11 @@ namespace usb::dfu
 	void reboot() noexcept
 	{
 		// Reset the boot magic, and ask the system controller to reboot the device.
+#if BOOTLOADER_TARGET == BMP
+		vals::gpio::set(gpioB, vals::gpio_t::pin12);
+#else
 		bootMagic = 0;
+#endif
 		scb.apint = vals::scb::apintKey | vals::scb::apintSystemResetRequest;
 		while (true)
 			continue;
