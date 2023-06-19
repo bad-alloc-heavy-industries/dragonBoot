@@ -7,3 +7,12 @@ option(
 		'atxmega256a3u'
 	]
 )
+
+option(
+	'target', type: 'combo', description: 'What target device you want to build for',
+	value: 'generic', choices:
+	[
+		'generic',
+		'bmp'
+	]
+)

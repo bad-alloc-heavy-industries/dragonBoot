@@ -60,7 +60,10 @@ bootloaderSrc = [
 bootloader = executable(
 	'bootloader',
 	bootloaderSrc,
-	cpp_args: ['-DSERIAL_LENGTH=@0@'.format(bootloaderSerialLength)],
+	cpp_args: [
+		'-DSERIAL_LENGTH=@0@'.format(bootloaderSerialLength),
+		'-DBOOTLOADER_TARGET=@0@'.format(get_option('target').to_upper())
+	],
 	include_directories: include_directories('../include'),
 	dependencies: [platform, dragonUSB],
 	link_args: ['-T', '@0@/@1@/linkerScript.ld'.format(meson.current_source_dir(), chip)],
