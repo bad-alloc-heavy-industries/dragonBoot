@@ -120,7 +120,7 @@ namespace usb::descriptors
 		{{stringParts[1].begin(), stringParts[1].end()}},
 		{{stringParts[2].begin(), stringParts[2].end()}},
 		{{stringParts[3].begin(), stringParts[3].end()}},
-		{{stringParts[4].begin(), stringParts[3].end()}}
+		{{stringParts[4].begin(), stringParts[4].end()}}
 	}};
 #else
 	const std::array<usbMultiPartTable_t, stringCount> strings
@@ -129,7 +129,7 @@ namespace usb::descriptors
 		{stringParts[1].begin(), stringParts[1].end()},
 		{stringParts[2].begin(), stringParts[2].end()},
 		{stringParts[3].begin(), stringParts[3].end()},
-		{stringParts[4].begin(), stringParts[3].end()}
+		{stringParts[4].begin(), stringParts[4].end()}
 	}};
 #endif
 } // namespace usb::descriptors
