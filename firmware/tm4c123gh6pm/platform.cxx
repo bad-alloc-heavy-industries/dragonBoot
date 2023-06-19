@@ -19,6 +19,8 @@ const std::array<usb::dfu::zone_t, 1> firmwareZone
 	}
 }};
 
+std::array<char16_t, serialLength> serialNumber{{}};
+
 // The linker script pins this to 0x20001000
 [[gnu::section(".bootMagic")]] static uint16_t bootMagic;
 
@@ -65,6 +67,10 @@ namespace osc
 
 void enableInterrupts() noexcept { }
 void idle() noexcept { __asm__("wfi"); }
+
+void readSerialNumber() noexcept
+{
+}
 
 bool mustEnterBootloader() noexcept
 {

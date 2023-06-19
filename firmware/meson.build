@@ -10,6 +10,7 @@ if chip in ['tm4c123gh6pm']
 	chipFlash = 262144 # 256KiB of Flash
 	chipRAM = 32768 # 32KiB of RAM
 	chipBaseAddr = 0 # Flash starts at 0x00000000
+	bootloaderSerialLength = 0
 elif chip in ['stm32f1']
 	dfuOptions = [
 		'dfuFlashBufferSize=1024',
@@ -19,6 +20,7 @@ elif chip in ['stm32f1']
 	chipFlash = 131072 # 128KiB of Flash
 	chipRAM = 20480 # 20KiB of RAM
 	chipBaseAddr = 0x08000000 # Flash starts at 0x08000000
+	bootloaderSerialLength = 8
 elif chip in ['atxmega256a3u']
 	dfuOptions = [
 		'dfuFlashBufferSize=256',
@@ -28,6 +30,7 @@ elif chip in ['atxmega256a3u']
 	chipFlash = 270336 # 256KiB + 8KiB of Flash
 	chipRAM = 32768 # 32KiB of RAM
 	chipBaseAddr = 0 # Flash starts at 0x00000000
+	bootloaderSerialLength = 0
 endif
 
 subdir(chip)
@@ -45,7 +48,7 @@ dragonUSB = dependency(
 		'configDescriptors=1',
 		'ifaceDescriptors=1',
 		'endpointDescriptors=0',
-		'strings=4',
+		'strings=5',
 		'drivers=dfu'
 	] + dfuOptions
 )
@@ -57,6 +60,7 @@ bootloaderSrc = [
 bootloader = executable(
 	'bootloader',
 	bootloaderSrc,
+	cpp_args: ['-DSERIAL_LENGTH=@0@'.format(bootloaderSerialLength)],
 	include_directories: include_directories('../include'),
 	dependencies: [platform, dragonUSB],
 	link_args: ['-T', '@0@/@1@/linkerScript.ld'.format(meson.current_source_dir(), chip)],

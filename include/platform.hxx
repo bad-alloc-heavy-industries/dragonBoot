@@ -3,15 +3,18 @@
 #define PLATFORM__HXX
 
 #include <usb/drivers/dfu.hxx>
+#include "constants.hxx"
 
 extern const std::array<usb::dfu::zone_t, 1> firmwareZone;
+extern std::array<char16_t, serialLength> serialNumber;
 
-extern void run() noexcept;
-extern void enableInterrupts() noexcept;
-extern void idle() noexcept;
-namespace osc { extern void init() noexcept; }
+void run() noexcept;
+void enableInterrupts() noexcept;
+void idle() noexcept;
+namespace osc { void init() noexcept; }
 
-extern bool mustEnterBootloader() noexcept;
-[[noreturn]] extern void rebootToFirmware() noexcept;
+void readSerialNumber() noexcept;
+bool mustEnterBootloader() noexcept;
+[[noreturn]] void rebootToFirmware() noexcept;
 
 #endif /*PLATFORM__HXX*/

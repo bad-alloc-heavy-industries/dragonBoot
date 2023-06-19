@@ -2,7 +2,7 @@
 #include <array>
 #include <usb/descriptors.hxx>
 #include <usb/drivers/dfu.hxx>
-#include "constants.hxx"
+#include "platform.hxx"
 
 using namespace std::literals::string_view_literals;
 
@@ -22,7 +22,7 @@ namespace usb::descriptors
 		0x0001, // BCD encoded device version
 		1, // Manufacturer string index
 		2, // Product string index
-		0, // No serial number string
+		3, // Serial string index
 		configsCount
 	};
 
@@ -35,7 +35,7 @@ namespace usb::descriptors
 				sizeof(dfu::functionalDescriptor_t),
 			interfaceCount,
 			1, // This configuration
-			3, // Configuration description string index
+			4, // Configuration description string index
 			usbConfigAttr_t::defaults,
 			50 // 100mA (the max a typical SOT-23-5 3.3V regulator can reasonably provide)
 		}
@@ -52,7 +52,7 @@ namespace usb::descriptors
 			usbClass_t::application,
 			uint8_t(subclasses::application_t::dfu),
 			uint8_t(protocols::dfu_t::dfu),
-			4, // "Device Firmware Upgrade interface" string index
+			5, // "Device Firmware Upgrade interface" string index
 		}
 	}};
 
@@ -99,6 +99,7 @@ namespace usb::descriptors
 	{{
 		{{u"bad_alloc Heavy Industries", 26}},
 		{{u"dragonBoot DFU bootloader", 25}},
+		{{serialNumber.data(), serialNumber.size()}},
 		{{u"bootloader DFU configuration", 28}},
 		{{u"Device Firmware Upgrade interface", 33}},
 	}};
@@ -108,7 +109,8 @@ namespace usb::descriptors
 		stringDescs[0].asParts(),
 		stringDescs[1].asParts(),
 		stringDescs[2].asParts(),
-		stringDescs[3].asParts()
+		stringDescs[3].asParts(),
+		stringDescs[4].asParts()
 	}};
 
 #ifdef USB_MEM_SEGMENTED
@@ -117,7 +119,8 @@ namespace usb::descriptors
 		{{stringParts[0].begin(), stringParts[0].end()}},
 		{{stringParts[1].begin(), stringParts[1].end()}},
 		{{stringParts[2].begin(), stringParts[2].end()}},
-		{{stringParts[3].begin(), stringParts[3].end()}}
+		{{stringParts[3].begin(), stringParts[3].end()}},
+		{{stringParts[4].begin(), stringParts[3].end()}}
 	}};
 #else
 	const std::array<usbMultiPartTable_t, stringCount> strings
@@ -125,7 +128,8 @@ namespace usb::descriptors
 		{stringParts[0].begin(), stringParts[0].end()},
 		{stringParts[1].begin(), stringParts[1].end()},
 		{stringParts[2].begin(), stringParts[2].end()},
-		{stringParts[3].begin(), stringParts[3].end()}
+		{stringParts[3].begin(), stringParts[3].end()},
+		{stringParts[4].begin(), stringParts[3].end()}
 	}};
 #endif
 } // namespace usb::descriptors

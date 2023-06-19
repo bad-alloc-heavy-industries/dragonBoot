@@ -30,6 +30,8 @@ const std::array<usb::dfu::zone_t, 1> firmwareZone
 	}
 }};
 
+std::array<char16_t, serialLength> serialNumber{{}};
+
 extern "C" void *_memcpy(void *dest, const void *src, size_t len);
 
 // NOLINTNEXTLINE(cert-dcl58-cpp)
@@ -83,6 +85,10 @@ void enableInterrupts() noexcept
 }
 
 void idle() noexcept { /*__builtin_avr_sleep();*/ }
+
+void readSerialNumber() noexcept
+{
+}
 
 bool mustEnterBootloader() noexcept
 {
