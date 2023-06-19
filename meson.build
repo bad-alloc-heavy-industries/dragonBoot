@@ -8,7 +8,8 @@ project(
 		'buildtype=release',
 		'strip=true',
 		'b_ndebug=if-release',
-		'b_lto=true'
+		'b_lto=true',
+		'b_staticpic=false'
 	],
 	version: '0.0.1',
 	meson_version: '>= 0.53',
