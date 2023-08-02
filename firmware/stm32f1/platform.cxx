@@ -3,6 +3,7 @@
 #include <cstring>
 #include <usb/core.hxx>
 #include <substrate/indexed_iterator>
+#include <substrate/index_sequence>
 #include "platform.hxx"
 #include "stm32f1.hxx"
 
@@ -87,6 +88,9 @@ bool mustEnterBootloader() noexcept
 {
 #if BOOTLOADER_TARGET == BMP
 	rcc.apb2PeriphClockEn |= vals::rcc::apb2PeriphClockEnGPIOPortB;
+	// Delay a little after powering up the GPIO controller to allow the pin value to stabilise
+	for ([[maybe_unused]] volatile size_t i : substrate::indexSequence_t{10})
+		continue;
 	// If PB12 is low, then either the button is pressed, or the firmware set it low
 	if (!vals::gpio::value(gpioB, vals::gpio_t::pin12))
 		return true;
