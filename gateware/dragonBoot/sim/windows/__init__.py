@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii.sim import Settle
 from torii.test import ToriiTestCase
 from usb_construct.types import USBRequestType, USBRequestRecipient
 from usb_construct.types.descriptors.microsoft import MicrosoftRequests
@@ -18,12 +17,8 @@ class WindowsRequestHandlerTestCase(ToriiTestCase):
 	domains = (('usb', 60e6),)
 
 	def setupReceived(self):
-		yield self.setup.received.eq(1)
-		yield Settle()
-		yield
-		yield self.setup.received.eq(0)
-		yield Settle()
-		yield
+		yield from self.pulse(self.setup.received)
+		yield from self.settle()
 		yield
 
 	def sendSetup(self, *, type : USBRequestType, retrieve : bool, request,
@@ -52,49 +47,42 @@ class WindowsRequestHandlerTestCase(ToriiTestCase):
 	def receiveData(self, *, data : Union[Tuple[int],bytes]):
 		yield self.tx.ready.eq(1)
 		yield self.interface.data_requested.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.interface.data_requested.eq(0)
-		assert (yield self.tx.valid) == 0
-		assert (yield self.tx.payload) == 0
+		self.assertEqual((yield self.tx.valid), 0)
+		self.assertEqual((yield self.tx.payload), 0)
 		while (yield self.tx.first) == 0:
-			yield Settle()
-			yield
+			yield from self.settle()
 		for idx, value in enumerate(data):
-			assert (yield self.tx.first) == (1 if idx == 0 else 0)
-			assert (yield self.tx.last) == (1 if idx == len(data) - 1 else 0)
-			assert (yield self.tx.valid) == 1
-			assert (yield self.tx.payload) == value
-			assert (yield self.interface.handshakes_out.ack) == 0
+			self.assertEqual((yield self.tx.first), (1 if idx == 0 else 0))
+			self.assertEqual((yield self.tx.last), (1 if idx == len(data) - 1 else 0))
+			self.assertEqual((yield self.tx.valid), 1)
+			self.assertEqual((yield self.tx.payload), value)
+			self.assertEqual((yield self.interface.handshakes_out.ack), 0)
 			if idx == len(data) - 1:
 				yield self.tx.ready.eq(0)
 				yield self.interface.status_requested.eq(1)
-			yield Settle()
-			yield
-		assert (yield self.tx.valid) == 0
-		assert (yield self.tx.payload) == 0
-		assert (yield self.interface.handshakes_out.ack) == 1
+			yield from self.settle()
+		self.assertEqual((yield self.tx.valid), 0)
+		self.assertEqual((yield self.tx.payload), 0)
+		self.assertEqual((yield self.interface.handshakes_out.ack), 1)
 		yield self.interface.status_requested.eq(0)
-		yield Settle()
-		yield
-		assert (yield self.interface.handshakes_out.ack) == 0
+		yield from self.settle()
+		self.assertEqual((yield self.interface.handshakes_out.ack), 0)
 
 	def ensureStall(self):
 		yield self.tx.ready.eq(1)
 		yield self.interface.data_requested.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.interface.data_requested.eq(0)
 		attempts = 0
 		while (yield self.interface.handshakes_out.stall) == 0:
-			assert (yield self.tx.valid) == 0
+			self.assertEqual((yield self.tx.valid), 0)
 			attempts += 1
 			if attempts > 10:
 				raise AssertionError('Stall took too long to assert')
-			yield Settle()
-			yield
-		yield Settle()
-		yield
+			yield from self.settle()
+		yield from self.settle()
 
 	@ToriiTestCase.simulation
 	@ToriiTestCase.sync_domain(domain = 'usb')
