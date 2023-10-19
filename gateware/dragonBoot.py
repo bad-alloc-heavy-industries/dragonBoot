@@ -4,9 +4,9 @@
 from sys import argv, path, exit
 from pathlib import Path
 
-piclePath = Path(argv[0]).resolve().parent
-if (piclePath / 'dragonBoot').is_dir():
-	path.insert(0, str(piclePath))
+dragonBootPath = Path(argv[0]).resolve().parent
+if (dragonBootPath / 'dragonBoot').is_dir():
+	path.insert(0, str(dragonBootPath))
 else:
 	raise ImportError('Cannot find the dragonBoot DFU gateware')
 
