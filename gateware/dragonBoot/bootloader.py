@@ -67,7 +67,7 @@ class DragonBoot(Elaboratable):
 			deviceDesc.bDeviceProtocol = 0
 			deviceDesc.idVendor = 0x1209
 			deviceDesc.idProduct = 0xBADB
-			deviceDesc.bcdDevice = 0.02
+			deviceDesc.bcdDevice = 0.03
 			deviceDesc.iManufacturer = 'bad_alloc Heavy Industries'
 			deviceDesc.iProduct = 'dragonBoot DFU bootloader'
 			deviceDesc.bNumConfigurations = 1
