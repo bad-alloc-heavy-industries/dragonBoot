@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from .framework import sim_case
 from torii import Record
 from torii.hdl.rec import DIR_FANOUT, DIR_FANIN
-from torii.sim import Simulator, Settle
+from torii.sim import Settle
+from torii.test import ToriiTestCase
 
 from ..spi import SPIBus
 
@@ -29,20 +29,22 @@ class Platform:
 		assert number == 0
 		return bus
 
-@sim_case(
-	domains = (('sync', 60e6),),
-	platform = Platform(),
-	dut = SPIBus(resource = ('flash', 0))
-)
-def spiBus(sim : Simulator, dut : SPIBus):
-	def sendRecv(dataOut, dataIn, overlap = False):
+class SPIBusTestCase(ToriiTestCase):
+	dut : SPIBus = SPIBus
+	dut_args = {
+		'resource': ('flash', 0)
+	}
+	domains = (('sync', 60e6), )
+	platform = Platform()
+
+	def sendRecv(self, dataOut, dataIn, overlap = False):
 		assert (yield bus.clk.o) == 1
-		yield dut.w_data.eq(dataOut)
-		yield dut.xfer.eq(1)
+		yield self.dut.w_data.eq(dataOut)
+		yield self.dut.xfer.eq(1)
 		yield Settle()
 		yield
 		assert (yield bus.clk.o) == 1
-		yield dut.xfer.eq(0)
+		yield self.dut.xfer.eq(0)
 		yield Settle()
 		yield
 		for bit in range(8):
@@ -55,35 +57,36 @@ def spiBus(sim : Simulator, dut : SPIBus):
 			yield Settle()
 			yield
 		assert (yield bus.clk.o) == 1
-		assert (yield dut.done) == 1
+		assert (yield self.dut.done) == 1
 		if not overlap:
 			yield Settle()
 			yield
 			assert (yield bus.clk.o) == 1
-			assert (yield dut.done) == 0
-			assert (yield dut.r_data) == dataIn
+			assert (yield self.dut.done) == 0
+			assert (yield self.dut.r_data) == dataIn
 		yield Settle()
 
-	def domainSync():
+	@ToriiTestCase.simulation
+	@ToriiTestCase.sync_domain(domain = 'sync')
+	def testSPIBus(self):
 		yield
 		assert (yield bus.clk.o) == 1
-		yield dut.cs.eq(1)
+		yield self.dut.cs.eq(1)
 		yield Settle()
 		yield
-		yield from sendRecv(0x0F, 0xF0)
+		yield from self.sendRecv(0x0F, 0xF0)
 		yield
 		assert (yield bus.clk.o) == 1
-		yield dut.cs.eq(0)
+		yield self.dut.cs.eq(0)
 		yield Settle()
 		yield
 		assert (yield bus.clk.o) == 1
-		yield dut.cs.eq(1)
+		yield self.dut.cs.eq(1)
 		yield Settle()
 		yield
-		yield from sendRecv(0xAA, 0x55, overlap = True)
-		yield from sendRecv(0x55, 0xAA, overlap = False)
+		yield from self.sendRecv(0xAA, 0x55, overlap = True)
+		yield from self.sendRecv(0x55, 0xAA, overlap = False)
 		yield
-		yield dut.cs.eq(0)
+		yield self.dut.cs.eq(0)
 		yield Settle()
 		yield
-	yield domainSync, 'sync'
