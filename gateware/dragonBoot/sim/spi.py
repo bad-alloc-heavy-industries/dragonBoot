@@ -41,26 +41,21 @@ class SPIBusTestCase(ToriiTestCase):
 		assert (yield bus.clk.o) == 1
 		yield self.dut.w_data.eq(dataOut)
 		yield self.dut.xfer.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		assert (yield bus.clk.o) == 1
 		yield self.dut.xfer.eq(0)
-		yield Settle()
-		yield
+		yield from self.settle()
 		for bit in range(8):
 			assert (yield bus.clk.o) == 1
 			yield bus.cipo.i.eq((dataIn >> (7 - bit)) & 1)
-			yield Settle()
-			yield
+			yield from self.settle()
 			assert (yield bus.clk.o) == 0
 			assert (yield bus.copi.o) == (dataOut >> (7 - bit)) & 1
-			yield Settle()
-			yield
+			yield from self.settle()
 		assert (yield bus.clk.o) == 1
 		assert (yield self.dut.done) == 1
 		if not overlap:
-			yield Settle()
-			yield
+			yield from self.settle()
 			assert (yield bus.clk.o) == 1
 			assert (yield self.dut.done) == 0
 			assert (yield self.dut.r_data) == dataIn
@@ -72,21 +67,17 @@ class SPIBusTestCase(ToriiTestCase):
 		yield
 		assert (yield bus.clk.o) == 1
 		yield self.dut.cs.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield from self.sendRecv(0x0F, 0xF0)
 		yield
 		assert (yield bus.clk.o) == 1
 		yield self.dut.cs.eq(0)
-		yield Settle()
-		yield
+		yield from self.settle()
 		assert (yield bus.clk.o) == 1
 		yield self.dut.cs.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield from self.sendRecv(0xAA, 0x55, overlap = True)
 		yield from self.sendRecv(0x55, 0xAA, overlap = False)
 		yield
 		yield self.dut.cs.eq(0)
-		yield Settle()
-		yield
+		yield from self.settle()
