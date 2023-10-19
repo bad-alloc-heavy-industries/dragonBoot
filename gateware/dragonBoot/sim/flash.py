@@ -71,38 +71,44 @@ class SPIFlashTestCase(ToriiTestCase):
 
 	def spiTransact(self, copi = None, cipo = None, partial = False, continuation = False):
 		if copi is not None and cipo is not None:
-			assert len(copi) == len(cipo)
+			self.assertEqual(len(copi), len(cipo))
+
 		bytes = max(0 if copi is None else len(copi), 0 if cipo is None else len(cipo))
-		assert (yield bus.clk.o) == 1
-		assert (yield bus.cs.o) == (1 if continuation else 0)
-		yield Settle()
+		self.assertEqual((yield bus.clk.o), 1)
+		if continuation:
+			yield Settle()
+			self.assertEqual((yield bus.cs.o), 1)
+		else:
+			self.assertEqual((yield bus.cs.o), 0)
+			yield Settle()
 		yield
-		assert (yield bus.clk.o) == 1
-		assert (yield bus.cs.o) == 1
+		self.assertEqual((yield bus.clk.o), 1)
+		self.assertEqual((yield bus.cs.o), 1)
 		yield Settle()
 		yield
 		for byte in range(bytes):
 			for bit in range(8):
-				assert (yield bus.clk.o) == 0
+				self.assertEqual((yield bus.clk.o), 0)
 				if copi is not None and copi[byte] is not None:
-					assert (yield bus.copi.o) == ((copi[byte] << bit) & 0x80) >> 7
-				assert (yield bus.cs.o) == 1
+					self.assertEqual((yield bus.copi.o), ((copi[byte] << bit) & 0x80) >> 7)
+				self.assertEqual((yield bus.cs.o), 1)
+				yield Settle()
 				if cipo is not None and cipo[byte] is not None:
 					yield bus.cipo.i.eq(((cipo[byte] << bit) & 0x80) >> 7)
+				yield
+				self.assertEqual((yield bus.clk.o), 1)
+				self.assertEqual((yield bus.cs.o), 1)
 				yield Settle()
 				yield
-				assert (yield bus.clk.o) == 1
-				assert (yield bus.cs.o) == 1
-				yield Settle()
-				yield
+			if byte < bytes - 1:
+				self.assertEqual((yield bus.clk.o), 1)
+				self.assertEqual((yield bus.cs.o), 1)
+			self.assertEqual((yield self.dut.done), 0)
+			yield Settle()
 			if cipo is not None and cipo[byte] is not None:
 				yield bus.cipo.i.eq(0)
-			if byte < bytes - 1:# or not partial:
-				assert (yield bus.clk.o) == 1
-				assert (yield bus.cs.o) == 1
-				yield Settle()
+			if byte < bytes - 1:
 				yield
-		assert (yield self.dut.done) == 0
 		if not partial:
 			assert (yield bus.clk.o) == 1
 			assert (yield bus.cs.o) == 0
@@ -114,7 +120,7 @@ class SPIFlashTestCase(ToriiTestCase):
 		fifo = self.dut._fifo
 
 		@ToriiTestCase.sync_domain(domain = 'sync')
-		def domainSync(self):
+		def domainSync(self: SPIFlashTestCase):
 			yield self.dut.beginAddr.eq(0)
 			yield self.dut.endAddr.eq(4096)
 			yield from self.spiTransact(copi = (0xAB,))
@@ -132,13 +138,13 @@ class SPIFlashTestCase(ToriiTestCase):
 			yield self.dut.byteCount.eq(len(dfuData))
 			yield Settle()
 			yield
-			assert (yield self.dut.readAddr) == 0
-			assert (yield self.dut.eraseAddr) == 0
-			assert (yield self.dut.writeAddr) == 0
-			assert (yield bus.cs.o) == 0
 			yield self.dut.start.eq(0)
 			yield self.dut.byteCount.eq(0)
 			yield Settle()
+			self.assertEqual((yield self.dut.readAddr), 0)
+			self.assertEqual((yield self.dut.eraseAddr), 0)
+			self.assertEqual((yield self.dut.writeAddr), 0)
+			self.assertEqual((yield bus.cs.o), 0)
 			yield
 			yield from self.spiTransact(copi = (0x06,))
 			yield from self.spiTransact(copi = (0x20, 0x00, 0x00, 0x00))
@@ -147,63 +153,60 @@ class SPIFlashTestCase(ToriiTestCase):
 			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x03))
 			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 			yield from self.spiTransact(copi = (0x06,))
-			assert (yield fifo.r_rdy) == 0
+			self.assertEqual((yield fifo.r_rdy), 0)
 			yield from self.spiTransact(copi = (0x02, 0x00, 0x00, 0x00), partial = True)
 			yield
-			assert (yield fifo.r_rdy) == 0
-			assert (yield bus.cs.o) == 1
-			assert (yield bus.clk.o) == 1
 			yield Settle()
+			self.assertEqual((yield fifo.r_rdy), 0)
+			self.assertEqual((yield bus.cs.o), 1)
+			self.assertEqual((yield bus.clk.o), 1)
 			yield
-			assert (yield fifo.r_rdy) == 0
-			assert (yield bus.cs.o) == 1
-			assert (yield bus.clk.o) == 1
+			yield Settle()
+			self.assertEqual((yield fifo.r_rdy), 0)
+			self.assertEqual((yield bus.cs.o), 1)
+			self.assertEqual((yield bus.clk.o), 1)
 			self.dut.fillFIFO = True
-			for _ in range(5):
+			for _ in range(6):
 				yield Settle()
 				yield
-				assert (yield bus.cs.o) == 1
-				assert (yield bus.clk.o) == 1
+				self.assertEqual((yield bus.cs.o), 1)
+				self.assertEqual((yield bus.clk.o), 1)
 			yield from self.spiTransact(copi = dfuData[0:64], continuation = True)
-			assert (yield self.dut.writeAddr) == 64
+			self.assertEqual((yield self.dut.writeAddr), 64)
 			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x03))
 			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
 			yield from self.spiTransact(copi = (0x06,))
 			yield from self.spiTransact(copi = (0x02, 0x00, 0x00, 0x40), partial = True)
 			yield from self.spiTransact(copi = dfuData[64:128], continuation = True)
-			assert (yield self.dut.writeAddr) == 128
+			self.assertEqual((yield self.dut.writeAddr), 128)
 			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
 			yield from self.spiTransact(copi = (0x06,))
 			yield from self.spiTransact(copi = (0x02, 0x00, 0x00, 0x80), partial = True)
 			yield from self.spiTransact(copi = dfuData[128:192], continuation = True)
-			assert (yield self.dut.writeAddr) == 192
+			self.assertEqual((yield self.dut.writeAddr), 192)
 			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
 			yield from self.spiTransact(copi = (0x06,))
 			yield from self.spiTransact(copi = (0x02, 0x00, 0x00, 0xC0), partial = True)
 			yield from self.spiTransact(copi = dfuData[192:256], continuation = True)
-			assert (yield self.dut.writeAddr) == 256
+			self.assertEqual((yield self.dut.writeAddr), 256)
 			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
 
-			yield Settle()
-			assert (yield self.dut.done) == 1
+			self.assertEqual((yield self.dut.done), 1)
 			yield self.dut.finish.eq(1)
 			yield
-			yield Settle()
-			assert (yield self.dut.done) == 1
+			self.assertEqual((yield self.dut.done), 1)
 			yield self.dut.finish.eq(0)
-			yield
-			yield Settle()
-			assert (yield self.dut.done) == 0
-			yield
 			yield Settle()
 			yield
+			self.assertEqual((yield self.dut.done), 0)
+			yield from self.settle(2)
 		domainSync(self)
 
 		@ToriiTestCase.sync_domain(domain = 'usb')
-		def domainUSB(self):
+		def domainUSB(self: SPIFlashTestCase):
 			while not self.dut.fillFIFO:
 				yield
 			yield fifo.w_en.eq(1)
