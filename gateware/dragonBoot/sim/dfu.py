@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from torii import Record
 from torii.hdl.rec import DIR_FANOUT, DIR_FANIN
-from torii.sim import Settle
 from torii.test import ToriiTestCase
 from usb_construct.types import USBRequestType, USBRequestRecipient, USBStandardRequests
 from usb_construct.types.descriptors.dfu import DFURequests
@@ -72,11 +71,9 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 
 	def setupReceived(self):
 		yield self.setup.received.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.setup.received.eq(0)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield
 
 	def sendSetup(self, *, type : USBRequestType, retrieve : bool, request,
@@ -123,41 +120,33 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 	def sendData(self, *, data : Tuple):
 		yield self.rx.valid.eq(1)
 		for value in data:
-			yield Settle()
-			yield
+			yield from self.settle()
 			yield self.rx.payload.eq(value)
 			yield self.rx.next.eq(1)
-			yield Settle()
-			yield
+			yield from self.settle()
 			yield self.rx.next.eq(0)
 		yield self.rx.valid.eq(0)
 		yield self.interface.rx_ready_for_response.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.interface.rx_ready_for_response.eq(0)
 		yield self.interface.status_requested.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.interface.status_requested.eq(0)
 		yield self.interface.handshakes_in.ack.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.interface.handshakes_in.ack.eq(0)
-		yield Settle()
-		yield
+		yield from self.settle()
 
 	def receiveData(self, *, data : Union[Tuple[int], bytes], check = True):
 		result = True
 		yield self.tx.ready.eq(1)
 		yield self.interface.data_requested.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.interface.data_requested.eq(0)
 		assert (yield self.tx.valid) == 0
 		assert (yield self.tx.payload) == 0
 		while (yield self.tx.first) == 0:
-			yield Settle()
-			yield
+			yield from self.settle()
 		for idx, value in enumerate(data):
 			assert (yield self.tx.first) == (1 if idx == 0 else 0)
 			assert (yield self.tx.last) == (1 if idx == len(data) - 1 else 0)
@@ -170,14 +159,12 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 			if idx == len(data) - 1:
 				yield self.tx.ready.eq(0)
 				yield self.interface.status_requested.eq(1)
-			yield Settle()
-			yield
+			yield from self.settle()
 		assert (yield self.tx.valid) == 0
 		assert (yield self.tx.payload) == 0
 		assert (yield self.interface.handshakes_out.ack) == 1
 		yield self.interface.status_requested.eq(0)
-		yield Settle()
-		yield
+		yield from self.settle()
 		assert (yield self.interface.handshakes_out.ack) == 0
 		return result
 
@@ -185,19 +172,16 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 		assert (yield self.tx.valid) == 0
 		assert (yield self.tx.last) == 0
 		yield self.interface.status_requested.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		assert (yield self.tx.valid) == 1
 		assert (yield self.tx.last) == 1
 		yield self.interface.status_requested.eq(0)
 		yield self.interface.handshakes_in.ack.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		assert (yield self.tx.valid) == 0
 		assert (yield self.tx.last) == 0
 		yield self.interface.handshakes_in.ack.eq(0)
-		yield Settle()
-		yield
+		yield from self.settle()
 
 	@ToriiTestCase.simulation
 	@ToriiTestCase.sync_domain(domain = 'usb')
@@ -208,28 +192,22 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 		self.rx = self.interface.rx
 
 		yield self.interface.active_config.eq(1)
-		yield Settle()
+		yield from self.settle()
 		yield
-		yield
-		while (yield bus.cs.o) == 1:
-			yield
-		yield
-		yield
+		yield from self.wait_until_low(bus.cs.o)
+		yield from self.step(2)
 		yield from self.sendDFUGetStatus()
 		yield from self.receiveData(data = (0, 0, 0, 0, DFUState.dfuIdle, 0))
 		yield from self.sendSetupSetInterface()
 		yield from self.receiveZLP()
-		yield
-		yield
-		yield
+		yield from self.step(3)
 		yield from self.sendDFUDownload()
 		yield from self.sendData(data = dfuData)
 		yield from self.sendDFUGetStatus()
 		yield from self.receiveData(data = (0, 0, 0, 0, DFUState.downloadBusy, 0))
 		yield from self.sendDFUGetState()
 		yield from self.receiveData(data = (DFUState.downloadBusy,))
-		for _ in range(6):
-			yield
+		yield from self.step(6)
 		yield from self.sendDFUGetState()
 		while (yield from self.receiveData(data = (DFUState.downloadBusy,), check = False)):
 			yield from self.sendDFUGetState()
@@ -243,7 +221,6 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 		yield from self.sendDFUDetach()
 		yield from self.receiveZLP()
 		assert (yield self.dut.triggerReboot) == 1
-		yield Settle()
-		yield
+		yield from self.settle()
 		assert (yield self.dut.triggerReboot) == 1
 		yield
