@@ -38,42 +38,42 @@ class SPIBusTestCase(ToriiTestCase):
 	platform = Platform()
 
 	def sendRecv(self, dataOut, dataIn, overlap = False):
-		assert (yield bus.clk.o) == 1
+		self.assertEqual((yield bus.clk.o), 1)
 		yield self.dut.w_data.eq(dataOut)
 		yield self.dut.xfer.eq(1)
 		yield from self.settle()
-		assert (yield bus.clk.o) == 1
+		self.assertEqual((yield bus.clk.o), 1)
 		yield self.dut.xfer.eq(0)
 		yield from self.settle()
 		for bit in range(8):
-			assert (yield bus.clk.o) == 1
+			self.assertEqual((yield bus.clk.o), 1)
 			yield bus.cipo.i.eq((dataIn >> (7 - bit)) & 1)
 			yield from self.settle()
-			assert (yield bus.clk.o) == 0
-			assert (yield bus.copi.o) == (dataOut >> (7 - bit)) & 1
+			self.assertEqual((yield bus.clk.o), 0)
+			self.assertEqual((yield bus.copi.o), (dataOut >> (7 - bit)) & 1)
 			yield from self.settle()
-		assert (yield bus.clk.o) == 1
-		assert (yield self.dut.done) == 1
+		self.assertEqual((yield bus.clk.o), 1)
+		self.assertEqual((yield self.dut.done), 1)
 		if not overlap:
 			yield from self.settle()
-			assert (yield bus.clk.o) == 1
-			assert (yield self.dut.done) == 0
-			assert (yield self.dut.r_data) == dataIn
+			self.assertEqual((yield bus.clk.o), 1)
+			self.assertEqual((yield self.dut.done), 0)
+			self.assertEqual((yield self.dut.r_data), dataIn)
 		yield Settle()
 
 	@ToriiTestCase.simulation
 	@ToriiTestCase.sync_domain(domain = 'sync')
 	def testSPIBus(self):
 		yield
-		assert (yield bus.clk.o) == 1
+		self.assertEqual((yield bus.clk.o), 1)
 		yield self.dut.cs.eq(1)
 		yield from self.settle()
 		yield from self.sendRecv(0x0F, 0xF0)
 		yield
-		assert (yield bus.clk.o) == 1
+		self.assertEqual((yield bus.clk.o), 1)
 		yield self.dut.cs.eq(0)
 		yield from self.settle()
-		assert (yield bus.clk.o) == 1
+		self.assertEqual((yield bus.clk.o), 1)
 		yield self.dut.cs.eq(1)
 		yield from self.settle()
 		yield from self.sendRecv(0xAA, 0x55, overlap = True)
