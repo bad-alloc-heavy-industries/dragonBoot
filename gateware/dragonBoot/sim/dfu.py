@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from .framework import sim_case
 from torii import Record
 from torii.hdl.rec import DIR_FANOUT, DIR_FANIN
-from torii.sim import Simulator, Settle
+from torii.sim import Settle
+from torii.test import ToriiTestCase
 from usb_construct.types import USBRequestType, USBRequestRecipient, USBStandardRequests
 from usb_construct.types.descriptors.dfu import DFURequests
 from typing import Tuple, Union
@@ -60,148 +60,154 @@ dfuData = (
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 )
 
-@sim_case(
-	domains = (('usb', 60e6),),
-	platform = Platform(),
-	dut = DFURequestHandler(configuration = 1, interface = 0, resource = ('flash', 0))
-)
-def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
-	interface = dut.interface
-	setup = interface.setup
-	tx = interface.tx
-	rx = interface.rx
+class DFURequestHandlerTestCase(ToriiTestCase):
+	dut : DFURequestHandler = DFURequestHandler
+	dut_args = {
+		'configuration': 1,
+		'interface': 0,
+		'resource': ('flash', 0),
+	}
+	domains = (('usb', 60e6),)
+	platform = Platform()
 
-	def setupReceived():
-		yield setup.received.eq(1)
+	def setupReceived(self):
+		yield self.setup.received.eq(1)
 		yield Settle()
 		yield
-		yield setup.received.eq(0)
+		yield self.setup.received.eq(0)
 		yield Settle()
 		yield
 		yield
 
-	def sendSetup(*, type : USBRequestType, retrieve : bool, request,
+	def sendSetup(self, *, type : USBRequestType, retrieve : bool, request,
 		value : Union[Tuple[int, int], int], index : Union[Tuple[int, int], int], length : int
 	):
-		yield setup.recipient.eq(USBRequestRecipient.INTERFACE)
-		yield setup.type.eq(type)
-		yield setup.is_in_request.eq(1 if retrieve else 0)
-		yield setup.request.eq(request)
+		yield self.setup.recipient.eq(USBRequestRecipient.INTERFACE)
+		yield self.setup.type.eq(type)
+		yield self.setup.is_in_request.eq(1 if retrieve else 0)
+		yield self.setup.request.eq(request)
 		if isinstance(value, int):
-			yield setup.value.eq(value)
+			yield self.setup.value.eq(value)
 		else:
-			yield setup.value[0:8].eq(value[0]) # This specifies the interface
-			yield setup.value[8:16].eq(value[1])
+			yield self.setup.value[0:8].eq(value[0]) # This specifies the interface
+			yield self.setup.value[8:16].eq(value[1])
 		if isinstance(index, int):
-			yield setup.index.eq(index)
+			yield self.setup.index.eq(index)
 		else:
-			yield setup.index[0:8].eq(index[0])
-			yield setup.index[8:16].eq(index[1])
-		yield setup.length.eq(length)
-		yield from setupReceived()
+			yield self.setup.index[0:8].eq(index[0])
+			yield self.setup.index[8:16].eq(index[1])
+		yield self.setup.length.eq(length)
+		yield from self.setupReceived()
 
-	def sendSetupSetInterface():
+	def sendSetupSetInterface(self):
 		# setup packet for interface 0
-		yield from sendSetup(type = USBRequestType.STANDARD, retrieve = False,
+		yield from self.sendSetup(type = USBRequestType.STANDARD, retrieve = False,
 			request = USBStandardRequests.SET_INTERFACE, value = (1, 0), index = (0, 0), length = 0)
 
-	def sendDFUDetach():
-		yield from sendSetup(type = USBRequestType.CLASS, retrieve = False,
+	def sendDFUDetach(self):
+		yield from self.sendSetup(type = USBRequestType.CLASS, retrieve = False,
 			request = DFURequests.DETACH, value = 1000, index = 0, length = 0)
 
-	def sendDFUDownload():
-		yield from sendSetup(type = USBRequestType.CLASS, retrieve = False,
+	def sendDFUDownload(self):
+		yield from self.sendSetup(type = USBRequestType.CLASS, retrieve = False,
 			request = DFURequests.DOWNLOAD, value = 0, index = 0, length = 256)
 
-	def sendDFUGetStatus():
-		yield from sendSetup(type = USBRequestType.CLASS, retrieve = True,
+	def sendDFUGetStatus(self):
+		yield from self.sendSetup(type = USBRequestType.CLASS, retrieve = True,
 			request = DFURequests.GET_STATUS, value = 0, index = 0, length = 6)
 
-	def sendDFUGetState():
-		yield from sendSetup(type = USBRequestType.CLASS, retrieve = True,
+	def sendDFUGetState(self):
+		yield from self.sendSetup(type = USBRequestType.CLASS, retrieve = True,
 			request = DFURequests.GET_STATE, value = 0, index = 0, length = 1)
 
-	def sendData(*, data : Tuple):
-		yield rx.valid.eq(1)
+	def sendData(self, *, data : Tuple):
+		yield self.rx.valid.eq(1)
 		for value in data:
 			yield Settle()
 			yield
-			yield rx.payload.eq(value)
-			yield rx.next.eq(1)
+			yield self.rx.payload.eq(value)
+			yield self.rx.next.eq(1)
 			yield Settle()
 			yield
-			yield rx.next.eq(0)
-		yield rx.valid.eq(0)
-		yield interface.rx_ready_for_response.eq(1)
+			yield self.rx.next.eq(0)
+		yield self.rx.valid.eq(0)
+		yield self.interface.rx_ready_for_response.eq(1)
 		yield Settle()
 		yield
-		yield interface.rx_ready_for_response.eq(0)
-		yield interface.status_requested.eq(1)
+		yield self.interface.rx_ready_for_response.eq(0)
+		yield self.interface.status_requested.eq(1)
 		yield Settle()
 		yield
-		yield interface.status_requested.eq(0)
-		yield interface.handshakes_in.ack.eq(1)
+		yield self.interface.status_requested.eq(0)
+		yield self.interface.handshakes_in.ack.eq(1)
 		yield Settle()
 		yield
-		yield interface.handshakes_in.ack.eq(0)
+		yield self.interface.handshakes_in.ack.eq(0)
 		yield Settle()
 		yield
 
-	def receiveData(*, data : Union[Tuple[int], bytes], check = True):
+	def receiveData(self, *, data : Union[Tuple[int], bytes], check = True):
 		result = True
-		yield tx.ready.eq(1)
-		yield interface.data_requested.eq(1)
+		yield self.tx.ready.eq(1)
+		yield self.interface.data_requested.eq(1)
 		yield Settle()
 		yield
-		yield interface.data_requested.eq(0)
-		assert (yield tx.valid) == 0
-		assert (yield tx.payload) == 0
-		while (yield tx.first) == 0:
+		yield self.interface.data_requested.eq(0)
+		assert (yield self.tx.valid) == 0
+		assert (yield self.tx.payload) == 0
+		while (yield self.tx.first) == 0:
 			yield Settle()
 			yield
 		for idx, value in enumerate(data):
-			assert (yield tx.first) == (1 if idx == 0 else 0)
-			assert (yield tx.last) == (1 if idx == len(data) - 1 else 0)
-			assert (yield tx.valid) == 1
+			assert (yield self.tx.first) == (1 if idx == 0 else 0)
+			assert (yield self.tx.last) == (1 if idx == len(data) - 1 else 0)
+			assert (yield self.tx.valid) == 1
 			if check:
-				assert (yield tx.payload) == value
-			if (yield tx.payload) != value:
+				assert (yield self.tx.payload) == value
+			if (yield self.tx.payload) != value:
 				result = False
-			assert (yield interface.handshakes_out.ack) == 0
+			assert (yield self.interface.handshakes_out.ack) == 0
 			if idx == len(data) - 1:
-				yield tx.ready.eq(0)
-				yield interface.status_requested.eq(1)
+				yield self.tx.ready.eq(0)
+				yield self.interface.status_requested.eq(1)
 			yield Settle()
 			yield
-		assert (yield tx.valid) == 0
-		assert (yield tx.payload) == 0
-		assert (yield interface.handshakes_out.ack) == 1
-		yield interface.status_requested.eq(0)
+		assert (yield self.tx.valid) == 0
+		assert (yield self.tx.payload) == 0
+		assert (yield self.interface.handshakes_out.ack) == 1
+		yield self.interface.status_requested.eq(0)
 		yield Settle()
 		yield
-		assert (yield interface.handshakes_out.ack) == 0
+		assert (yield self.interface.handshakes_out.ack) == 0
 		return result
 
-	def receiveZLP():
-		assert (yield tx.valid) == 0
-		assert (yield tx.last) == 0
-		yield interface.status_requested.eq(1)
+	def receiveZLP(self):
+		assert (yield self.tx.valid) == 0
+		assert (yield self.tx.last) == 0
+		yield self.interface.status_requested.eq(1)
 		yield Settle()
 		yield
-		assert (yield tx.valid) == 1
-		assert (yield tx.last) == 1
-		yield interface.status_requested.eq(0)
-		yield interface.handshakes_in.ack.eq(1)
+		assert (yield self.tx.valid) == 1
+		assert (yield self.tx.last) == 1
+		yield self.interface.status_requested.eq(0)
+		yield self.interface.handshakes_in.ack.eq(1)
 		yield Settle()
 		yield
-		assert (yield tx.valid) == 0
-		assert (yield tx.last) == 0
-		yield interface.handshakes_in.ack.eq(0)
+		assert (yield self.tx.valid) == 0
+		assert (yield self.tx.last) == 0
+		yield self.interface.handshakes_in.ack.eq(0)
 		yield Settle()
 		yield
 
-	def domainUSB():
-		yield interface.active_config.eq(1)
+	@ToriiTestCase.simulation
+	@ToriiTestCase.sync_domain(domain = 'usb')
+	def testDFURequestHandler(self):
+		self.interface = self.dut.interface
+		self.setup = self.interface.setup
+		self.tx = self.interface.tx
+		self.rx = self.interface.rx
+
+		yield self.interface.active_config.eq(1)
 		yield Settle()
 		yield
 		yield
@@ -209,37 +215,35 @@ def dfuRequestHandler(sim : Simulator, dut : DFURequestHandler):
 			yield
 		yield
 		yield
-		yield from sendDFUGetStatus()
-		yield from receiveData(data = (0, 0, 0, 0, DFUState.dfuIdle, 0))
-		yield from sendSetupSetInterface()
-		yield from receiveZLP()
+		yield from self.sendDFUGetStatus()
+		yield from self.receiveData(data = (0, 0, 0, 0, DFUState.dfuIdle, 0))
+		yield from self.sendSetupSetInterface()
+		yield from self.receiveZLP()
 		yield
 		yield
 		yield
-		yield from sendDFUDownload()
-		yield from sendData(data = dfuData)
-		yield from sendDFUGetStatus()
-		yield from receiveData(data = (0, 0, 0, 0, DFUState.downloadBusy, 0))
-		yield from sendDFUGetState()
-		yield from receiveData(data = (DFUState.downloadBusy,))
+		yield from self.sendDFUDownload()
+		yield from self.sendData(data = dfuData)
+		yield from self.sendDFUGetStatus()
+		yield from self.receiveData(data = (0, 0, 0, 0, DFUState.downloadBusy, 0))
+		yield from self.sendDFUGetState()
+		yield from self.receiveData(data = (DFUState.downloadBusy,))
 		for _ in range(6):
 			yield
-		yield from sendDFUGetState()
-		while (yield from receiveData(data = (DFUState.downloadBusy,), check = False)):
-			yield from sendDFUGetState()
-		yield from sendDFUGetState()
-		yield from receiveData(data = (DFUState.downloadSync,))
-		yield from sendDFUGetStatus()
-		yield from receiveData(data = (0, 0, 0, 0, DFUState.downloadSync, 0))
-		yield from sendDFUGetState()
-		yield from receiveData(data = (DFUState.downloadIdle,))
+		yield from self.sendDFUGetState()
+		while (yield from self.receiveData(data = (DFUState.downloadBusy,), check = False)):
+			yield from self.sendDFUGetState()
+		yield from self.sendDFUGetState()
+		yield from self.receiveData(data = (DFUState.downloadSync,))
+		yield from self.sendDFUGetStatus()
+		yield from self.receiveData(data = (0, 0, 0, 0, DFUState.downloadSync, 0))
+		yield from self.sendDFUGetState()
+		yield from self.receiveData(data = (DFUState.downloadIdle,))
 		yield
-		yield from sendDFUDetach()
-		yield from receiveZLP()
-		assert (yield dut.triggerReboot) == 1
+		yield from self.sendDFUDetach()
+		yield from self.receiveZLP()
+		assert (yield self.dut.triggerReboot) == 1
 		yield Settle()
 		yield
-		assert (yield dut.triggerReboot) == 1
+		assert (yield self.dut.triggerReboot) == 1
 		yield
-
-	yield domainUSB, 'usb'
