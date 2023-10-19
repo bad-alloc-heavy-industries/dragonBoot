@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from .framework import sim_case
 from torii import Elaboratable, Module, Record
 from torii.lib.fifo import AsyncFIFO
 from torii.hdl.rec import DIR_FANOUT, DIR_FANIN
-from torii.sim import Simulator, Settle
+from torii.sim import Settle
+from torii.test import ToriiTestCase
 
 from ..platform import Flash
 from ..flash import SPIFlash
@@ -55,21 +55,21 @@ class DUT(Elaboratable):
 		self.writeAddr = self._flash.writeAddr
 		self.byteCount = self._flash.byteCount
 
-	def elaborate(self, platform):
+	def elaborate(self, _):
 		m = Module()
 		m.submodules.fifo = self._fifo
 		m.submodules.flash = self._flash
 		return m
 
-@sim_case(
-	domains = (('sync', 60e6), ('usb', 60e6)),
-	platform = Platform(),
-	dut = DUT(resource = ('flash', 0))
-)
-def spiFlash(sim : Simulator, dut : SPIFlash):
-	fifo = dut._fifo
+class SPIFlashTestCase(ToriiTestCase):
+	dut : DUT = DUT
+	dut_args = {
+		'resource': ('flash', 0)
+	}
+	domains = (('sync', 60e6), ('usb', 60e6))
+	platform = Platform()
 
-	def spiTransact(copi = None, cipo = None, partial = False, continuation = False):
+	def spiTransact(self, copi = None, cipo = None, partial = False, continuation = False):
 		if copi is not None and cipo is not None:
 			assert len(copi) == len(cipo)
 		bytes = max(0 if copi is None else len(copi), 0 if cipo is None else len(cipo))
@@ -102,108 +102,114 @@ def spiFlash(sim : Simulator, dut : SPIFlash):
 				assert (yield bus.cs.o) == 1
 				yield Settle()
 				yield
-		assert (yield dut.done) == 0
+		assert (yield self.dut.done) == 0
 		if not partial:
 			assert (yield bus.clk.o) == 1
 			assert (yield bus.cs.o) == 0
 			yield Settle()
 			yield
 
-	def domainSync():
-		yield dut.beginAddr.eq(0)
-		yield dut.endAddr.eq(4096)
-		yield from spiTransact(copi = (0xAB,))
-		yield Settle()
-		yield
-		yield Settle()
-		yield
-		yield dut.resetAddrs.eq(1)
-		yield Settle()
-		yield
-		yield dut.resetAddrs.eq(0)
-		yield Settle()
-		yield
-		yield dut.start.eq(1)
-		yield dut.byteCount.eq(len(dfuData))
-		yield Settle()
-		yield
-		assert (yield dut.readAddr) == 0
-		assert (yield dut.eraseAddr) == 0
-		assert (yield dut.writeAddr) == 0
-		assert (yield bus.cs.o) == 0
-		yield dut.start.eq(0)
-		yield dut.byteCount.eq(0)
-		yield Settle()
-		yield
-		yield from spiTransact(copi = (0x06,))
-		yield from spiTransact(copi = (0x20, 0x00, 0x00, 0x00))
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
-		yield from spiTransact(copi = (0x06,))
-		assert (yield fifo.r_rdy) == 0
-		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x00), partial = True)
-		yield
-		assert (yield fifo.r_rdy) == 0
-		assert (yield bus.cs.o) == 1
-		assert (yield bus.clk.o) == 1
-		yield Settle()
-		yield
-		assert (yield fifo.r_rdy) == 0
-		assert (yield bus.cs.o) == 1
-		assert (yield bus.clk.o) == 1
-		dut.fillFIFO = True
-		for _ in range(5):
+	@ToriiTestCase.simulation
+	def testSPIFlash(self):
+		fifo = self.dut._fifo
+
+		@ToriiTestCase.sync_domain(domain = 'sync')
+		def domainSync(self):
+			yield self.dut.beginAddr.eq(0)
+			yield self.dut.endAddr.eq(4096)
+			yield from self.spiTransact(copi = (0xAB,))
 			yield Settle()
 			yield
+			yield Settle()
+			yield
+			yield self.dut.resetAddrs.eq(1)
+			yield Settle()
+			yield
+			yield self.dut.resetAddrs.eq(0)
+			yield Settle()
+			yield
+			yield self.dut.start.eq(1)
+			yield self.dut.byteCount.eq(len(dfuData))
+			yield Settle()
+			yield
+			assert (yield self.dut.readAddr) == 0
+			assert (yield self.dut.eraseAddr) == 0
+			assert (yield self.dut.writeAddr) == 0
+			assert (yield bus.cs.o) == 0
+			yield self.dut.start.eq(0)
+			yield self.dut.byteCount.eq(0)
+			yield Settle()
+			yield
+			yield from self.spiTransact(copi = (0x06,))
+			yield from self.spiTransact(copi = (0x20, 0x00, 0x00, 0x00))
+			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x03))
+			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x03))
+			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x03))
+			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
+			yield from self.spiTransact(copi = (0x06,))
+			assert (yield fifo.r_rdy) == 0
+			yield from self.spiTransact(copi = (0x02, 0x00, 0x00, 0x00), partial = True)
+			yield
+			assert (yield fifo.r_rdy) == 0
 			assert (yield bus.cs.o) == 1
 			assert (yield bus.clk.o) == 1
-		yield from spiTransact(copi = dfuData[0:64], continuation = True)
-		assert (yield dut.writeAddr) == 64
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x03))
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
-
-		yield from spiTransact(copi = (0x06,))
-		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x40), partial = True)
-		yield from spiTransact(copi = dfuData[64:128], continuation = True)
-		assert (yield dut.writeAddr) == 128
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
-
-		yield from spiTransact(copi = (0x06,))
-		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0x80), partial = True)
-		yield from spiTransact(copi = dfuData[128:192], continuation = True)
-		assert (yield dut.writeAddr) == 192
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
-
-		yield from spiTransact(copi = (0x06,))
-		yield from spiTransact(copi = (0x02, 0x00, 0x00, 0xC0), partial = True)
-		yield from spiTransact(copi = dfuData[192:256], continuation = True)
-		assert (yield dut.writeAddr) == 256
-		yield from spiTransact(copi = (0x05, None), cipo = (None, 0x00))
-
-		assert (yield dut.done) == 1
-		yield dut.finish.eq(1)
-		yield Settle()
-		yield
-		assert (yield dut.done) == 1
-		yield dut.finish.eq(0)
-		yield Settle()
-		yield
-		assert (yield dut.done) == 0
-		yield Settle()
-		yield
-		yield Settle()
-		yield
-	yield domainSync, 'sync'
-
-	def domainUSB():
-		while not dut.fillFIFO:
+			yield Settle()
 			yield
-		yield fifo.w_en.eq(1)
-		for byte in dfuData:
-			yield fifo.w_data.eq(byte)
+			assert (yield fifo.r_rdy) == 0
+			assert (yield bus.cs.o) == 1
+			assert (yield bus.clk.o) == 1
+			self.dut.fillFIFO = True
+			for _ in range(5):
+				yield Settle()
+				yield
+				assert (yield bus.cs.o) == 1
+				assert (yield bus.clk.o) == 1
+			yield from self.spiTransact(copi = dfuData[0:64], continuation = True)
+			assert (yield self.dut.writeAddr) == 64
+			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x03))
+			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
+
+			yield from self.spiTransact(copi = (0x06,))
+			yield from self.spiTransact(copi = (0x02, 0x00, 0x00, 0x40), partial = True)
+			yield from self.spiTransact(copi = dfuData[64:128], continuation = True)
+			assert (yield self.dut.writeAddr) == 128
+			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
+
+			yield from self.spiTransact(copi = (0x06,))
+			yield from self.spiTransact(copi = (0x02, 0x00, 0x00, 0x80), partial = True)
+			yield from self.spiTransact(copi = dfuData[128:192], continuation = True)
+			assert (yield self.dut.writeAddr) == 192
+			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
+
+			yield from self.spiTransact(copi = (0x06,))
+			yield from self.spiTransact(copi = (0x02, 0x00, 0x00, 0xC0), partial = True)
+			yield from self.spiTransact(copi = dfuData[192:256], continuation = True)
+			assert (yield self.dut.writeAddr) == 256
+			yield from self.spiTransact(copi = (0x05, None), cipo = (None, 0x00))
+
+			yield Settle()
+			assert (yield self.dut.done) == 1
+			yield self.dut.finish.eq(1)
 			yield
-		yield fifo.w_en.eq(0)
-		yield
-	yield domainUSB, 'usb'
+			yield Settle()
+			assert (yield self.dut.done) == 1
+			yield self.dut.finish.eq(0)
+			yield
+			yield Settle()
+			assert (yield self.dut.done) == 0
+			yield
+			yield Settle()
+			yield
+		domainSync(self)
+
+		@ToriiTestCase.sync_domain(domain = 'usb')
+		def domainUSB(self):
+			while not self.dut.fillFIFO:
+				yield
+			yield fifo.w_en.eq(1)
+			for byte in dfuData:
+				yield fifo.w_data.eq(byte)
+				yield
+			yield fifo.w_en.eq(0)
+			yield
+		domainUSB(self)
