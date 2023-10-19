@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from logging import *
 from sys import stdout
-from time import strftime
 
 __all__ = (
 	'configureLogging',
