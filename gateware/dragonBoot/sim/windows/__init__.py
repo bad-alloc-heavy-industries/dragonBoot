@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from ..framework import sim_case
-from torii.sim import Simulator, Settle
+from torii.sim import Settle
+from torii.test import ToriiTestCase
 from usb_construct.types import USBRequestType, USBRequestRecipient
 from usb_construct.types.descriptors.microsoft import MicrosoftRequests
 from typing import Tuple, Union
@@ -10,87 +10,84 @@ from .descriptorSet import platformDescriptors
 
 descriptors = platformDescriptors.descriptors
 
-@sim_case(
-	domains = (('usb', 60e6),),
-	dut = WindowsRequestHandler(platformDescriptors)
-)
-def windowsRequestHandler(sim : Simulator, dut : WindowsRequestHandler):
-	interface = dut.interface
-	setup = interface.setup
-	tx = interface.tx
-	rx = interface.rx
+class WindowsRequestHandlerTestCase(ToriiTestCase):
+	dut : WindowsRequestHandler = WindowsRequestHandler
+	dut_args = {
+		'descriptors': platformDescriptors
+	}
+	domains = (('usb', 60e6),)
 
-	def setupReceived():
-		yield setup.received.eq(1)
+	def setupReceived(self):
+		yield self.setup.received.eq(1)
 		yield Settle()
 		yield
-		yield setup.received.eq(0)
+		yield self.setup.received.eq(0)
 		yield Settle()
 		yield
 		yield
 
-	def sendSetup(*, type : USBRequestType, retrieve : bool, request,
+	def sendSetup(self, *, type : USBRequestType, retrieve : bool, request,
 		value : Union[Tuple[int, int], int], index : Union[Tuple[int, int], int], length : int):
-		yield setup.recipient.eq(USBRequestRecipient.DEVICE)
-		yield setup.type.eq(type)
-		yield setup.is_in_request.eq(1 if retrieve else 0)
-		yield setup.request.eq(request)
+		yield self.setup.recipient.eq(USBRequestRecipient.DEVICE)
+		yield self.setup.type.eq(type)
+		yield self.setup.is_in_request.eq(1 if retrieve else 0)
+		yield self.setup.request.eq(request)
 		if isinstance(value, int):
-			yield setup.value.eq(value)
+			yield self.setup.value.eq(value)
 		else:
-			yield setup.value[0:8].eq(value[0]) # This specifies the interface
-			yield setup.value[8:16].eq(value[1])
+			yield self.setup.value[0:8].eq(value[0]) # This specifies the interface
+			yield self.setup.value[8:16].eq(value[1])
 		if isinstance(index, int):
-			yield setup.index.eq(index)
+			yield self.setup.index.eq(index)
 		else:
-			yield setup.index[0:8].eq(index[0])
-			yield setup.index[8:16].eq(index[1])
-		yield setup.length.eq(length)
-		yield from setupReceived()
+			yield self.setup.index[0:8].eq(index[0])
+			yield self.setup.index[8:16].eq(index[1])
+		yield self.setup.length.eq(length)
+		yield from self.setupReceived()
 
-	def sendGetDescriptorSet(*, vendorCode, length):
-		yield from sendSetup(type = USBRequestType.VENDOR, retrieve = True,
+	def sendGetDescriptorSet(self, *, vendorCode, length):
+		yield from self.sendSetup(type = USBRequestType.VENDOR, retrieve = True,
 			request = vendorCode, value = 0, index = MicrosoftRequests.GET_DESCRIPTOR_SET, length = length)
 
-	def receiveData(*, data : Union[Tuple[int],bytes]):
-		yield tx.ready.eq(1)
-		yield interface.data_requested.eq(1)
+	def receiveData(self, *, data : Union[Tuple[int],bytes]):
+		yield self.tx.ready.eq(1)
+		yield self.interface.data_requested.eq(1)
 		yield Settle()
 		yield
-		yield interface.data_requested.eq(0)
-		assert (yield tx.valid) == 0
-		assert (yield tx.payload) == 0
-		while (yield tx.first) == 0:
+		yield self.interface.data_requested.eq(0)
+		assert (yield self.tx.valid) == 0
+		assert (yield self.tx.payload) == 0
+		while (yield self.tx.first) == 0:
 			yield Settle()
 			yield
 		for idx, value in enumerate(data):
-			assert (yield tx.first) == (1 if idx == 0 else 0)
-			assert (yield tx.last) == (1 if idx == len(data) - 1 else 0)
-			assert (yield tx.valid) == 1
-			assert (yield tx.payload) == value
-			assert (yield interface.handshakes_out.ack) == 0
+			assert (yield self.tx.first) == (1 if idx == 0 else 0)
+			assert (yield self.tx.last) == (1 if idx == len(data) - 1 else 0)
+			assert (yield self.tx.valid) == 1
+			assert (yield self.tx.payload) == value
+			assert (yield self.interface.handshakes_out.ack) == 0
 			if idx == len(data) - 1:
-				yield tx.ready.eq(0)
-				yield interface.status_requested.eq(1)
+				yield self.tx.ready.eq(0)
+				yield self.interface.status_requested.eq(1)
 			yield Settle()
 			yield
-		assert (yield tx.valid) == 0
-		assert (yield tx.payload) == 0
-		assert (yield interface.handshakes_out.ack) == 1
-		yield interface.status_requested.eq(0)
+		assert (yield self.tx.valid) == 0
+		assert (yield self.tx.payload) == 0
+		assert (yield self.interface.handshakes_out.ack) == 1
+		yield self.interface.status_requested.eq(0)
 		yield Settle()
 		yield
-		assert (yield interface.handshakes_out.ack) == 0
+		assert (yield self.interface.handshakes_out.ack) == 0
 
-	def ensureStall():
-		yield tx.ready.eq(1)
-		yield interface.data_requested.eq(1)
+	def ensureStall(self):
+		yield self.tx.ready.eq(1)
+		yield self.interface.data_requested.eq(1)
 		yield Settle()
 		yield
-		yield interface.data_requested.eq(0)
+		yield self.interface.data_requested.eq(0)
 		attempts = 0
-		while (yield interface.handshakes_out.stall) == 0:
-			assert (yield tx.valid) == 0
+		while (yield self.interface.handshakes_out.stall) == 0:
+			assert (yield self.tx.valid) == 0
 			attempts += 1
 			if attempts > 10:
 				raise AssertionError('Stall took too long to assert')
@@ -99,18 +96,24 @@ def windowsRequestHandler(sim : Simulator, dut : WindowsRequestHandler):
 		yield Settle()
 		yield
 
-	def domainUSB():
+	@ToriiTestCase.simulation
+	@ToriiTestCase.sync_domain(domain = 'usb')
+	def testWindowsRequestHandler(self):
+		self.interface = self.dut.interface
+		self.setup = self.interface.setup
+		self.tx = self.interface.tx
+		self.rx = self.interface.rx
+
 		yield
-		yield from sendGetDescriptorSet(vendorCode = 1, length = 46)
-		yield from receiveData(data = descriptors[1])
-		yield from sendGetDescriptorSet(vendorCode = 0, length = 46)
-		yield from ensureStall()
-		yield from sendGetDescriptorSet(vendorCode = 2, length = 46)
-		yield from ensureStall()
-		yield from sendSetup(type = USBRequestType.VENDOR, retrieve = False, request = 1,
+		yield from self.sendGetDescriptorSet(vendorCode = 1, length = 46)
+		yield from self.receiveData(data = descriptors[1])
+		yield from self.sendGetDescriptorSet(vendorCode = 0, length = 46)
+		yield from self.ensureStall()
+		yield from self.sendGetDescriptorSet(vendorCode = 2, length = 46)
+		yield from self.ensureStall()
+		yield from self.sendSetup(type = USBRequestType.VENDOR, retrieve = False, request = 1,
 			value = 0, index = MicrosoftRequests.GET_DESCRIPTOR_SET, length = 0)
-		yield from ensureStall()
-		yield from sendSetup(type = USBRequestType.VENDOR, retrieve = True, request = 1,
+		yield from self.ensureStall()
+		yield from self.sendSetup(type = USBRequestType.VENDOR, retrieve = True, request = 1,
 			value = 1, index = MicrosoftRequests.GET_DESCRIPTOR_SET, length = 0)
-		yield from ensureStall()
-	yield domainUSB, 'usb'
+		yield from self.ensureStall()
