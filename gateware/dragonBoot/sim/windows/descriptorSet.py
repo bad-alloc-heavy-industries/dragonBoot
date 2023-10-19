@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from ..framework import sim_case
-from torii.sim import Simulator, Settle
+from torii.sim import Settle
+from torii.test import ToriiTestCase
 from usb_construct.emitters.descriptors.microsoft import SetHeaderDescriptorEmitter, PlatformDescriptorCollection
 
 from ...windows.descriptorSet import GetDescriptorSetHandler
@@ -20,27 +20,31 @@ platformDescriptors.add_descriptor(setHeader, 1)
 
 descriptors = platformDescriptors.descriptors
 
-@sim_case(
-	domains = (('usb', 60e6),),
-	dut = GetDescriptorSetHandler(platformDescriptors)
-)
-def getDescriptorSetHandler(sim : Simulator, dut : GetDescriptorSetHandler):
-	tx = dut.tx
+class GetDescriptorSetHandlerTestCase(ToriiTestCase):
+	dut: GetDescriptorSetHandler = GetDescriptorSetHandler
+	dut_args = {
+		'descriptorCollection': platformDescriptors
+	}
+	domains = (('usb', 60e6),)
 
-	def domainUSB():
+	@ToriiTestCase.simulation
+	@ToriiTestCase.sync_domain(domain = 'usb')
+	def testGetDescriptorSetHandler(self):
+		tx = self.dut.tx
+
 		# Make sure we're in a known state
 		yield tx.ready.eq(0)
 		yield Settle()
 		yield
 		# Set up the request
-		yield dut.request.eq(1)
-		yield dut.length.eq(46)
-		yield dut.startPosition.eq(0)
+		yield self.dut.request.eq(1)
+		yield self.dut.length.eq(46)
+		yield self.dut.startPosition.eq(0)
 		yield tx.ready.eq(1)
-		yield dut.start.eq(1)
+		yield self.dut.start.eq(1)
 		yield Settle()
 		yield
-		yield dut.start.eq(0)
+		yield self.dut.start.eq(0)
 		yield Settle()
 		while (yield tx.valid) == 0:
 			yield
@@ -54,7 +58,7 @@ def getDescriptorSetHandler(sim : Simulator, dut : GetDescriptorSetHandler):
 			assert (yield tx.last) == (1 if byte == lastByte else 0)
 			assert (yield tx.valid) == 1
 			assert (yield tx.payload) == descriptor[byte]
-			assert (yield dut.stall) == 0
+			assert (yield self.dut.stall) == 0
 			yield
 			yield Settle()
 		assert (yield tx.valid) == 0
@@ -64,17 +68,17 @@ def getDescriptorSetHandler(sim : Simulator, dut : GetDescriptorSetHandler):
 		yield tx.ready.eq(0)
 		yield Settle()
 		yield
-		yield dut.request.eq(0)
-		yield dut.length.eq(0)
-		yield dut.startPosition.eq(0)
+		yield self.dut.request.eq(0)
+		yield self.dut.length.eq(0)
+		yield self.dut.startPosition.eq(0)
 		yield tx.ready.eq(1)
-		yield dut.start.eq(1)
+		yield self.dut.start.eq(1)
 		yield Settle()
 		yield
-		yield dut.start.eq(0)
+		yield self.dut.start.eq(0)
 		yield Settle()
 		attempts = 0
-		while not (yield dut.stall):
+		while not (yield self.dut.stall):
 			assert (yield tx.valid) == 0
 			attempts += 1
 			if attempts > 10:
@@ -87,17 +91,17 @@ def getDescriptorSetHandler(sim : Simulator, dut : GetDescriptorSetHandler):
 		yield tx.ready.eq(0)
 		yield Settle()
 		yield
-		yield dut.request.eq(2)
-		yield dut.length.eq(1)
-		yield dut.startPosition.eq(0)
+		yield self.dut.request.eq(2)
+		yield self.dut.length.eq(1)
+		yield self.dut.startPosition.eq(0)
 		yield tx.ready.eq(1)
-		yield dut.start.eq(1)
+		yield self.dut.start.eq(1)
 		yield Settle()
 		yield
-		yield dut.start.eq(0)
+		yield self.dut.start.eq(0)
 		yield Settle()
 		attempts = 0
-		while not (yield dut.stall):
+		while not (yield self.dut.stall):
 			assert (yield tx.valid) == 0
 			attempts += 1
 			if attempts > 10:
@@ -112,5 +116,3 @@ def getDescriptorSetHandler(sim : Simulator, dut : GetDescriptorSetHandler):
 		yield
 		yield Settle()
 		yield
-
-	yield domainUSB, 'usb'
