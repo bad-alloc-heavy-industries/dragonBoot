@@ -2,7 +2,7 @@
 # If you're looking for the target platforms this bootloader can be built for, look in platforms/
 from torii.build import Platform
 from torii.build.run import BuildPlan, BuildProducts, LocalBuildProducts
-from torii.platform.vendor.lattice_ice40 import LatticeICE40Platform
+from torii.platform.vendor.lattice.ice40 import ICE40Platform
 from abc import abstractmethod
 from typing import Dict, Union
 
@@ -107,7 +107,7 @@ class Flash:
 		return f'{size}{sizeSuffixes[iters]}'
 
 	def _calculateSlots(self):
-		if isinstance(self._platform, LatticeICE40Platform):
+		if isinstance(self._platform, ICE40Platform):
 			self.slots = 4
 			if self._platform.device == 'iCE40HX8K' or self._platform.device == 'iCE40HX4K':
 				self.slotSize = 2 ** 18
@@ -119,7 +119,7 @@ class Flash:
 			self.slots = 2
 			raise NotImplementedError('I don\'t know how to size the slots on this platform')
 
-class DragonICE40Platform(LatticeICE40Platform):
+class DragonICE40Platform(ICE40Platform):
 	""" This is the base platform for all Lattice iCE40 bootloaders.
 
 	This platform defines how to build a multi-boot Flash image on top of the normal bitstream building logic.
