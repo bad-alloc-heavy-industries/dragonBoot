@@ -150,7 +150,7 @@ class DragonICE40Platform(ICE40Platform):
 		self.flash.platform(self)
 
 	def build(self, elaboratable, name = "top", build_dir = "build", do_build = True,
-		program_opts = None, do_program = False, **kwargs
+		program_opts = None, do_program = False, pnrSeed = 0, **kwargs
 	) -> Union[BuildPlan, BuildProducts, None]:
 		""" This is called automatically by the bootloader CLI.
 
@@ -169,7 +169,7 @@ class DragonICE40Platform(ICE40Platform):
 		"""
 		products : LocalBuildProducts = super().build(
 			elaboratable, name, build_dir, do_build, do_program = False,
-			synth_opts = '-abc9', nextpnr_opts = '--tmg-ripup --seed=0',
+			synth_opts = '-abc9', nextpnr_opts = ['--tmg-ripup', f'--seed={pnrSeed}'],
 			**kwargs
 		)
 

@@ -27,6 +27,10 @@ def cli():
 	platforms = listPlatforms()
 	buildAction.add_argument('--target', action = 'store', required = True, choices = platforms.keys())
 
+	# Allow the user to pick a seed if their toolchain is not giving good nextpnr runs
+	buildAction.add_argument('--seed', action = 'store', type = int, default = 0,
+		help = 'The nextpnr seed to use for the gateware build (default 0)')
+
 	# Parse the command line and, if `-v` is specified, bump the logging level
 	args = parser.parse_args()
 	if args.verbose:
@@ -46,5 +50,5 @@ def cli():
 		return 0
 	elif args.action == 'build':
 		platform = platforms[args.target]()
-		platform.build(DragonBoot(), name = 'dragonBoot')
+		platform.build(DragonBoot(), name = 'dragonBoot', pnrSeed = args.seed)
 		return 0
