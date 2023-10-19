@@ -34,34 +34,32 @@ class GetDescriptorSetHandlerTestCase(ToriiTestCase):
 
 		# Make sure we're in a known state
 		yield tx.ready.eq(0)
-		yield Settle()
-		yield
+		yield from self.settle()
 		# Set up the request
 		yield self.dut.request.eq(1)
 		yield self.dut.length.eq(46)
 		yield self.dut.startPosition.eq(0)
 		yield tx.ready.eq(1)
 		yield self.dut.start.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.dut.start.eq(0)
 		yield Settle()
 		while (yield tx.valid) == 0:
-			yield
+			yield from self.settle()
 			yield Settle()
 		descriptor = descriptors[1]
 		bytes = len(descriptor)
 		lastByte = bytes - 1
 		# And read back the result, validating state along the way
 		for byte in range(bytes):
-			assert (yield tx.first) == (1 if byte == 0 else 0)
-			assert (yield tx.last) == (1 if byte == lastByte else 0)
-			assert (yield tx.valid) == 1
-			assert (yield tx.payload) == descriptor[byte]
-			assert (yield self.dut.stall) == 0
-			yield
+			self.assertEqual((yield tx.first), (1 if byte == 0 else 0))
+			self.assertEqual((yield tx.last), (1 if byte == lastByte else 0))
+			self.assertEqual((yield tx.valid), 1)
+			self.assertEqual((yield tx.payload), descriptor[byte])
+			self.assertEqual((yield self.dut.stall), 0)
+			yield from self.settle()
 			yield Settle()
-		assert (yield tx.valid) == 0
+		self.assertEqual((yield tx.valid), 0)
 		yield
 
 		# Test the first stall-able condition
@@ -73,46 +71,40 @@ class GetDescriptorSetHandlerTestCase(ToriiTestCase):
 		yield self.dut.startPosition.eq(0)
 		yield tx.ready.eq(1)
 		yield self.dut.start.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.dut.start.eq(0)
 		yield Settle()
 		attempts = 0
 		while not (yield self.dut.stall):
-			assert (yield tx.valid) == 0
+			self.assertEqual((yield tx.valid), 0)
 			attempts += 1
 			if attempts > 10:
 				raise AssertionError('Stall took too long to assert')
-			yield
+			yield from self.settle()
 			yield Settle()
 		yield
 
 		# Test the second stall-able condition
 		yield tx.ready.eq(0)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.dut.request.eq(2)
 		yield self.dut.length.eq(1)
 		yield self.dut.startPosition.eq(0)
 		yield tx.ready.eq(1)
 		yield self.dut.start.eq(1)
-		yield Settle()
-		yield
+		yield from self.settle()
 		yield self.dut.start.eq(0)
 		yield Settle()
 		attempts = 0
 		while not (yield self.dut.stall):
-			assert (yield tx.valid) == 0
+			self.assertEqual((yield tx.valid), 0)
 			attempts += 1
 			if attempts > 10:
 				raise AssertionError('Stall took too long to assert')
-			yield
+			yield from self.settle()
 			yield Settle()
 		yield
 
 		# Cleanup
 		yield tx.ready.eq(0)
-		yield Settle()
-		yield
-		yield Settle()
-		yield
+		yield from self.settle(2)
