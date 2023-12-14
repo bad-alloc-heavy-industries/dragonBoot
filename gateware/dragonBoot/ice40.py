@@ -111,7 +111,7 @@ class Slots:
 
 		slots = self._buildSlots(self._flash)
 		# Copy in the boot slot
-		data[0:32] = slots[1]
+		data[0:32] = slots[self._flash.bootSlot]
 		slotOffset = 32
 		# And then populate the usable slots
 		for slot in slots:

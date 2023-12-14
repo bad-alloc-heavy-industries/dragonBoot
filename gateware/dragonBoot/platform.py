@@ -70,6 +70,15 @@ class Flash:
 		self._slots = slots
 
 	@property
+	def bootSlot(self) -> int:
+		""" This property returns which slot should be booted by default """
+		# If the platform uses a timeout instead of the normal boot scheme, default to always booting
+		# the bootloader, otherwise default to booting the user gateware.
+		if hasattr(self._platform, 'timeout'):
+			return 0
+		return 1
+
+	@property
 	def partitions(self) -> Dict[int, Dict[str, int]]:
 		""" This property returns a dictionary describing the slot configuration Flash partioning.
 
@@ -103,7 +112,7 @@ class Flash:
 		iters = 0
 		while size > 1024:
 			iters += 1
-			size /= 1024
+			size //= 1024
 		return f'{size}{sizeSuffixes[iters]}'
 
 	def _calculateSlots(self):
