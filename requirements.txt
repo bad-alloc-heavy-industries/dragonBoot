@@ -1,4 +1,3 @@
 git+https://github.com/shrine-maiden-heavy-industries/torii-hdl.git@main#egg=torii
-git+https://github.com/shrine-maiden-heavy-industries/arachne@main#egg=arachne
 git+https://github.com/shrine-maiden-heavy-industries/sol@main#egg=sol-usb
 git+https://github.com/shrine-maiden-heavy-industries/usb-construct@main#egg=usb-construct
