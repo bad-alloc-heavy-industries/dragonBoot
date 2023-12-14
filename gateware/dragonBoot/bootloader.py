@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from torii import Elaboratable, Module, ClockDomain, ResetSignal
+from torii.build import Platform
 from sol_usb.usb2 import USBDevice
 from sol_usb.gateware.usb.request import SetupPacket
 from sol_usb.gateware.usb.usb2.request import StallOnlyRequestHandler
@@ -40,7 +41,7 @@ class DragonBoot(Elaboratable):
 	We configure by default for the :py:class:`sol.gateware.usb.usb2.device.USBDevice` to connect in high speed
 	mode and define the :code:`usb` clock domain, while SOL handles setting up clocking that domain appropriately.
 	"""
-	def elaborate(self, platform) -> Module:
+	def elaborate(self, platform: Platform) -> Module:
 		""" Describes the specific gateware needed to provide the descriptors and handlers and device logic to talk USB.
 
 		Parameters
@@ -54,9 +55,19 @@ class DragonBoot(Elaboratable):
 			A complete description of the gateware behaviour required.
 		"""
 		m = Module()
-		m.domains.usb = ClockDomain()
-		ulpiInterface = platform.request('ulpi', 0)
-		m.submodules.device = device = USBDevice(bus = ulpiInterface, handle_clocking = True)
+		if ('upli', 0) in platform.resources:
+			m.domains.usb = ClockDomain()
+			ulpiInterface = platform.request('ulpi', 0)
+			m.submodules.device = device = USBDevice(bus = ulpiInterface, handle_clocking = True)
+		elif ('usb', 0) in platform.resources:
+			if not hasattr(platform, 'pll_type'):
+				raise AssertionError('Platform does not define an implementation for a PLL to clock it')
+			pllType = platform.pll_type
+			m.submodules.clocking = pllType()
+			usbInterface = platform.request('usb', 0)
+			m.submodules.device = device = USBDevice(bus = usbInterface, handle_clocking = False)
+		else:
+			raise AssertionError('Platform fails to define any valid USB resources!')
 		m.submodules.warmboot = warmboot = Warmboot()
 
 		descriptors = DeviceDescriptorCollection()
