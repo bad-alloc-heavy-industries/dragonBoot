@@ -109,7 +109,8 @@ class Flash:
 	def _calculateSlots(self):
 		if isinstance(self._platform, ICE40Platform):
 			self.slots = 4
-			if self._platform.device == 'iCE40HX8K' or self._platform.device == 'iCE40HX4K':
+			if (self._platform.device == 'iCE40HX8K' or self._platform.device == 'iCE40HX4K' or
+	   			self._platform.device == 'iCE40LP8K' or self._platform.device == 'iCE40LP4K'):
 				self.slotSize = 2 ** 18
 			elif self._platform.device == 'iCE40UP5K' or self._platform.device == 'iCE40UP3K':
 				self.slotSize = 2 ** 17
