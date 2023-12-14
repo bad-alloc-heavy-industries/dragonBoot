@@ -1,10 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Elaboratable, Module, ClockDomain, ResetSignal
+from torii import Elaboratable, Module, Signal, ClockDomain, ResetSignal
 from torii.build import Platform
 from sol_usb.usb2 import USBDevice
-from sol_usb.gateware.usb.request import SetupPacket
-from sol_usb.gateware.usb.usb2.request import StallOnlyRequestHandler
-from usb_construct.types import USBRequestType
 from usb_construct.emitters.descriptors.standard import (
 	DeviceDescriptorCollection, LanguageIDs, DeviceClassCodes, InterfaceClassCodes,
 	ApplicationSubclassCodes, DFUProtocolCodes
@@ -18,6 +15,7 @@ from usb_construct.contextmgrs.descriptors.microsoft import *
 from .dfu import DFURequestHandler
 from .windows import WindowsRequestHandler
 from .warmboot import Warmboot
+from .timeout import ConnectTimeout
 
 __all__ = (
 	'DragonBoot',
@@ -132,12 +130,22 @@ class DragonBoot(Elaboratable):
 
 		ep0.add_request_handler(WindowsRequestHandler(platformDescriptors))
 
+		if hasattr(platform, 'timeout'):
+			rebootTrigger = Signal()
+			m.submodules.timeout = timeout = ConnectTimeout(timeout = platform.timeout, clockFreq = device.data_clock)
+			m.d.comb += [
+				timeout.stop.eq(device.reset_detected),
+				rebootTrigger.eq(dfuRequestHandler.triggerReboot | timeout.triggerReboot),
+			]
+		else:
+			rebootTrigger = dfuRequestHandler.triggerReboot
+
 		# Signal that we always want LUNA to try connecting
 		m.d.comb += [
 			device.connect.eq(1),
 			device.low_speed_only.eq(0),
 			device.full_speed_only.eq(0),
 			ResetSignal('usb').eq(0),
-			warmboot.trigger.eq(dfuRequestHandler.triggerReboot),
+			warmboot.trigger.eq(rebootTrigger),
 		]
 		return m

@@ -109,3 +109,6 @@ class TinyFPGABXPlatform(DragonICE40Platform):
 	)
 
 	pll_type = USBPLL
+	# Unlike other platforms, this one waits 1s for the USB connection to come up, and if that fails,
+	# warmboots into w/e the user has in slot 1.
+	timeout = 1e0
