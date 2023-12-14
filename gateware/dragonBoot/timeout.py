@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Elaboratable, Module, Signal, ClockDomain
+from torii import Elaboratable, Module, Signal
 from torii.build import Platform
 
 __all__ = (
@@ -47,7 +47,7 @@ class ConnectTimeout(Elaboratable):
 		m.d.comb += self.triggerReboot.eq(0)
 
 		# This doesn't _need_ to be a state machine, but it's much simpler for it to be..
-		with m.FSM():
+		with m.FSM(domain = 'usb'):
 			# Start out in the counting state, going up from 0 to the timeout value
 			with m.State('COUNT'):
 				m.d.usb += counter.eq(counter + 1)
