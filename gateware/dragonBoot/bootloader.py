@@ -53,7 +53,7 @@ class DragonBoot(Elaboratable):
 			A complete description of the gateware behaviour required.
 		"""
 		m = Module()
-		if ('upli', 0) in platform.resources:
+		if ('ulpi', 0) in platform.resources:
 			m.domains.usb = ClockDomain()
 			ulpiInterface = platform.request('ulpi', 0)
 			m.submodules.device = device = USBDevice(bus = ulpiInterface, handle_clocking = True)
