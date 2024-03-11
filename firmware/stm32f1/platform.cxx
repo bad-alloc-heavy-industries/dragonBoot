@@ -129,8 +129,9 @@ namespace usb::dfu
 
 	void reboot() noexcept
 	{
-		flashCtrl.bank[0].control |= vals::flash::controlLock;
-		flashCtrl.bank[1].control |= vals::flash::controlLock;
+		// Make sure the Flash is locked
+		flashCtrl.bank[0].control = vals::flash::controlLock;
+		flashCtrl.bank[1].control = vals::flash::controlLock;
 		// Reset the boot magic, and ask the system controller to reboot the device.
 #if BOOTLOADER_TARGET == BMP
 		vals::gpio::config<vals::gpio_t::pin12>(gpioB, vals::gpio::mode_t::input, vals::gpio::config_t::inputFloating);
@@ -167,7 +168,7 @@ namespace usb::dfu
 		flashCtrl.bank[flashBank].control = vals::flash::controlPageErase;
 		flashCtrl.bank[flashBank].address = address;
 		// And then trigger the operation
-		flashCtrl.bank[flashBank].control |= vals::flash::controlStartErase;
+		flashCtrl.bank[flashBank].control = vals::flash::controlPageErase | vals::flash::controlStartErase;
 	}
 
 	void write(const std::uintptr_t address, const std::size_t count, const uint8_t *const buffer) noexcept
