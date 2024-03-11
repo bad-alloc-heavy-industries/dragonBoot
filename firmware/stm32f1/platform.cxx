@@ -37,8 +37,8 @@ namespace osc
 			continue;
 		// Switch to the HSE for the moment
 		rcc.clockConfig = (rcc.clockConfig & ~vals::rcc::clockConfigSourceMask) | vals::rcc::clockConfigSourceHSE;
-		// Switch off the HSI and PLL (just in case)
-		rcc.clockCtrl &= ~(vals::rcc::clockCtrlHSIEnable | vals::rcc::clockCtrlPLLEnable);
+		// Switch off the PLL (just in case), but not the HSI as that's required for FPEC operations
+		rcc.clockCtrl &= ~vals::rcc::clockCtrlPLLEnable;
 		// Now configure the prescalers
 		rcc.clockConfig &= ~(vals::rcc::clockConfigAHBPrescaleMask | vals::rcc::clockConfigAPB1PrescaleMask |
 			vals::rcc::clockConfigAPB2PrescaleMask | vals::rcc::clockConfigADCPrescaleMask |
@@ -164,7 +164,7 @@ namespace usb::dfu
 			// Assume that the controller is now unlocked.. not much we can do otherwise!
 		}
 		// Set up the page erase
-		flashCtrl.bank[flashBank].control |= vals::flash::controlPageErase;
+		flashCtrl.bank[flashBank].control = vals::flash::controlPageErase;
 		flashCtrl.bank[flashBank].address = address;
 		// And then trigger the operation
 		flashCtrl.bank[flashBank].control |= vals::flash::controlStartErase;
@@ -180,7 +180,7 @@ namespace usb::dfu
 		flashCtrl.bank[flashBank].status |= vals::flash::statusEndOfOperation;
 		// The controller should already be unlocked because of the erase that occured, so..
 		// Set up the programming operation.
-		flashCtrl.bank[flashBank].control |= vals::flash::controlProgram;
+		flashCtrl.bank[flashBank].control = vals::flash::controlProgram;
 		// The STM32F1 Flash is only able to be written 16 bits at a time, so turn the address too write into
 		// a uint16_t pointer, and copy the data in 2 bytes at a time w/ a fixup for the final one.
 		for (const auto offset : substrate::indexSequence_t{count}.step(2))
