@@ -181,7 +181,15 @@ namespace usb::dfu
 		// The controller should already be unlocked because of the erase that occured, so..
 		// Set up the programming operation.
 		flashCtrl.bank[flashBank].control |= vals::flash::controlProgram;
-		std::memcpy(reinterpret_cast<void *>(address), buffer, count);
+		// The STM32F1 Flash is only able to be written 16 bits at a time, so turn the address too write into
+		// a uint16_t pointer, and copy the data in 2 bytes at a time w/ a fixup for the final one.
+		for (const auto offset : substrate::indexSequence_t{count}.step(2))
+		{
+			const auto amount{std::min(count - offset, 2U)};
+			uint16_t data = 0xffffU;
+			std::memcpy(&data, buffer + offset, amount);
+			*reinterpret_cast<volatile uint16_t *>(address + offset) = data;
+		}
 	}
 } // namespace usb::dfu
 
