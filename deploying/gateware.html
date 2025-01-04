@@ -1,24 +1,25 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deploying the gateware &mdash; dragonBoot  documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sphinx_construct.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/platformpicker.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=aefb6c79" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_construct.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/platformpicker.css" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/platformpicker.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=7f41d439"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/platformpicker.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -31,11 +32,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dragonBoot
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dragonBoot
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -72,9 +77,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../gettingStarted.html">Getting Started</a> &raquo;</li>
-      <li>Deploying the gateware</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../gettingStarted.html">Getting Started</a></li>
+      <li class="breadcrumb-item active">Deploying the gateware</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -84,9 +89,9 @@
            <div itemprop="articleBody">
              
   <section id="deploying-the-gateware">
-<h1>Deploying the gateware<a class="headerlink" href="#deploying-the-gateware" title="Permalink to this headline"></a></h1>
+<h1>Deploying the gateware<a class="headerlink" href="#deploying-the-gateware" title="Link to this heading"></a></h1>
 <section id="system-requirements">
-<h2>System Requirements<a class="headerlink" href="#system-requirements" title="Permalink to this headline"></a></h2>
+<h2>System Requirements<a class="headerlink" href="#system-requirements" title="Link to this heading"></a></h2>
 <p>The dragonBoot gateware requires the following:</p>
 <ul class="simple">
 <li><p>Python 3.8 or newer</p></li>
@@ -95,18 +100,18 @@
 </ul>
 </section>
 <section id="installing-python">
-<h2>Installing Python<a class="headerlink" href="#installing-python" title="Permalink to this headline"></a></h2>
+<h2>Installing Python<a class="headerlink" href="#installing-python" title="Link to this heading"></a></h2>
 <p>First install <code class="docutils literal notranslate"><span class="pre">python</span></code>, <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> for your platform:</p>
 <div class="platform-picker docutils container">
 <div class="platform-choice platform--arch platform-noaltname docutils container">
 <p class="platform-title">Arch Linux</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo pacman -S python python-pip python-virtualenv
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>python<span class="w"> </span>python-pip<span class="w"> </span>python-virtualenv
 </pre></div>
 </div>
 </div>
 <div class="platform-choice platform--debian platform-noaltname docutils container">
 <p class="platform-title">Debian/Ubuntu Linux</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo apt install python3 python3-pip python3-virtualenv
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3<span class="w"> </span>python3-pip<span class="w"> </span>python3-virtualenv
 </pre></div>
 </div>
 </div>
@@ -121,8 +126,8 @@ requirement of Python 3.8.</p>
 </div>
 <div class="platform-choice platform--macos platform-noaltname docutils container">
 <p class="platform-title">macOS</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>brew install python
-<span class="gp">$ </span>pip3 install virtualenv
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>brew<span class="w"> </span>install<span class="w"> </span>python
+<span class="gp">$ </span>pip3<span class="w"> </span>install<span class="w"> </span>virtualenv
 </pre></div>
 </div>
 </div>
@@ -134,13 +139,13 @@ and follow the instructions in the installer to have Python end up on <code clas
 </div>
 <p>Once you have completed the platform-specific steps, please create a virtual environment and activate it
 for all further steps:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>virtualenv env
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>virtualenv<span class="w"> </span>env
 <span class="go">created virtual environment CPython3.10.4.final.0-64 in 100ms</span>
 <span class="go">  creator CPython3Posix(dest=/tmp/env, clear=False, no_vcs_ignore=False, global=False)</span>
 <span class="go">  seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/home/dx-mon/.local/share/virtualenv)</span>
 <span class="go">    added seed packages: pip==22.0.4, setuptools==61.1.1, wheel==0.37.1</span>
 <span class="go">  activators BashActivator,CShellActivator,FishActivator,NushellActivator,PowerShellActivator,PythonActivator</span>
-<span class="gp">$ </span>. env/bin/activate
+<span class="gp">$ </span>.<span class="w"> </span>env/bin/activate
 </pre></div>
 </div>
 <div class="admonition note">
@@ -150,38 +155,38 @@ for all further steps:</p>
 We recomend using Windows Terminal for a better experience doing this.</p>
 </div>
 <p>Once you have python you will then need Yosys and nextpnr.
-There are two ways to get these requirements - <a class="reference internal" href="#native-yosys-and-nextpnr"><span class="std std-doc">natively</span></a> or
-<a class="reference internal" href="#yowasp-yosys-and-nextpnr"><span class="std std-doc">via YoWASP</span></a>, details below.</p>
+There are two ways to get these requirements - <a class="reference internal" href="#native-yosys-and-nextpnr">natively</a> or
+<a class="reference internal" href="#yowasp-yosys-and-nextpnr">via YoWASP</a>, details below.</p>
 </section>
 <section id="native-yosys-and-nextpnr">
-<h2>Native Yosys and nextpnr<a class="headerlink" href="#native-yosys-and-nextpnr" title="Permalink to this headline"></a></h2>
+<h2>Native Yosys and nextpnr<a class="headerlink" href="#native-yosys-and-nextpnr" title="Link to this heading"></a></h2>
 <div class="platform-picker docutils container">
 <div class="platform-choice platform--arch platform-noaltname docutils container">
 <p class="platform-title">Arch Linux</p>
 <p>Yosys can be installed from the community repos with:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo pacman -S yosys
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>yosys
 </pre></div>
 </div>
 <p>However, it is preferred due to some features dragonBoot needs for the toolchain to be installed from the
 <a class="reference external" href="https://aur.archlinux.org/">AUR</a>. nextpnr is not available in repos, so must be installed from the AUR.</p>
 <p>To install Yosys from the AUR, install the <code class="code docutils literal notranslate"><span class="pre">yosys-nightly</span></code> package with your favourite AUR helper,
 or run:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://aur.archlinux.org/yosys-nightly.git
-<span class="gp">$ </span><span class="nb">cd</span> yosys-nightly
-<span class="gp">$ </span>makepkg -sic yosys-nightly
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://aur.archlinux.org/yosys-nightly.git
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>yosys-nightly
+<span class="gp">$ </span>makepkg<span class="w"> </span>-sic<span class="w"> </span>yosys-nightly
 </pre></div>
 </div>
 <p>Once installed you must then pick a nextpnr to install suitable for your target.
 For the Lattice iCE40 parts, install <code class="code docutils literal notranslate"><span class="pre">nextpnr-ice40-nightly</span></code> with your favourite AUR helper, or run:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://aur.archlinux.org/nextpnr-ice40-nightly.git
-<span class="gp">$ </span><span class="nb">cd</span> nextpnr-ice40-nightly
-<span class="gp">$ </span>makepkg -sic nextpnr-ice40-nightly
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://aur.archlinux.org/nextpnr-ice40-nightly.git
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>nextpnr-ice40-nightly
+<span class="gp">$ </span>makepkg<span class="w"> </span>-sic<span class="w"> </span>nextpnr-ice40-nightly
 </pre></div>
 </div>
 <p>For the Lattice ECP5 parts, install <code class="code docutils literal notranslate"><span class="pre">nextpnr-ecp5-nightly</span></code> with your favourite AUR helper, or run:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://aur.archlinux.org/nextpnr-ecp5-nightly.git
-<span class="gp">$ </span><span class="nb">cd</span> nextpnr-ecp5-nightly
-<span class="gp">$ </span>makepkg -sic nextpnr-ecp5-nightly
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://aur.archlinux.org/nextpnr-ecp5-nightly.git
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>nextpnr-ecp5-nightly
+<span class="gp">$ </span>makepkg<span class="w"> </span>-sic<span class="w"> </span>nextpnr-ecp5-nightly
 </pre></div>
 </div>
 </div>
@@ -214,18 +219,18 @@ the installation in to your environment’s <code class="code docutils literal n
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you do not wish to edit your environment block to do this permanently, please run:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>call &lt;extracted_location&gt;<span class="se">\o</span>ss-cad-suite<span class="se">\e</span>nvironment.bat
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>call<span class="w"> </span>&lt;extracted_location&gt;<span class="se">\o</span>ss-cad-suite<span class="se">\e</span>nvironment.bat
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-<p>Once done, continue setup with <a class="reference internal" href="#setting-up-dragonboot"><span class="std std-doc">setting up dragonBoot</span></a>.</p>
+<p>Once done, continue setup with <a class="reference internal" href="#setting-up-dragonboot">setting up dragonBoot</a>.</p>
 </section>
 <section id="yowasp-yosys-and-nextpnr">
-<h2>YoWASP Yosys and nextpnr<a class="headerlink" href="#yowasp-yosys-and-nextpnr" title="Permalink to this headline"></a></h2>
+<h2>YoWASP Yosys and nextpnr<a class="headerlink" href="#yowasp-yosys-and-nextpnr" title="Link to this heading"></a></h2>
 <p>Then install Yosys:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install yowasp-yosys
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3<span class="w"> </span>install<span class="w"> </span>yowasp-yosys
 <span class="go">Collecting yowasp-yosys</span>
 <span class="go">  Downloading yowasp_yosys-0.16.post31.dev334-py3-none-any.whl (6.8 MB)</span>
 <span class="go">     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.8/6.8 MB 10.5 MB/s eta 0:00:00</span>
@@ -242,7 +247,7 @@ the installation in to your environment’s <code class="code docutils literal n
 <div class="platform-picker docutils container">
 <div class="platform-choice platform--ice40 platform-noaltname docutils container">
 <p class="platform-title">Lattice iCE40</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install yowasp-nextpnr-ice40
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3<span class="w"> </span>install<span class="w"> </span>yowasp-nextpnr-ice40
 <span class="go">Collecting yowasp-nextpnr-ice40</span>
 <span class="go">  Downloading yowasp_nextpnr_ice40-0.3.dev303-py3-none-any.whl (71.9 MB)</span>
 <span class="go">    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 71.9/71.9 MB 8.9 MB/s eta 0:00:00</span>
@@ -255,7 +260,7 @@ the installation in to your environment’s <code class="code docutils literal n
 </div>
 <div class="platform-choice platform--ecp5 platform-noaltname docutils container">
 <p class="platform-title">Lattice ECP5</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install yowasp-nextpnr-ecp5
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3<span class="w"> </span>install<span class="w"> </span>yowasp-nextpnr-ecp5
 <span class="go">Collecting yowasp-nextpnr-ecp5</span>
 <span class="go">  Downloading yowasp_nextpnr_ecp5-0.3.dev303-py3-none-any.whl (30.1 MB)</span>
 <span class="go">    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 30.1/30.1 MB 14.3 MB/s eta 0:00:00</span>
@@ -267,14 +272,14 @@ the installation in to your environment’s <code class="code docutils literal n
 </div>
 </div>
 </div>
-<p>Once done, continue setup with <a class="reference internal" href="#setting-up-dragonboot"><span class="std std-doc">setting up dragonBoot</span></a>.</p>
+<p>Once done, continue setup with <a class="reference internal" href="#setting-up-dragonboot">setting up dragonBoot</a>.</p>
 </section>
 <section id="setting-up-dragonboot">
-<h2>Setting up dragonBoot<a class="headerlink" href="#setting-up-dragonboot" title="Permalink to this headline"></a></h2>
+<h2>Setting up dragonBoot<a class="headerlink" href="#setting-up-dragonboot" title="Link to this heading"></a></h2>
 <p>The next few steps are considerably easier, and consist of a couple of simple <code class="docutils literal notranslate"><span class="pre">pip</span></code> commands and
 running the bootloader builder.</p>
 <p>First we preinstall the LUNA framework to resovle a dependency issue:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install git+https://github.com/shrine-maiden-heavy-industries/luna@main#egg<span class="o">=</span>luna
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3<span class="w"> </span>install<span class="w"> </span>git+https://github.com/shrine-maiden-heavy-industries/luna@main#egg<span class="o">=</span>luna
 <span class="go">Collecting luna</span>
 <span class="go">  Cloning https://github.com/shrine-maiden-heavy-industries/luna (to revision main) to /tmp/pip-install-21jaa3jl/luna_d8cb58b30cf84ad5a38f6517eeb86922</span>
 <span class="go">  Running command git clone --filter=blob:none --quiet https://github.com/shrine-maiden-heavy-industries/luna /tmp/pip-install-21jaa3jl/luna_d8cb58b30cf84ad5a38f6517eeb86922</span>
@@ -345,7 +350,7 @@ running the bootloader builder.</p>
 </pre></div>
 </div>
 <p>Then we install the rest of the requirements:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3 install -r requirements-ci.txt
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-ci.txt
 <span class="go">Collecting amaranth</span>
 <span class="go">  Cloning https://github.com/amaranth-lang/amaranth.git (to revision main) to /tmp/pip-install-qk963uua/amaranth_fc7092b8b38d4eed93ff74f26847c9ca</span>
 <span class="go">  Running command git clone --filter=blob:none --quiet https://github.com/amaranth-lang/amaranth.git /tmp/pip-install-qk963uua/amaranth_fc7092b8b38d4eed93ff74f26847c9ca</span>
@@ -396,11 +401,11 @@ running the bootloader builder.</p>
 <p>This will install all Python dependencies needed.</p>
 </section>
 <section id="using-dragonboot">
-<h2>Using dragonBoot<a class="headerlink" href="#using-dragonboot" title="Permalink to this headline"></a></h2>
+<h2>Using dragonBoot<a class="headerlink" href="#using-dragonboot" title="Link to this heading"></a></h2>
 <p>The gateware builder is run from in the gateware subdirectory of your clone of dragonBoot.
 For example, to build the bootloader for the <a class="reference external" href="https://github.com/dragonmux/HeadphoneAmp">HeadphoneAmp audio interface</a>,
 it is invoked as follows:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./dragonBoot.py build --target audioInterface
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./dragonBoot.py<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>audioInterface
 <span class="go">[~] (LUNA) SoC framework components could not be imported; some functionality will be unavailable.</span>
 <span class="go">[~] (LUNA) No module named &#39;lambdasoc&#39;</span>
 <span class="go">[~] Building for a 512.0kiB Flash with 2 boot slots</span>
@@ -416,7 +421,7 @@ it is invoked as follows:</p>
 on the device when bringing new hardware up and doing initial programming</p></li>
 </ul>
 <p>To upgrade a device’s bootloader, one need only execute the following command (adjusted for the device’s primary VID:PID):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>dfu-util -d <span class="m">1209</span>:badc,:badb -a <span class="m">0</span> -D build/dragonBoot.bin
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>dfu-util<span class="w"> </span>-d<span class="w"> </span><span class="m">1209</span>:badc,:badb<span class="w"> </span>-a<span class="w"> </span><span class="m">0</span><span class="w"> </span>-D<span class="w"> </span>build/dragonBoot.bin
 <span class="go">dfu-util 0.11</span>
 
 <span class="go">Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.</span>
@@ -464,7 +469,7 @@ on the device when bringing new hardware up and doing initial programming</p></l
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022-2022, Rachel Mant.</p>
+    <p>&#169; Copyright 2022-2025, Rachel Mant.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

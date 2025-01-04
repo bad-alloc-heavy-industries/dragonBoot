@@ -1,24 +1,25 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The LUNA-based USB Device &mdash; dragonBoot  documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/sphinx_construct.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/platformpicker.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=aefb6c79" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_construct.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/platformpicker.css" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/platformpicker.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=7f41d439"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/platformpicker.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -31,11 +32,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dragonBoot
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dragonBoot
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -47,7 +52,11 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">dragonBoot for FPGA</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="platforms/index.html">Platforms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="handlers/index.html">Request Handlers</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">The LUNA-based USB Device</a><ul class="simple">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The LUNA-based USB Device</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dragonBoot.bootloader.DragonBoot"><code class="docutils literal notranslate"><span class="pre">DragonBoot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dragonBoot.bootloader.DragonBoot.elaborate"><code class="docutils literal notranslate"><span class="pre">DragonBoot.elaborate()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="flash.html">The SPI Flash controller</a></li>
@@ -69,9 +78,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">dragonBoot for FPGA</a> &raquo;</li>
-      <li>The LUNA-based USB Device</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">dragonBoot for FPGA</a></li>
+      <li class="breadcrumb-item active">The LUNA-based USB Device</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -81,39 +90,39 @@
            <div itemprop="articleBody">
              
   <section id="the-luna-based-usb-device">
-<h1>The LUNA-based USB Device<a class="headerlink" href="#the-luna-based-usb-device" title="Permalink to this headline"></a></h1>
+<h1>The LUNA-based USB Device<a class="headerlink" href="#the-luna-based-usb-device" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-dragonBoot.bootloader"></span><dl class="py class">
+<dl class="py class" id="module-dragonBoot.bootloader">
 <dt class="sig sig-object py" id="dragonBoot.bootloader.DragonBoot">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.bootloader.</span></span><span class="sig-name descname"><span class="pre">DragonBoot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.bootloader.DragonBoot" title="Permalink to this definition"></a></dt>
-<dd><p>The top-level of the dragonBoot gateware and implementation of the descriptors and LUNA USB device.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.bootloader.</span></span><span class="sig-name descname"><span class="pre">DragonBoot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.bootloader.DragonBoot" title="Link to this definition"></a></dt>
+<dd><p>The top-level of the dragonBoot gateware and implementation of the descriptors and SOL USB device.</p>
 <p>This top-level <code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.hdl.ir.Elaboratable</span></code> does a few things, some of which are described in
 detail in other sections of the documentation:</p>
 <ul class="simple">
 <li><p>It implements the <a class="reference internal" href="descriptors.html"><span class="doc">USB descriptors</span></a> required to tell the host what we are.</p></li>
-<li><p>It houses the LUNA USB device instance used to communicate with the host.</p></li>
+<li><p>It houses the SOL USB device instance used to communicate with the host.</p></li>
 <li><p>It houses and connects the platform-specific warmboot block needed to reboot and reconfigure the FPGA
 on completion of operations.</p></li>
-<li><p>It connects up and provides to the LUNA USB device all the handlers required for USB endpoint 0 to work
+<li><p>It connects up and provides to the SOL USB device all the handlers required for USB endpoint 0 to work
 and respond as needed to requests from the host.</p></li>
 </ul>
-<p>The LUNA USB device uses what is ostensibly an ULPI interface, however it is possible to instead use a raw
+<p>The SOL USB device uses what is ostensibly an ULPI interface, however it is possible to instead use a raw
 USB LS/FS interface even on a device such as the Lattice iCE40UP5K which is unable to work at ULPI speeds.
-We configure by default for the <code class="xref py py-class docutils literal notranslate"><span class="pre">luna.gateware.usb.usb2.device.USBDevice</span></code> to connect in high speed
-mode and define the <code class="code docutils literal notranslate"><span class="pre">usb</span></code> clock domain, while LUNA handles setting up clocking that domain appropriately.</p>
+We configure by default for the <code class="xref py py-class docutils literal notranslate"><span class="pre">sol.gateware.usb.usb2.device.USBDevice</span></code> to connect in high speed
+mode and define the <code class="code docutils literal notranslate"><span class="pre">usb</span></code> clock domain, while SOL handles setting up clocking that domain appropriately.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dragonBoot.bootloader.DragonBoot.elaborate">
-<span class="sig-name descname"><span class="pre">elaborate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">amaranth.hdl.dsl.Module</span></span></span><a class="headerlink" href="#dragonBoot.bootloader.DragonBoot.elaborate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">elaborate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Platform</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Module</span></span></span><a class="headerlink" href="#dragonBoot.bootloader.DragonBoot.elaborate" title="Link to this definition"></a></dt>
 <dd><p>Describes the specific gateware needed to provide the descriptors and handlers and device logic to talk USB.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>platform</strong> – The Amaranth platform for which the gateware will be synthesised.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A complete description of the gateware behaviour required.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">amaranth.hdl.dsl.Module</span></code></p>
 </dd>
 </dl>
@@ -134,7 +143,7 @@ mode and define the <code class="code docutils literal notranslate"><span class=
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022-2022, Rachel Mant.</p>
+    <p>&#169; Copyright 2022-2025, Rachel Mant.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

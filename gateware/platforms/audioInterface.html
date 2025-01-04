@@ -1,24 +1,25 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dragonmux/HeadphoneAmp audio interface platform &mdash; dragonBoot  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/sphinx_construct.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/platformpicker.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=aefb6c79" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_construct.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/platformpicker.css" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/platformpicker.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=7f41d439"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/platformpicker.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -31,11 +32,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> dragonBoot
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            dragonBoot
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -46,7 +51,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../firmware/index.html">dragonBoot for microcontroller</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">dragonBoot for FPGA</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Platforms</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonmux/HeadphoneAmp audio interface platform</a><ul class="simple">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dragonmux/HeadphoneAmp audio interface platform</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dragonBoot.platforms.audioInterface.AudioInterfacePlatform"><code class="docutils literal notranslate"><span class="pre">AudioInterfacePlatform</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="helpers/index.html">Platform Helpers</a></li>
@@ -73,10 +79,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">dragonBoot for FPGA</a> &raquo;</li>
-          <li><a href="index.html">Platforms</a> &raquo;</li>
-      <li>dragonmux/HeadphoneAmp audio interface platform</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">dragonBoot for FPGA</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Platforms</a></li>
+      <li class="breadcrumb-item active">dragonmux/HeadphoneAmp audio interface platform</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -86,12 +92,12 @@
            <div itemprop="articleBody">
              
   <section id="dragonmux-headphoneamp-audio-interface-platform">
-<h1>dragonmux/HeadphoneAmp audio interface platform<a class="headerlink" href="#dragonmux-headphoneamp-audio-interface-platform" title="Permalink to this headline"></a></h1>
+<h1>dragonmux/HeadphoneAmp audio interface platform<a class="headerlink" href="#dragonmux-headphoneamp-audio-interface-platform" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="dragonBoot.platforms.audioInterface.AudioInterfacePlatform">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.platforms.audioInterface.</span></span><span class="sig-name descname"><span class="pre">AudioInterfacePlatform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toolchain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IceStorm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.platforms.audioInterface.AudioInterfacePlatform" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dragonBoot.platforms.audioInterface.</span></span><span class="sig-name descname"><span class="pre">AudioInterfacePlatform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toolchain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IceStorm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dragonBoot.platforms.audioInterface.AudioInterfacePlatform" title="Link to this definition"></a></dt>
 <dd><p>Platform for <a class="reference external" href="https://github.com/dragonmux/HeadphoneAmp">HeadphoneAmp’s audio interface</a>.</p>
 <p>Used to allow the device gateware to be upgraded or swapped out on the fly,
 this defines the bare minimum of the resources on the board requried to to perform this task:</p>
@@ -109,7 +115,7 @@ the PHY on the board is a USB3318 which produces a 60MHz clock from its associat
 <li><p>The Flash configuration object required to describe the GD25Q40C Flash</p></li>
 </ul>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>toolchain</strong> – Which toolchain synthesis, placement and routing should be performed via.
 Unless you have extremely good reason to do otherwise, the default IceStorm
 should be used.</p>
@@ -130,7 +136,7 @@ should be used.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022-2022, Rachel Mant.</p>
+    <p>&#169; Copyright 2022-2025, Rachel Mant.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -1,24 +1,26 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Request Handlers &mdash; dragonBoot  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/sphinx_construct.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/platformpicker.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=aefb6c79" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx_construct.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/platformpicker.css" />
+
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/platformpicker.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=7f41d439"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/platformpicker.js"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -31,11 +33,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> dragonBoot
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            dragonBoot
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -71,9 +77,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">dragonBoot for FPGA</a> &raquo;</li>
-      <li>Request Handlers</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">dragonBoot for FPGA</a></li>
+      <li class="breadcrumb-item active">Request Handlers</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -83,16 +89,16 @@
            <div itemprop="articleBody">
              
   <section id="request-handlers">
-<h1>Request Handlers<a class="headerlink" href="#request-handlers" title="Permalink to this headline"></a></h1>
+<h1>Request Handlers<a class="headerlink" href="#request-handlers" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <p>The gateware uses three request handlers to function:</p>
 <ul class="simple">
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Standard</span> <span class="pre">Request</span> <span class="pre">Handler</span></code> (from the LUNA framework)</p></li>
-<li><p><a class="reference internal" href="dfu.html"><span class="doc std std-doc">DFU Request Handler</span></a></p></li>
-<li><p><a class="reference internal" href="windows.html"><span class="doc std std-doc">Windows Platform-Specific Request Handler</span></a></p></li>
+<li><p><a class="reference internal" href="dfu.html"><span class="std std-doc">DFU Request Handler</span></a></p></li>
+<li><p><a class="reference internal" href="windows.html"><span class="std std-doc">Windows Platform-Specific Request Handler</span></a></p></li>
 </ul>
-<p>As DFU is handled entirely through endpoint 0 control requests, this along with the <a class="reference internal" href="../descriptors.html"><span class="doc std std-doc">descriptors</span></a> form the complete USB portion of the gateware</p>
+<p>As DFU is handled entirely through endpoint 0 control requests, this along with the <a class="reference internal" href="../descriptors.html"><span class="std std-doc">descriptors</span></a> form the complete USB portion of the gateware</p>
 </section>
 
 
@@ -106,7 +112,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022-2022, Rachel Mant.</p>
+    <p>&#169; Copyright 2022-2025, Rachel Mant.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
