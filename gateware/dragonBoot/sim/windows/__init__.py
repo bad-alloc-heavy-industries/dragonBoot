@@ -2,7 +2,6 @@
 from torii.test import ToriiTestCase
 from usb_construct.types import USBRequestType, USBRequestRecipient
 from usb_construct.types.descriptors.microsoft import MicrosoftRequests
-from typing import Tuple, Union
 
 from ...windows import WindowsRequestHandler
 from .descriptorSet import platformDescriptors
@@ -18,12 +17,13 @@ class WindowsRequestHandlerTestCase(ToriiTestCase):
 
 	def setupReceived(self):
 		yield from self.pulse(self.setup.received)
-		yield from self.settle()
+		yield from self.settle(0)
 		yield
 
 	def sendSetup(self, *, type : USBRequestType, retrieve : bool, request,
-		value : Union[Tuple[int, int], int], index : Union[Tuple[int, int], int], length : int):
-		yield self.setup.recipient.eq(USBRequestRecipient.DEVICE)
+		value : tuple[int, int] | int, index : tuple[int, int] | int, length : int,
+		recipient: USBRequestRecipient = USBRequestRecipient.DEVICE):
+		yield self.setup.recipient.eq(recipient)
 		yield self.setup.type.eq(type)
 		yield self.setup.is_in_request.eq(1 if retrieve else 0)
 		yield self.setup.request.eq(request)
@@ -41,10 +41,12 @@ class WindowsRequestHandlerTestCase(ToriiTestCase):
 		yield from self.setupReceived()
 
 	def sendGetDescriptorSet(self, *, vendorCode, length):
-		yield from self.sendSetup(type = USBRequestType.VENDOR, retrieve = True,
-			request = vendorCode, value = 0, index = MicrosoftRequests.GET_DESCRIPTOR_SET, length = length)
+		yield from self.sendSetup(
+			recipient = USBRequestRecipient.DEVICE, type = USBRequestType.VENDOR, retrieve = True,
+			request = vendorCode, value = 0, index = MicrosoftRequests.GET_DESCRIPTOR_SET, length = length
+		)
 
-	def receiveData(self, *, data : Union[Tuple[int],bytes]):
+	def receiveData(self, *, data : tuple[int, ...] | bytes):
 		yield self.tx.ready.eq(1)
 		yield self.interface.data_requested.eq(1)
 		yield from self.settle()
@@ -52,7 +54,7 @@ class WindowsRequestHandlerTestCase(ToriiTestCase):
 		self.assertEqual((yield self.tx.valid), 0)
 		self.assertEqual((yield self.tx.payload), 0)
 		while (yield self.tx.first) == 0:
-			yield from self.settle()
+			yield
 		for idx, value in enumerate(data):
 			self.assertEqual((yield self.tx.first), (1 if idx == 0 else 0))
 			self.assertEqual((yield self.tx.last), (1 if idx == len(data) - 1 else 0))
@@ -62,18 +64,18 @@ class WindowsRequestHandlerTestCase(ToriiTestCase):
 			if idx == len(data) - 1:
 				yield self.tx.ready.eq(0)
 				yield self.interface.status_requested.eq(1)
-			yield from self.settle()
+			yield
 		self.assertEqual((yield self.tx.valid), 0)
 		self.assertEqual((yield self.tx.payload), 0)
 		self.assertEqual((yield self.interface.handshakes_out.ack), 1)
 		yield self.interface.status_requested.eq(0)
-		yield from self.settle()
+		yield
 		self.assertEqual((yield self.interface.handshakes_out.ack), 0)
 
 	def ensureStall(self):
 		yield self.tx.ready.eq(1)
 		yield self.interface.data_requested.eq(1)
-		yield from self.settle()
+		yield
 		yield self.interface.data_requested.eq(0)
 		attempts = 0
 		while (yield self.interface.handshakes_out.stall) == 0:
@@ -81,7 +83,7 @@ class WindowsRequestHandlerTestCase(ToriiTestCase):
 			attempts += 1
 			if attempts > 10:
 				raise AssertionError('Stall took too long to assert')
-			yield from self.settle()
+			yield
 		yield from self.settle()
 
 	@ToriiTestCase.simulation
