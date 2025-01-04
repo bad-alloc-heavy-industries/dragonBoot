@@ -117,7 +117,7 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 		yield from self.sendSetup(type = USBRequestType.CLASS, retrieve = True,
 			request = DFURequests.GET_STATE, value = 0, index = 0, length = 1)
 
-	def sendData(self, *, data : Tuple):
+	def sendData(self, *, data : tuple[int, ...]):
 		yield self.rx.valid.eq(1)
 		for value in data:
 			yield from self.settle()
@@ -137,16 +137,16 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 		yield self.interface.handshakes_in.ack.eq(0)
 		yield from self.settle()
 
-	def receiveData(self, *, data : Union[Tuple[int], bytes], check = True):
+	def receiveData(self, *, data : tuple[int, ...] | bytes, check = True):
 		result = True
 		yield self.tx.ready.eq(1)
 		yield self.interface.data_requested.eq(1)
-		yield from self.settle()
+		yield
 		yield self.interface.data_requested.eq(0)
 		assert (yield self.tx.valid) == 0
 		assert (yield self.tx.payload) == 0
 		while (yield self.tx.first) == 0:
-			yield from self.settle()
+			yield
 		for idx, value in enumerate(data):
 			assert (yield self.tx.first) == (1 if idx == 0 else 0)
 			assert (yield self.tx.last) == (1 if idx == len(data) - 1 else 0)
@@ -159,12 +159,12 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 			if idx == len(data) - 1:
 				yield self.tx.ready.eq(0)
 				yield self.interface.status_requested.eq(1)
-			yield from self.settle()
+			yield
 		assert (yield self.tx.valid) == 0
 		assert (yield self.tx.payload) == 0
 		assert (yield self.interface.handshakes_out.ack) == 1
 		yield self.interface.status_requested.eq(0)
-		yield from self.settle()
+		yield
 		assert (yield self.interface.handshakes_out.ack) == 0
 		return result
 
@@ -172,16 +172,16 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 		assert (yield self.tx.valid) == 0
 		assert (yield self.tx.last) == 0
 		yield self.interface.status_requested.eq(1)
-		yield from self.settle()
+		yield
 		assert (yield self.tx.valid) == 1
 		assert (yield self.tx.last) == 1
 		yield self.interface.status_requested.eq(0)
 		yield self.interface.handshakes_in.ack.eq(1)
-		yield from self.settle()
+		yield
 		assert (yield self.tx.valid) == 0
 		assert (yield self.tx.last) == 0
 		yield self.interface.handshakes_in.ack.eq(0)
-		yield from self.settle()
+		yield
 
 	@ToriiTestCase.simulation
 	@ToriiTestCase.sync_domain(domain = 'usb')
