@@ -53,8 +53,8 @@ class DFUConfig:
 		A 4-bit register containing the current state of the DFU request handler from the :py:class:DFUState enum.
 	"""
 	def __init__(self):
-		self.status = Signal(4, decoder = DFUStatus)
-		self.state = Signal(4, decoder = DFUState)
+		self.status = Signal(DFUStatus)
+		self.state = Signal(DFUState)
 
 class DFURequestHandler(USBRequestHandler):
 	""" The DFU request handling engine.
