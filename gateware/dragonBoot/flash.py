@@ -137,6 +137,14 @@ class SPIFlash(Elaboratable):
 		]
 
 		with m.FSM(name = 'flash'):
+			with m.State('PRE_RESET_WAIT'):
+				m.d.sync += resetTimer.dec()
+				with m.If(resetTimer == 0):
+					m.d.sync += [
+						resetTimer.eq(resetTimer.reset),
+						resetStep.eq(0),
+					]
+					m.next = 'RESET'
 			with m.State('RESET'):
 				with m.Switch(resetStep):
 					with m.Case(0):
@@ -150,10 +158,7 @@ class SPIFlash(Elaboratable):
 						]
 					with m.Case(1):
 						with m.If(flash.done):
-							m.d.sync += [
-								flash.cs.eq(0),
-								enableStep.eq(0),
-							]
+							m.d.sync += flash.cs.eq(0)
 							m.next = 'RESET_WAIT'
 			with m.State('RESET_WAIT'):
 				m.d.sync += resetTimer.dec()
@@ -180,6 +185,7 @@ class SPIFlash(Elaboratable):
 					m.d.sync += [
 						op.eq(SPIFlashOp.erase),
 						byteCount.eq(self.byteCount),
+						enableStep.eq(0),
 					]
 					m.next = 'WRITE_ENABLE'
 			with m.State('WRITE_ENABLE'):
