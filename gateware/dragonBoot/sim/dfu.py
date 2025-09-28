@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from torii.hdl import Record
 from torii.hdl.rec import Direction
+from torii.build import Clock
 from torii.test import ToriiTestCase
 from usb_construct.types import USBRequestType, USBRequestRecipient, USBStandardRequests
 from usb_construct.types.descriptors.dfu import DFURequests
@@ -34,6 +35,8 @@ class Platform:
 
 	flash.slots = 4
 	flash.slotSize = 2 ** 18
+
+	default_clk_constraint = Clock(12e6)
 
 	def request(self, name, number):
 		assert name == 'flash'
