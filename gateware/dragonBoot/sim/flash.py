@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 from torii.hdl import Elaboratable, Module, Record
+from torii.build import Clock
 from torii.lib.fifo import AsyncFIFO
 from torii.hdl.rec import Direction
 from torii.sim import Settle
@@ -32,6 +33,8 @@ class Platform:
 		eraseCommand = 0x20
 	)
 
+	default_clk_constraint = Clock(12e6)
+
 	def request(self, name, number):
 		assert name == 'flash'
 		assert number == 0
@@ -44,6 +47,7 @@ class DUT(Elaboratable):
 
 		self.fillFIFO = False
 
+		self.ready = self._flash.ready
 		self.start = self._flash.start
 		self.finish = self._flash.finish
 		self.done = self._flash.done
@@ -126,7 +130,7 @@ class SPIFlashTestCase(ToriiTestCase):
 			yield from self.spiTransact(copi = (0xAB,))
 			yield Settle()
 			yield
-			yield Settle()
+			self.wait_until_high(self.dut.ready, timeout = 20e-6 * 12e6)
 			yield
 			yield self.dut.resetAddrs.eq(1)
 			yield Settle()
