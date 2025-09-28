@@ -114,6 +114,8 @@ class SPIFlash(Elaboratable):
 		m.submodules.spi = flash = SPIBus(resource = self._flashResource)
 		fifo = self._fifo
 
+		resetDuration = int(20e6 // platform.default_clk_constraint.period)
+
 		op = Signal(SPIFlashOp, reset = SPIFlashOp.none)
 		resetStep = Signal(range(2))
 		enableStep = Signal(range(3))
@@ -123,6 +125,7 @@ class SPIFlash(Elaboratable):
 		writeFinishStep = Signal(range(2))
 		writeWaitStep = Signal(range(4))
 		writeTrigger = Signal()
+		resetTimer = Signal(range(resetDuration), reset = resetDuration - 1)
 		writeCount = Signal(range(platform.flash.pageSize + 1))
 		byteCount = Signal.like(self.byteCount)
 
@@ -147,12 +150,17 @@ class SPIFlash(Elaboratable):
 						]
 					with m.Case(1):
 						with m.If(flash.done):
-							m.d.comb += self.ready.eq(1)
 							m.d.sync += [
 								flash.cs.eq(0),
 								enableStep.eq(0),
 							]
-							m.next = 'IDLE'
+							m.next = 'RESET_WAIT'
+			with m.State('RESET_WAIT'):
+				m.d.sync += resetTimer.dec()
+				with m.If(resetTimer == 0):
+					m.d.sync += resetTimer.eq(resetTimer.reset)
+					m.d.comb += self.ready.eq(1)
+					m.next = 'IDLE'
 			with m.State('IDLE'):
 				m.d.sync += [
 					enableStep.eq(0),
