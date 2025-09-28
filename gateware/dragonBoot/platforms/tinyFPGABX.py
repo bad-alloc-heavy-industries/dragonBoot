@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Elaboratable, Module, Instance, Signal, Const, ClockDomain, ClockSignal
+from torii.hdl import Elaboratable, Module, Instance, Signal, Const, ClockDomain, ClockSignal
 from torii.build import Resource, Pins, Clock, Attrs
 from torii.platform.resources.interface import SPIResource, DirectUSBResource
 from ..platform import DragonICE40Platform, Flash, platform

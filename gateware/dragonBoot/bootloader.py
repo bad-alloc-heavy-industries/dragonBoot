@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Elaboratable, Module, Signal, ClockDomain, ResetSignal
+from torii.hdl import Elaboratable, Module, Signal, ClockDomain, ResetSignal
 from torii.build import Platform
-from sol_usb.usb2 import USBDevice
+from torii_usb.usb2 import USBDevice
+from torii_usb.usb.request.windows import WindowsRequestHandler
 from usb_construct.emitters.descriptors.standard import (
 	DeviceDescriptorCollection, LanguageIDs, DeviceClassCodes, InterfaceClassCodes,
 	ApplicationSubclassCodes, DFUProtocolCodes
@@ -13,7 +14,6 @@ from usb_construct.emitters.descriptors.microsoft import PlatformDescriptorColle
 from usb_construct.contextmgrs.descriptors.microsoft import *
 
 from .dfu import DFURequestHandler
-from .windows import WindowsRequestHandler
 from .warmboot import Warmboot
 from .timeout import ConnectTimeout
 

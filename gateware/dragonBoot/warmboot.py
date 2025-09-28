@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Elaboratable, Module, Signal, Instance
+from torii.hdl import Elaboratable, Module, Signal, Instance
 from torii.platform.vendor.lattice.ice40 import ICE40Platform
 from torii.platform.vendor.lattice.ecp5 import ECP5Platform
 

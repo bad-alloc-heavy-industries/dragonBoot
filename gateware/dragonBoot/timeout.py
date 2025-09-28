@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Elaboratable, Module, Signal
+from torii.hdl import Elaboratable, Module, Signal
 from torii.build import Platform
 
 __all__ = (
-	'ConnectTimeout'
+	'ConnectTimeout',
 )
 
 class ConnectTimeout(Elaboratable):

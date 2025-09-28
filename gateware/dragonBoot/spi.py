@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Elaboratable, Module, Signal, Cat
+from torii.hdl import Elaboratable, Module, Signal, Cat
 from typing import Tuple
 
 __all__ = (

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Record
-from torii.hdl.rec import DIR_FANOUT, DIR_FANIN
+from torii.hdl import Record
+from torii.hdl.rec import Direction
 from torii.test import ToriiTestCase
 from usb_construct.types import USBRequestType, USBRequestRecipient, USBStandardRequests
 from usb_construct.types.descriptors.dfu import DFURequests
@@ -11,16 +11,16 @@ from ..dfu import DFURequestHandler, DFUState
 
 bus = Record((
 	('clk', [
-		('o', 1, DIR_FANOUT),
+		('o', 1, Direction.FANOUT),
 	]),
 	('cs', [
-		('o', 1, DIR_FANOUT),
+		('o', 1, Direction.FANOUT),
 	]),
 	('copi', [
-		('o', 1, DIR_FANOUT),
+		('o', 1, Direction.FANOUT),
 	]),
 	('cipo', [
-		('i', 1, DIR_FANIN),
+		('i', 1, Direction.FANIN),
 	]),
 ))
 
@@ -121,7 +121,7 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 		yield self.rx.valid.eq(1)
 		for value in data:
 			yield from self.settle()
-			yield self.rx.payload.eq(value)
+			yield self.rx.data.eq(value)
 			yield self.rx.next.eq(1)
 			yield from self.settle()
 			yield self.rx.next.eq(0)
@@ -144,7 +144,7 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 		yield
 		yield self.interface.data_requested.eq(0)
 		assert (yield self.tx.valid) == 0
-		assert (yield self.tx.payload) == 0
+		assert (yield self.tx.data) == 0
 		while (yield self.tx.first) == 0:
 			yield
 		for idx, value in enumerate(data):
@@ -152,8 +152,8 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 			assert (yield self.tx.last) == (1 if idx == len(data) - 1 else 0)
 			assert (yield self.tx.valid) == 1
 			if check:
-				assert (yield self.tx.payload) == value
-			if (yield self.tx.payload) != value:
+				assert (yield self.tx.data) == value
+			if (yield self.tx.data) != value:
 				result = False
 			assert (yield self.interface.handshakes_out.ack) == 0
 			if idx == len(data) - 1:
@@ -161,7 +161,7 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 				yield self.interface.status_requested.eq(1)
 			yield
 		assert (yield self.tx.valid) == 0
-		assert (yield self.tx.payload) == 0
+		assert (yield self.tx.data) == 0
 		assert (yield self.interface.handshakes_out.ack) == 1
 		yield self.interface.status_requested.eq(0)
 		yield

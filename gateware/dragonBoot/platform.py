@@ -200,6 +200,7 @@ class DragonICE40Platform(ICE40Platform):
 		if not do_program:
 			return products
 		self.toolchain_program(products, name, **(program_opts or {}))
+		return None
 
 	def buildSlots(self) -> bytes:
 		""" Builds a multi-boot slot configuration for the platform.

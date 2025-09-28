@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Module, Signal, DomainRenamer, Cat, Memory, Const
+from torii.hdl import Module, Signal, DomainRenamer, Cat, Memory, Const
 from torii.lib.fifo import AsyncFIFO
 from usb_construct.types import USBRequestType, USBRequestRecipient, USBStandardRequests
 from usb_construct.types.descriptors.dfu import DFURequests
-from sol_usb.gateware.usb.usb2.request import (
+from torii_usb.usb.usb2.request import (
 	USBRequestHandler, SetupPacket
 )
-from sol_usb.gateware.usb.stream import USBInStreamInterface, USBOutStreamInterface
-from sol_usb.gateware.stream.generator import StreamSerializer
+from torii_usb.usb.stream import USBInStreamInterface, USBOutStreamInterface
+from torii_usb.stream.generator import StreamSerializer
 from enum import IntEnum, unique
 from struct import pack as structPack, unpack as structUnpack
 from typing import Tuple
@@ -145,7 +145,7 @@ class DFURequestHandler(USBRequestHandler):
 		setup = interface.setup
 
 		rxTriggered = Signal()
-		rxStream = USBOutStreamInterface(payload_width = 8)
+		rxStream = USBOutStreamInterface(data_width = 8)
 		receiverStart = Signal()
 		receiverCount = Signal.like(setup.length)
 		receiverConsumed = Signal.like(setup.length)
@@ -158,7 +158,7 @@ class DFURequestHandler(USBRequestHandler):
 		m.submodules.bitstreamFIFO = bitstreamFIFO = AsyncFIFO(
 			width = 8, depth = _flash.erasePageSize, r_domain = 'usb', w_domain = 'usb'
 		)
-		flash : SPIFlash = DomainRenamer({'sync': 'usb'})(
+		flash : SPIFlash = DomainRenamer(sync = 'usb')(
 			SPIFlash(resource = self._flashResource, fifo = bitstreamFIFO)
 		)
 		m.submodules.flash = flash
@@ -263,7 +263,7 @@ class DFURequestHandler(USBRequestHandler):
 			with m.State('HANDLE_GET_STATUS'):
 				# Hook up the transmitter ...
 				m.d.comb += [
-					transmitter.stream.connect(interface.tx),
+					transmitter.stream.attach(interface.tx),
 					transmitter.max_length.eq(6),
 					transmitter.data[0].eq(config.status),
 					Cat(transmitter.data[1:4]).eq(0),
@@ -308,7 +308,7 @@ class DFURequestHandler(USBRequestHandler):
 			with m.State('HANDLE_GET_STATE'):
 				# Hook up the transmitter ...
 				m.d.comb += [
-					transmitter.stream.connect(interface.tx),
+					transmitter.stream.attach(interface.tx),
 					transmitter.max_length.eq(1),
 					transmitter.data[0].eq(Cat(config.state, 0)),
 				]
@@ -330,7 +330,7 @@ class DFURequestHandler(USBRequestHandler):
 			with m.State('GET_INTERFACE'):
 				# Hook up the transmitter ...
 				m.d.comb += [
-					transmitter.stream.connect(interface.tx),
+					transmitter.stream.attach(interface.tx),
 					transmitter.max_length.eq(1),
 					transmitter.data[0].eq(slot),
 				]
@@ -386,7 +386,7 @@ class DFURequestHandler(USBRequestHandler):
 
 		m.d.comb += [
 			bitstreamFIFO.w_en.eq(0),
-			bitstreamFIFO.w_data.eq(rxStream.payload),
+			bitstreamFIFO.w_data.eq(rxStream.data),
 		]
 		receiverContinue = (receiverConsumed < receiverCount)
 

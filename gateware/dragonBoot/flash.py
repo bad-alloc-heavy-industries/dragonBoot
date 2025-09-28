@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
-from torii import Elaboratable, Module, Signal
+from torii.hdl import Elaboratable, Module, Signal
 from torii.lib.fifo import AsyncFIFO
 from enum import IntEnum, auto, unique
 
