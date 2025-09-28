@@ -73,15 +73,14 @@ class SPIBus(Elaboratable):
 					m.d.sync += dataOut.eq(self.w_data)
 					m.next = 'TRANSFER'
 			with m.State('TRANSFER'):
+				m.d.sync += clk.eq(clk ^ 1)
 				with m.If(clk):
 					m.d.sync += [
-						clk.eq(0),
 						bit.eq(bit + 1),
 						copi.eq(dataOut[7]),
 					]
 				with m.Else():
 					m.d.sync += [
-						clk.eq(1),
 						dataOut.eq(dataOut.shift_left(1)),
 						dataIn.eq(Cat(cipo, dataIn[:-1])),
 					]

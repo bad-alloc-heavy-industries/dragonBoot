@@ -44,14 +44,14 @@ class SPIBusTestCase(ToriiTestCase):
 		yield from self.settle()
 		self.assertEqual((yield bus.clk.o), 1)
 		yield self.dut.xfer.eq(0)
-		yield from self.settle()
+		yield
 		for bit in range(8):
 			self.assertEqual((yield bus.clk.o), 1)
 			yield bus.cipo.i.eq((dataIn >> (7 - bit)) & 1)
-			yield from self.settle()
+			yield
 			self.assertEqual((yield bus.clk.o), 0)
 			self.assertEqual((yield bus.copi.o), (dataOut >> (7 - bit)) & 1)
-			yield from self.settle()
+			yield
 		self.assertEqual((yield bus.clk.o), 1)
 		self.assertEqual((yield self.dut.done), 1)
 		if not overlap:
