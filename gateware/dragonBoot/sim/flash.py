@@ -130,7 +130,7 @@ class SPIFlashTestCase(ToriiTestCase):
 			yield from self.spiTransact(copi = (0xAB,))
 			yield Settle()
 			yield
-			self.wait_until_high(self.dut.ready, timeout = 20e-6 * 12e6)
+			yield from self.wait_until_high(self.dut.ready, timeout = 20e-6 * 12e6)
 			yield
 			yield self.dut.resetAddrs.eq(1)
 			yield Settle()
