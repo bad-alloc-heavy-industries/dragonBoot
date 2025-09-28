@@ -198,6 +198,7 @@ class DFURequestHandlerTestCase(ToriiTestCase):
 		yield from self.settle()
 		yield
 		yield from self.wait_until_low(bus.cs.o)
+		yield from self.wait_for(20e-6)
 		yield from self.step(2)
 		yield from self.sendDFUGetStatus()
 		yield from self.receiveData(data = (0, 0, 0, 0, DFUState.dfuIdle, 0))
