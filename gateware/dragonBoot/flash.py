@@ -114,7 +114,7 @@ class SPIFlash(Elaboratable):
 		m.submodules.spi = flash = SPIBus(resource = self._flashResource)
 		fifo = self._fifo
 
-		resetDuration = int(20e6 // platform.default_clk_constraint.period)
+		resetDuration = int(20e-6 // platform.default_clk_constraint.period)
 
 		op = Signal(SPIFlashOp, reset = SPIFlashOp.none)
 		resetStep = Signal(range(2))
