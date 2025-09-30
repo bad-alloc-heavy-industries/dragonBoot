@@ -185,7 +185,6 @@ class SPIFlash(Elaboratable):
 					m.d.sync += [
 						op.eq(SPIFlashOp.erase),
 						byteCount.eq(self.byteCount),
-						enableStep.eq(0),
 					]
 					m.next = 'WRITE_ENABLE'
 			with m.State('WRITE_ENABLE'):
